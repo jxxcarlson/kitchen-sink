@@ -15,16 +15,16 @@ header config =
 
         titleSize =
             if config.window.width < 800 then
-                64
+                35
 
             else
-                80
+                50
 
         elmCampTitle =
             Element.link
                 []
                 { url = Route.encode HomepageRoute
-                , label = Element.el [ Element.Font.size titleSize, Theme.glow, Element.paddingXY 0 8 ] (Element.text "Elm Camp")
+                , label = Element.el [ Element.Font.size titleSize, Theme.glow, Element.paddingXY 0 8 ] (Element.text "Kitchen Sink App Template")
                 }
 
         elmCampNextTopLine =
@@ -32,12 +32,7 @@ header config =
                 [ Element.centerX, Element.spacing 13 ]
                 [ Element.image
                     [ Element.width (Element.px 49) ]
-                    { src = "/elm-camp-tangram.webp", description = "The logo of Elm Camp, a tangram in green forest colors" }
-                , Element.column
-                    [ Element.spacing 2, Element.Font.size 24, Element.moveUp 1 ]
-                    [ Element.el [ Theme.glow ] (Element.text "Unconference")
-                    , Element.el [ Element.Font.extraBold, Element.Font.color MarkdownThemed.lightTheme.elmText ] (Element.text "Planet Earth 2024")
-                    ]
+                    { src = "/elm-camp-tangram.webp", description = "The Elm Logo" }
                 ]
     in
     if config.window.width < 1000 || config.isCompact then
@@ -60,12 +55,6 @@ header config =
     else
         Element.row
             [ Element.padding 30, Element.spacing 40, Element.centerX ]
-            [ Element.image
-                [ Element.width (Element.px 523) ]
-                { src = "/logo.webp", description = illustrationAltText }
-            , Element.column
-                [ Element.spacing 24 ]
-                [ elmCampTitle
-                , elmCampNextTopLine
-                ]
+            [ elmCampTitle
+            , elmCampNextTopLine
             ]

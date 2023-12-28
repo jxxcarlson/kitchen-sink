@@ -1,4 +1,4 @@
-module Product exposing (..)
+module Stripe.Product exposing (..)
 
 import Env
 

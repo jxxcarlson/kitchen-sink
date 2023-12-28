@@ -1,4 +1,4 @@
-module PurchaseForm exposing
+module Stripe.PurchaseForm exposing
     ( CouplePurchaseData
     , PressedSubmit(..)
     , PurchaseForm
@@ -20,9 +20,9 @@ import EmailAddress exposing (EmailAddress)
 import Env
 import Id exposing (Id)
 import Name exposing (Name)
-import Product
 import String.Nonempty exposing (NonemptyString)
 import Stripe exposing (ProductId(..))
+import Stripe.Product as Product
 import Toop exposing (T3(..), T4(..), T5(..), T6(..), T7(..), T8(..))
 import TravelMode exposing (TravelMode)
 

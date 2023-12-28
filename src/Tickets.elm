@@ -10,8 +10,8 @@ import Env
 import Id exposing (Id)
 import MarkdownThemed
 import Money
-import Product
 import Stripe exposing (Price, ProductId(..))
+import Stripe.Product as Product
 import Theme
 
 

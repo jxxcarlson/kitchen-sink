@@ -12,9 +12,9 @@ import Lamdera exposing (ClientId, SessionId)
 import LiveSchedule
 import Money
 import Postmark exposing (PostmarkSendResponse)
-import PurchaseForm exposing (PurchaseForm, PurchaseFormValidated)
 import Route exposing (Route)
 import Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
+import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseForm, PurchaseFormValidated)
 import Time
 import Untrusted exposing (Untrusted)
 import Url exposing (Url)

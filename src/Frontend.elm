@@ -1,5 +1,7 @@
 module Frontend exposing (app)
 
+--exposing (PriceId, ProductId(..), StripeSessionId)
+
 import Admin
 import AssocList
 import Audio exposing (Audio, AudioCmd)
@@ -29,11 +31,11 @@ import Pages.Brillig
 import Pages.Home
 import Pages.Parts
 import Ports
-import Product
-import PurchaseForm exposing (PressedSubmit(..), PurchaseForm, PurchaseFormValidated(..), SubmitStatus(..))
 import Route exposing (Route(..), SubPage(..))
 import String.Nonempty
-import Stripe exposing (PriceId, ProductId(..))
+import Stripe
+import Stripe.Product as Product
+import Stripe.PurchaseForm as PurchaseForm exposing (PressedSubmit(..), PurchaseForm, PurchaseFormValidated(..), SubmitStatus(..))
 import Task
 import Theme
 import Tickets exposing (Ticket)
@@ -279,6 +281,7 @@ updateLoaded msg model =
         MouseDown ->
             ( { model | showTooltip = False, showCarbonOffsetTooltip = False }, Cmd.none )
 
+        -- STRIPE
         PressedSelectTicket productId priceId ->
             case ( AssocList.get productId Tickets.dict, model.ticketsEnabled ) of
                 ( Just ticket, TicketsEnabled ) ->
@@ -339,6 +342,7 @@ updateLoaded msg model =
                 |> Task.attempt (\_ -> SetViewport)
             )
 
+        -- /STRIPE
         PressedShowCarbonOffsetTooltip ->
             ( { model | showCarbonOffsetTooltip = True }, Cmd.none )
 
@@ -593,7 +597,7 @@ errorText error =
     Element.paragraph [ Element.Font.color (Element.rgb255 150 0 0) ] [ Element.text error ]
 
 
-formView : LoadedModel -> Id ProductId -> Id PriceId -> Ticket -> Element FrontendMsg_
+formView : LoadedModel -> Id Stripe.ProductId -> Id Stripe.PriceId -> Ticket -> Element FrontendMsg_
 formView model productId priceId ticket =
     let
         form =
@@ -990,113 +994,3 @@ tooltip text =
         , Element.Border.shadow { offset = ( 0, 1 ), size = 0, blur = 4, color = Element.rgba 0 0 0 0.25 }
         ]
         [ Element.text text ]
-
-
-venueAccessContent : Element msg
-venueAccessContent =
-    Element.column
-        []
-        [ """
-# The venue and access
-
-## The venue
-
-**Dallund Slot**<br/>
-Dallundvej 63<br/>
-5471 Søndersø<br/>
-Denmark
-
-[Google Maps](https://goo.gl/maps/1WGiHRc7NaNimBzx5)
-
-[https://www.dallundcastle.dk/](https://www.dallundcastle.dk/)
-
-## Getting there
-
-### via train, bus & 2 km walk/Elm Camp shuttle
-
-* Travel to Odense train station ([Danske Statsbaner](https://www.dsb.dk/en/))
-* From the station take [bus 191](https://www.fynbus.dk/find-din-rejse/rute,190) to Søndersø (_OBC Nord Plads H_ to _Søndersø Bypark_)
-* Elm Camp will be organising shuttles between Søndersø and the venue at key times
-* You can walk 2 km from Søndersø to the venue if you don't mind a short section of unpaved road
-
-### via car
-
-* There is ample parking on site
-
-### via plane
-
-* Major airports in Denmark are Copenhagen, Billund and Aarhus
-* Malmö (Sweden) also has good connections to Denmark
-
-For other travel options also check [Rejseplanen](https://www.rejseplanen.dk/), [The Man in Seat 61](https://www.seat61.com/Denmark.htm), [Trainline](https://www.thetrainline.com/) and [Flixbus](https://www.flixbus.co.uk/coach/odense).
-
-## Local amenities
-
-Food and drinks are available on site, but if you forgot to pack a toothbrush or need that gum you like, Søndersø offers a few shops.
-
-### Supermarkets
-
-- SuperBrugsen (7 am—8 pm), Toftekær 4
-- Rema 1000 (7 am—9 pm), Odensevej 3
-- Netto (7 am—10 pm), Vesterled 45
-
-### Health
-
-- Pharmacy ([Søndersø Apotek](https://soendersoeapotek.a-apoteket.dk/)) (9 am—5:30 pm), near SuperBrugsen supermarket
-
-## Accessibility
-
-### Not step free.
-
-* Bedrooms, toilets, dining rooms and conference talk / workshop rooms can all be accessed via a lift which is 3 steps from ground level
-
-### It's an old manor house
-
-* The house has been renovated to a high standard but there are creaky bits, be sensible when exploring
-* There are plenty of spaces to hang out in private or in a small quiet group
-* There are a variety of seating options
-
-### Toilets
-
-* All toilets are gender neutral
-* There is one public toilet on each of the 3 floors
-* All attendees staying at the hotel have a private ensuite in their room
-* The level of accessibility of toilets needs to be confirmed (please ask if you have specific needs)
-
-### Open water & rough ground
-
-* The house is set in landscaped grounds, there are paths and rough bits.
-* There is a lake with a pier for swimming and fishing off of, right next to the house that is NOT fenced
-
-## Participating in conversations
-
-* The official conference language will be English. We ask that attendees conduct as much of their conversations in English in order to include as many people as possible
-* We do not have facility for captioning or signing, please get in touch as soon as possible if you would benefit from something like that and we'll see what we can do
-* We aim to provide frequent breaks of a decent length, so if this feels lacking to you at any time, let an organiser know
-
-## Contacting the organisers
-
-If you have questions or concerns about this website or attending Elm Camp, please get in touch
-
-    """
-            ++ contactDetails
-            |> MarkdownThemed.renderFull
-        , Html.iframe
-            [ Html.Attributes.src "/map.html"
-            , Html.Attributes.style "width" "100%"
-            , Html.Attributes.style "height" "auto"
-            , Html.Attributes.style "aspect-ratio" "21 / 9"
-            , Html.Attributes.style "border" "none"
-            ]
-            []
-            |> Element.html
-        ]
-
-
-contactDetails : String
-contactDetails =
-    """
-* Elmcraft Discord: [#elm-camp-23](https://discord.gg/QeZDXJrN78) channel or DM Katja#0091
-* Email: [team@elm.camp](mailto:team@elm.camp)
-* Elm Slack: @katjam
-"""

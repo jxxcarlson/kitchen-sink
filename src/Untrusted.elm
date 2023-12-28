@@ -8,7 +8,7 @@ module Untrusted exposing
 
 import EmailAddress exposing (EmailAddress)
 import Name exposing (Name)
-import PurchaseForm exposing (PurchaseFormValidated(..))
+import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
 import Toop exposing (T2(..), T3(..))
 
 

@@ -11,11 +11,11 @@ import Lamdera exposing (ClientId, SessionId)
 import List.Extra as List
 import List.Nonempty
 import Postmark exposing (PostmarkEmailBody(..))
-import Product
-import PurchaseForm exposing (PurchaseFormValidated(..))
 import Quantity
 import String.Nonempty exposing (NonemptyString(..))
 import Stripe exposing (PriceId, ProductId(..), StripeSessionId)
+import Stripe.Product as Product
+import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
 import Task
 import Time
 import Types exposing (..)

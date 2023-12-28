@@ -1,0 +1,13 @@
+scripts:
+
+  review: npx elm-review --ignore-dirs src/Evergreen/
+
+  review-fix: npx elm-review --ignore-dirs src/Evergreen/ --fix
+
+  review-fix-all: npx elm-review --ignore-dirs src/Evergreen/ --fix-all
+
+  review-debug: npx elm-review --ignore-dirs src/Evergreen/ --fix-all --rules NoDebug.Log
+
+  review-x: npx elm-review  --rules NoUnused.CustomTypeConstructors
+
+  cloc: cloc --by-file --exclude-dir=Evergreen src/

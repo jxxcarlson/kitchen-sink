@@ -17,9 +17,9 @@ import LamderaRPC
 import List.Nonempty exposing (Nonempty(..))
 import Name
 import Postmark
-import PurchaseForm
 import String.Nonempty exposing (NonemptyString(..))
 import Stripe exposing (Webhook(..))
+import Stripe.PurchaseForm as PurchaseForm
 import Task exposing (Task)
 import Tickets exposing (Ticket)
 import Types exposing (BackendModel, BackendMsg(..), EmailResult(..), TicketsEnabled(..), ToFrontend(..))
