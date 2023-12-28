@@ -45,7 +45,7 @@ header config =
                 Element.image
                     [ Element.width (Element.maximum 523 Element.fill) ]
                     { src = "/logo.webp", description = illustrationAltText }
-            , Element.column
+            , Element.row
                 [ Element.spacing 24, Element.centerX ]
                 [ elmCampTitle
                 , elmCampNextTopLine
