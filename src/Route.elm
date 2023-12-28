@@ -18,7 +18,7 @@ type Route
     | PaymentSuccessRoute (Maybe EmailAddress)
     | PaymentCancelRoute
     | LiveScheduleRoute
-    | Camp23Denmark SubPage
+
 
 
 type SubPage
@@ -26,12 +26,7 @@ type SubPage
     | Artifacts
 
 
-subPageParser : Url.Parser.Parser (SubPage -> a) a
-subPageParser =
-    Url.Parser.oneOf
-        [ Url.Parser.s "artifacts" |> Url.Parser.map Artifacts
-        , Url.Parser.top |> Url.Parser.map Home
-        ]
+
 
 
 decode : Url -> Route
@@ -46,8 +41,7 @@ decode url =
         , Url.Parser.s Stripe.cancelPath |> Url.Parser.map PaymentCancelRoute
         , Url.Parser.s liveSchedulePath |> Url.Parser.map LiveScheduleRoute
 
-        -- Previous events
-        , Url.Parser.s "23-denmark" </> subPageParser |> Url.Parser.map Camp23Denmark
+
         ]
         |> (\a -> Url.Parser.parse a url |> Maybe.withDefault HomepageRoute)
 
@@ -101,13 +95,7 @@ encode route =
             LiveScheduleRoute ->
                 [ liveSchedulePath ]
 
-            Camp23Denmark subPage ->
-                case subPage of
-                    Home ->
-                        [ "23-denmark" ]
 
-                    Artifacts ->
-                        [ "23-denmark", "artifacts" ]
         )
         (case route of
             HomepageRoute ->
@@ -139,11 +127,5 @@ encode route =
             LiveScheduleRoute ->
                 []
 
-            Camp23Denmark subPage ->
-                case subPage of
-                    Home ->
-                        []
 
-                    Artifacts ->
-                        []
         )

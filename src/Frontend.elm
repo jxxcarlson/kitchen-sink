@@ -7,8 +7,6 @@ import Browser exposing (UrlRequest(..))
 import Browser.Dom
 import Browser.Events
 import Browser.Navigation
-import Camp23Denmark
-import Camp23Denmark.Artifacts
 import Dict
 import Element exposing (Element)
 import Element.Background
@@ -636,8 +634,7 @@ loadedView model =
         LiveScheduleRoute ->
             LiveSchedule.view model |> Element.map LiveScheduleMsg
 
-        Camp23Denmark subpage ->
-            Camp23Denmark.view model subpage
+
 
 
 ticketsHtmlId =
@@ -1119,8 +1116,7 @@ We're still working out the details for Elm Camp 2024. We're on the hunt for a n
 Last year we ran a 3-day event in Odense, Denmark. Here are some of the memories folks have shared:
 
 """
-        ++ Camp23Denmark.Artifacts.posts
-        ++ Camp23Denmark.Artifacts.media
+
         ++ """<br/>
 
 Did you attend Elm Camp 2023? We're [open to contributions on Github](https://github.com/elm-camp/website/edit/main/src/Camp23Denmark/Artifacts.elm)!
