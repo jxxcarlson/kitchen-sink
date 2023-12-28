@@ -1,17 +1,14 @@
-module Tickets exposing (Ticket, campTicket, campfireTicket, couplesCampTicket, dict, viewDesktop, viewMobile)
+module Stripe.Tickets exposing (Ticket, campTicket, campfireTicket, couplesCampTicket, dict, viewDesktop, viewMobile)
 
 import AssocList
 import Element exposing (Element)
-import Element.Background
-import Element.Border
 import Element.Font
 import Element.Input
-import Env
 import Id exposing (Id)
 import MarkdownThemed
 import Money
-import Stripe exposing (Price, ProductId(..))
 import Stripe.Product as Product
+import Stripe.Stripe as Stripe exposing (Price, ProductId(..))
 import Theme
 
 

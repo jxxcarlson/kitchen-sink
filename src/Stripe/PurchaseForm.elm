@@ -21,8 +21,8 @@ import Env
 import Id exposing (Id)
 import Name exposing (Name)
 import String.Nonempty exposing (NonemptyString)
-import Stripe exposing (ProductId(..))
 import Stripe.Product as Product
+import Stripe.Stripe exposing (ProductId(..))
 import Toop exposing (T3(..), T4(..), T5(..), T6(..), T7(..), T8(..))
 import TravelMode exposing (TravelMode)
 

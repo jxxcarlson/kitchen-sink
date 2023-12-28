@@ -6,16 +6,16 @@ import EmailAddress exposing (EmailAddress)
 import Env
 import HttpHelpers
 import Id exposing (Id)
-import Inventory
 import Lamdera exposing (ClientId, SessionId)
 import List.Extra as List
 import List.Nonempty
 import Postmark exposing (PostmarkEmailBody(..))
 import Quantity
 import String.Nonempty exposing (NonemptyString(..))
-import Stripe exposing (PriceId, ProductId(..), StripeSessionId)
+import Stripe.Inventory as Inventory
 import Stripe.Product as Product
 import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
+import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
 import Task
 import Time
 import Types exposing (..)

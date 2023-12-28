@@ -18,10 +18,10 @@ import List.Nonempty exposing (Nonempty(..))
 import Name
 import Postmark
 import String.Nonempty exposing (NonemptyString(..))
-import Stripe exposing (Webhook(..))
 import Stripe.PurchaseForm as PurchaseForm
+import Stripe.Stripe as Stripe exposing (Webhook(..))
+import Stripe.Tickets as Tickets exposing (Ticket)
 import Task exposing (Task)
-import Tickets exposing (Ticket)
 import Types exposing (BackendModel, BackendMsg(..), EmailResult(..), TicketsEnabled(..), ToFrontend(..))
 
 

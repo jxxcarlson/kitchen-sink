@@ -5,7 +5,7 @@ import Codec
 import Element exposing (..)
 import Id exposing (Id)
 import Lamdera
-import Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
+import Stripe.Stripe as Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
 import Types exposing (..)
 
 

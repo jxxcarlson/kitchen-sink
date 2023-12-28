@@ -2,7 +2,7 @@ module Route exposing (Route(..), SubPage(..), decode, encode)
 
 import EmailAddress exposing (EmailAddress)
 import Id exposing (Id)
-import Stripe exposing (StripeSessionId(..))
+import Stripe.Stripe as Stripe exposing (StripeSessionId(..))
 import Url exposing (Url)
 import Url.Builder
 import Url.Parser exposing ((</>), (<?>))

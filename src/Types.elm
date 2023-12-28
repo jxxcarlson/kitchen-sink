@@ -13,8 +13,8 @@ import LiveSchedule
 import Money
 import Postmark exposing (PostmarkSendResponse)
 import Route exposing (Route)
-import Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
 import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseForm, PurchaseFormValidated)
+import Stripe.Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
 import Time
 import Untrusted exposing (Untrusted)
 import Url exposing (Url)

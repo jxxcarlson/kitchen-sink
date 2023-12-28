@@ -1,4 +1,4 @@
-module Inventory exposing (..)
+module Stripe.Inventory exposing (..)
 
 import AssocList
 import Stripe.PurchaseForm as PurchaseForm exposing (..)

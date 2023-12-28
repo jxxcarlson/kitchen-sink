@@ -1,4 +1,4 @@
-module Stripe exposing
+module Stripe.Stripe exposing
     ( Price
     , PriceData
     , PriceId(..)

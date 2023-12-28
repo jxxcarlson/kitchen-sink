@@ -10,7 +10,7 @@ import Html.Attributes
 import MarkdownThemed
 import Money
 import Route exposing (Route(..))
-import Stripe exposing (Price)
+import Stripe.Stripe as Stripe exposing (Price)
 
 
 contentAttributes : List (Element.Attribute msg)

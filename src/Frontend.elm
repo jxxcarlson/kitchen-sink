@@ -21,7 +21,6 @@ import Html exposing (Html)
 import Html.Attributes
 import Html.Events
 import Id exposing (Id)
-import Inventory
 import Json.Decode
 import Lamdera
 import LiveSchedule
@@ -33,12 +32,12 @@ import Pages.Parts
 import Ports
 import Route exposing (Route(..), SubPage(..))
 import String.Nonempty
-import Stripe
 import Stripe.Product as Product
 import Stripe.PurchaseForm as PurchaseForm exposing (PressedSubmit(..), PurchaseForm, PurchaseFormValidated(..), SubmitStatus(..))
+import Stripe.Stripe as Stripe
+import Stripe.Tickets as Tickets exposing (Ticket)
 import Task
 import Theme
-import Tickets exposing (Ticket)
 import Time
 import TravelMode
 import Types exposing (..)
