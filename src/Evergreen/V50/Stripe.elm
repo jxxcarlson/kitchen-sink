@@ -13,7 +13,7 @@ type PriceId
     = PriceId Never
 
 
-type alias Price = 
+type alias Price =
     { currency : Money.Currency
     , amount : Int
     }
@@ -23,10 +23,10 @@ type StripeSessionId
     = StripeSessionId Never
 
 
-type alias PriceData = 
-    { priceId : (Evergreen.V50.Id.Id PriceId)
+type alias PriceData =
+    { priceId : Evergreen.V50.Id.Id PriceId
     , price : Price
-    , productId : (Evergreen.V50.Id.Id ProductId)
+    , productId : Evergreen.V50.Id.Id ProductId
     , isActive : Bool
     , createdAt : Time.Posix
     }

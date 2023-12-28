@@ -191,12 +191,9 @@ footer =
             )
             [ Element.link
                 []
-                { url = Route.encode CodeOfConductRoute, label = Element.text "Code of Conduct" }
+                { url = Route.encode About, label = Element.text "About" }
             , Element.link
                 []
-                { url = Route.encode UnconferenceFormatRoute, label = Element.text "Unconference Guidelines" }
-            , Element.link
-                []
-                { url = Route.encode VenueAndAccessRoute, label = Element.text "Venue & Access" }
+                { url = Route.encode Brillig, label = Element.text "Brillig" }
             ]
         )

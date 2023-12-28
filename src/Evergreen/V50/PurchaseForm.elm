@@ -17,32 +17,32 @@ type SubmitStatus
     | SubmitBackendError String
 
 
-type alias PurchaseForm = 
+type alias PurchaseForm =
     { submitStatus : SubmitStatus
     , attendee1Name : String
     , attendee2Name : String
     , billingEmail : String
     , country : String
     , originCity : String
-    , primaryModeOfTravel : (Maybe Evergreen.V50.TravelMode.TravelMode)
+    , primaryModeOfTravel : Maybe Evergreen.V50.TravelMode.TravelMode
     , grantContribution : String
     , grantApply : Bool
-    , sponsorship : (Maybe String)
+    , sponsorship : Maybe String
     }
 
 
-type alias SinglePurchaseData = 
+type alias SinglePurchaseData =
     { attendeeName : Evergreen.V50.Name.Name
     , billingEmail : Evergreen.V50.EmailAddress.EmailAddress
     , country : String.Nonempty.NonemptyString
     , originCity : String.Nonempty.NonemptyString
     , primaryModeOfTravel : Evergreen.V50.TravelMode.TravelMode
     , grantContribution : Int
-    , sponsorship : (Maybe String)
+    , sponsorship : Maybe String
     }
 
 
-type alias CouplePurchaseData = 
+type alias CouplePurchaseData =
     { attendee1Name : Evergreen.V50.Name.Name
     , attendee2Name : Evergreen.V50.Name.Name
     , billingEmail : Evergreen.V50.EmailAddress.EmailAddress
@@ -50,7 +50,7 @@ type alias CouplePurchaseData =
     , originCity : String.Nonempty.NonemptyString
     , primaryModeOfTravel : Evergreen.V50.TravelMode.TravelMode
     , grantContribution : Int
-    , sponsorship : (Maybe String)
+    , sponsorship : Maybe String
     }
 
 

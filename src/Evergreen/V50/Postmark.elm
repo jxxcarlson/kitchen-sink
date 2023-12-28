@@ -1,6 +1,7 @@
 module Evergreen.V50.Postmark exposing (..)
 
-type alias PostmarkSendResponse = 
+
+type alias PostmarkSendResponse =
     { to : String
     , submittedAt : String
     , messageId : String
