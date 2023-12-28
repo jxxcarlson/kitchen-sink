@@ -1,7 +1,6 @@
 module Types exposing (..)
 
 import AssocList
-import Audio
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
 import Codec exposing (Codec)
@@ -9,7 +8,6 @@ import Dict
 import Http
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
-import LiveSchedule
 import Money
 import Postmark exposing (PostmarkSendResponse)
 import Route exposing (Route)
@@ -20,11 +18,7 @@ import Untrusted exposing (Untrusted)
 import Url exposing (Url)
 
 
-type alias FrontendModel =
-    Audio.Model FrontendMsg_ FrontendModel_
-
-
-type FrontendModel_
+type FrontendModel
     = Loading LoadingModel
     | Loaded LoadedModel
 
@@ -36,7 +30,6 @@ type alias LoadingModel =
     , route : Route
     , isOrganiser : Bool
     , initData : Maybe InitData2
-    , audio : Maybe (Result Audio.LoadError Audio.Source)
     }
 
 
@@ -54,7 +47,6 @@ type alias LoadedModel =
     , isOrganiser : Bool
     , ticketsEnabled : TicketsEnabled
     , backendModel : Maybe BackendModel
-    , audio : Maybe Audio.Source
     , pressedAudioButton : Bool
     }
 
@@ -287,11 +279,7 @@ type alias CityCode =
     String
 
 
-type alias FrontendMsg =
-    Audio.Msg FrontendMsg_
-
-
-type FrontendMsg_
+type FrontendMsg
     = UrlClicked UrlRequest
     | UrlChanged Url
     | Tick Time.Posix
@@ -304,8 +292,6 @@ type FrontendMsg_
     | PressedCancelForm
     | PressedShowCarbonOffsetTooltip
     | SetViewport
-    | LoadedMusic (Result Audio.LoadError Audio.Source)
-    | LiveScheduleMsg LiveSchedule.Msg
 
 
 type ToBackend

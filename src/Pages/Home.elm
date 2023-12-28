@@ -9,7 +9,7 @@ import Theme
 import Types exposing (..)
 
 
-view : LoadedModel -> Element FrontendMsg_
+view : LoadedModel -> Element FrontendMsg
 view model =
     let
         sidePadding =

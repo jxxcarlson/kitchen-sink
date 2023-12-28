@@ -4,7 +4,6 @@ module Frontend exposing (app)
 
 import Admin
 import AssocList
-import Audio exposing (Audio, AudioCmd)
 import Browser exposing (UrlRequest(..))
 import Browser.Dom
 import Browser.Events
@@ -48,51 +47,18 @@ import Url.Parser.Query as Query
 
 
 app =
-    Audio.lamderaFrontendWithAudio
+    Lamdera.frontend
         { init = init
         , onUrlRequest = UrlClicked
         , onUrlChange = UrlChanged
-        , update =
-            \_ msg model ->
-                let
-                    ( newModel, cmd ) =
-                        update msg model
-                in
-                ( newModel, cmd, Audio.cmdNone )
-        , updateFromBackend =
-            \_ toFrontend model ->
-                let
-                    ( newModel, cmd ) =
-                        updateFromBackend toFrontend model
-                in
-                ( newModel, cmd, Audio.cmdNone )
-        , subscriptions = \_ model -> subscriptions model
-        , view = \_ model -> view model
-        , audio = audio
-        , audioPort = { toJS = Ports.audioPortToJS, fromJS = Ports.audioPortFromJS }
+        , update = update
+        , updateFromBackend = updateFromBackend
+        , subscriptions = subscriptions
+        , view = view
         }
 
 
-audio : a -> FrontendModel_ -> Audio
-audio _ model =
-    case model of
-        Loading _ ->
-            Audio.silence
-
-        Loaded loaded ->
-            case ( loaded.route, loaded.audio ) of
-                ( LiveScheduleRoute, Just song ) ->
-                    if loaded.pressedAudioButton then
-                        LiveSchedule.audio song
-
-                    else
-                        Audio.silence
-
-                _ ->
-                    Audio.silence
-
-
-subscriptions : FrontendModel_ -> Sub FrontendMsg_
+subscriptions : FrontendModel -> Sub FrontendMsg
 subscriptions _ =
     Sub.batch
         [ Browser.Events.onResize GotWindowSize
@@ -105,7 +71,7 @@ queryBool name =
     Query.enum name (Dict.fromList [ ( "true", True ), ( "false", False ) ])
 
 
-init : Url.Url -> Browser.Navigation.Key -> ( FrontendModel_, Cmd FrontendMsg_, AudioCmd FrontendMsg_ )
+init : Url.Url -> Browser.Navigation.Key -> ( FrontendModel, Cmd FrontendMsg )
 init url key =
     let
         route =
@@ -126,7 +92,6 @@ init url key =
         , initData = Nothing
         , route = route
         , isOrganiser = isOrganiser
-        , audio = Nothing
         }
     , Cmd.batch
         [ Browser.Dom.getViewport
@@ -146,25 +111,16 @@ init url key =
             _ ->
                 Cmd.none
         ]
-    , case route of
-        Route.LiveScheduleRoute ->
-            Audio.loadAudio LoadedMusic "cowboy bebob - elm.mp3"
-
-        _ ->
-            Audio.cmdNone
     )
 
 
-update : FrontendMsg_ -> FrontendModel_ -> ( FrontendModel_, Cmd FrontendMsg_ )
+update : FrontendMsg -> FrontendModel -> ( FrontendModel, Cmd FrontendMsg )
 update msg model =
     case model of
         Loading loading ->
             case msg of
                 GotWindowSize width height ->
                     tryLoading { loading | window = Just { width = width, height = height } }
-
-                LoadedMusic result ->
-                    tryLoading { loading | audio = Just result }
 
                 _ ->
                     ( model, Cmd.none )
@@ -173,46 +129,11 @@ update msg model =
             updateLoaded msg loaded |> Tuple.mapFirst Loaded
 
 
-tryLoading : LoadingModel -> ( FrontendModel_, Cmd FrontendMsg_ )
+tryLoading : LoadingModel -> ( FrontendModel, Cmd FrontendMsg )
 tryLoading loadingModel =
     Maybe.map2
         (\window { slotsRemaining, prices, ticketsEnabled } ->
-            case ( loadingModel.audio, loadingModel.route ) of
-                ( Just (Ok song), LiveScheduleRoute ) ->
-                    ( Loaded
-                        { key = loadingModel.key
-                        , now = loadingModel.now
-                        , window = window
-                        , showTooltip = False
-                        , prices = prices
-                        , selectedTicket = Nothing
-                        , form =
-                            { submitStatus = NotSubmitted NotPressedSubmit
-                            , attendee1Name = ""
-                            , attendee2Name = ""
-                            , billingEmail = ""
-                            , country = ""
-                            , originCity = ""
-                            , primaryModeOfTravel = Nothing
-                            , grantContribution = "0"
-                            , grantApply = False
-                            , sponsorship = Nothing
-                            }
-                        , route = loadingModel.route
-                        , showCarbonOffsetTooltip = False
-                        , slotsRemaining = slotsRemaining
-                        , isOrganiser = loadingModel.isOrganiser
-                        , ticketsEnabled = ticketsEnabled
-                        , backendModel = Nothing
-                        , audio = Just song
-                        , pressedAudioButton = False
-                        }
-                    , Cmd.none
-                    )
-
-                ( _, LiveScheduleRoute ) ->
-                    ( Loading loadingModel, Cmd.none )
-
+            case loadingModel.route of
                 _ ->
                     ( Loaded
                         { key = loadingModel.key
@@ -239,7 +160,6 @@ tryLoading loadingModel =
                         , isOrganiser = loadingModel.isOrganiser
                         , ticketsEnabled = ticketsEnabled
                         , backendModel = Nothing
-                        , audio = Nothing
                         , pressedAudioButton = False
                         }
                     , Cmd.none
@@ -250,7 +170,7 @@ tryLoading loadingModel =
         |> Maybe.withDefault ( Loading loadingModel, Cmd.none )
 
 
-updateLoaded : FrontendMsg_ -> LoadedModel -> ( LoadedModel, Cmd FrontendMsg_ )
+updateLoaded : FrontendMsg -> LoadedModel -> ( LoadedModel, Cmd FrontendMsg )
 updateLoaded msg model =
     case msg of
         UrlClicked urlRequest ->
@@ -348,21 +268,13 @@ updateLoaded msg model =
         SetViewport ->
             ( model, Cmd.none )
 
-        LoadedMusic _ ->
-            ( model, Cmd.none )
 
-        LiveScheduleMsg liveScheduleMsg ->
-            case liveScheduleMsg of
-                LiveSchedule.PressedAllowAudio ->
-                    ( { model | pressedAudioButton = True }, Cmd.none )
-
-
-scrollToTop : Cmd FrontendMsg_
+scrollToTop : Cmd FrontendMsg
 scrollToTop =
     Browser.Dom.setViewport 0 0 |> Task.perform (\() -> SetViewport)
 
 
-updateFromBackend : ToFrontend -> FrontendModel_ -> ( FrontendModel_, Cmd FrontendMsg_ )
+updateFromBackend : ToFrontend -> FrontendModel -> ( FrontendModel, Cmd FrontendMsg )
 updateFromBackend msg model =
     case model of
         Loading loading ->
@@ -427,7 +339,7 @@ includesAccom productId =
         True
 
 
-view : FrontendModel_ -> Browser.Document FrontendMsg_
+view : FrontendModel -> Browser.Document FrontendMsg
 view model =
     { title = "Elm Camp"
     , body =
@@ -464,26 +376,9 @@ view model =
                 |> Element.inFront
             ]
             (case model of
-                Loading loading ->
+                Loading _ ->
                     Element.column [ Element.width Element.fill, Element.padding 20 ]
-                        [ (case loading.audio of
-                            Just (Err error) ->
-                                case error of
-                                    Audio.FailedToDecode ->
-                                        "Failed to decode song"
-
-                                    Audio.NetworkError ->
-                                        "Network error"
-
-                                    Audio.UnknownError ->
-                                        "Unknown error"
-
-                                    Audio.ErrorThatHappensWhenYouLoadMoreThan1000SoundsDueToHackyWorkAroundToMakeThisPackageBehaveMoreLikeAnEffectPackage ->
-                                        "Unknown error"
-
-                            _ ->
-                                "Loading..."
-                          )
+                        [ "Loading..."
                             |> Element.text
                             |> Element.el [ Element.centerX ]
                         ]
@@ -495,7 +390,7 @@ view model =
     }
 
 
-loadedView : LoadedModel -> Element FrontendMsg_
+loadedView : LoadedModel -> Element FrontendMsg
 loadedView model =
     case model.route of
         HomepageRoute ->
@@ -563,9 +458,6 @@ loadedView model =
                     }
                 ]
 
-        LiveScheduleRoute ->
-            LiveSchedule.view model |> Element.map LiveScheduleMsg
-
 
 ticketsHtmlId =
     "tickets"
@@ -596,7 +488,7 @@ errorText error =
     Element.paragraph [ Element.Font.color (Element.rgb255 150 0 0) ] [ Element.text error ]
 
 
-formView : LoadedModel -> Id Stripe.ProductId -> Id Stripe.PriceId -> Ticket -> Element FrontendMsg_
+formView : LoadedModel -> Id Stripe.ProductId -> Id Stripe.PriceId -> Ticket -> Element FrontendMsg
 formView model productId priceId ticket =
     let
         form =
@@ -955,7 +847,7 @@ dallundCastleImage width path =
         { src = "/" ++ path, description = "Photo of part of the Dallund Castle" }
 
 
-ticketCardsView : LoadedModel -> Element FrontendMsg_
+ticketCardsView : LoadedModel -> Element FrontendMsg
 ticketCardsView model =
     if model.window.width < 950 then
         List.map
