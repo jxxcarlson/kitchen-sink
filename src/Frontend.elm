@@ -21,7 +21,7 @@ import Route exposing (Route(..), SubPage(..))
 import Stripe.Product as Product
 import Stripe.PurchaseForm as PurchaseForm exposing (PressedSubmit(..), PurchaseForm, PurchaseFormValidated(..), SubmitStatus(..))
 import Stripe.Stripe as Stripe
-import Stripe.Tickets as Tickets exposing (Ticket)
+import Stripe.Tickets as Tickets exposing (Product_)
 import Stripe.Utility
 import Stripe.View
 import Task

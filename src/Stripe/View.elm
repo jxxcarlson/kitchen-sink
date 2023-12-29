@@ -33,7 +33,7 @@ import String.Nonempty
 import Stripe.Product as Product
 import Stripe.PurchaseForm as PurchaseForm exposing (PressedSubmit(..), PurchaseForm, PurchaseFormValidated(..), SubmitStatus(..))
 import Stripe.Stripe as Stripe
-import Stripe.Tickets as Tickets exposing (Ticket)
+import Stripe.Tickets as Tickets exposing (Product_)
 import Stripe.Utility
 import Task
 import Theme
@@ -47,7 +47,7 @@ import Url.Parser.Query as Query
 import View.Style
 
 
-formView : LoadedModel -> Id Stripe.ProductId -> Id Stripe.PriceId -> Ticket -> Element FrontendMsg
+formView : LoadedModel -> Id Stripe.ProductId -> Id Stripe.PriceId -> Product_ -> Element FrontendMsg
 formView model productId priceId ticket =
     let
         form =

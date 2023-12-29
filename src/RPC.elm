@@ -20,7 +20,7 @@ import Postmark
 import String.Nonempty exposing (NonemptyString(..))
 import Stripe.PurchaseForm as PurchaseForm
 import Stripe.Stripe as Stripe exposing (Webhook(..))
-import Stripe.Tickets as Tickets exposing (Ticket)
+import Stripe.Tickets as Tickets exposing (Product_)
 import Task exposing (Task)
 import Types exposing (BackendModel, BackendMsg(..), EmailResult(..), TicketsEnabled(..), ToFrontend(..))
 
@@ -64,7 +64,7 @@ purchaseCompletedEndpoint _ model request =
                     case AssocList.get stripeSessionId model.pendingOrder of
                         Just order ->
                             let
-                                maybeTicket : Maybe Ticket
+                                maybeTicket : Maybe Product_
                                 maybeTicket =
                                     case Backend.priceIdToProductId model order.priceId of
                                         Just productId ->
@@ -135,7 +135,7 @@ purchaseCompletedEndpoint _ model request =
             ( Err (Http.BadBody errorText), model, Backend.errorEmail errorText )
 
 
-confirmationEmail : Ticket -> { subject : NonemptyString, textBody : String, htmlBody : Html.Html }
+confirmationEmail : Product_ -> { subject : NonemptyString, textBody : String, htmlBody : Html.Html }
 confirmationEmail ticket =
     { subject =
         String.Nonempty.append

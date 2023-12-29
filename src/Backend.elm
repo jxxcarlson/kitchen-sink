@@ -1,7 +1,5 @@
 module Backend exposing (..)
 
--- import Stripe.Inventory as Inventory
-
 import AssocList
 import Duration
 import EmailAddress exposing (EmailAddress)
