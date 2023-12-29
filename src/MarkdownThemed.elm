@@ -26,7 +26,7 @@ lightTheme : Theme
 lightTheme =
     { defaultText = Element.rgb255 30 50 46
     , mutedText = Element.rgb255 74 94 122
-    , link = Element.rgb255 12 109 82
+    , link = Element.rgb255 12 82 200
     , lightGrey = Element.rgb255 248 250 240
     , grey = Element.rgb255 200 220 240
     }
