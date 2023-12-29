@@ -12,6 +12,7 @@ import Url.Parser.Query
 type Route
     = HomepageRoute
     | About
+    | Notes
     | Brillig
     | AdminRoute (Maybe String)
     | PaymentSuccessRoute (Maybe EmailAddress)
@@ -28,6 +29,7 @@ decode url =
     Url.Parser.oneOf
         [ Url.Parser.top |> Url.Parser.map HomepageRoute
         , Url.Parser.s "about" |> Url.Parser.map About
+        , Url.Parser.s "notes" |> Url.Parser.map Notes
         , Url.Parser.s "brillig" |> Url.Parser.map Brillig
         , Url.Parser.s "admin" <?> parseAdminPass |> Url.Parser.map AdminRoute
         , Url.Parser.s Stripe.successPath <?> parseEmail |> Url.Parser.map PaymentSuccessRoute
@@ -67,6 +69,9 @@ encode route =
             About ->
                 [ "about" ]
 
+            Notes ->
+                [ "notes" ]
+
             Brillig ->
                 [ "brillig" ]
 
@@ -84,6 +89,9 @@ encode route =
                 []
 
             About ->
+                []
+
+            Notes ->
                 []
 
             Brillig ->

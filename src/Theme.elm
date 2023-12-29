@@ -172,28 +172,3 @@ spinnerWhite =
 
 glow =
     Element.Font.glow (colorWithAlpha 0.25 MarkdownThemed.lightTheme.defaultText) 4
-
-
-footer : Element msg
-footer =
-    Element.el
-        [ Element.Background.color (Element.rgb255 12 109 82)
-        , Element.paddingXY 24 16
-        , Element.width Element.fill
-        , Element.alignBottom
-        ]
-        (Element.wrappedRow
-            ([ Element.spacing 32
-             , Element.Background.color (Element.rgb255 12 109 82)
-             , Element.Font.color (Element.rgb 1 1 1)
-             ]
-                ++ contentAttributes
-            )
-            [ Element.link
-                []
-                { url = Route.encode About, label = Element.text "About" }
-            , Element.link
-                []
-                { url = Route.encode Brillig, label = Element.text "Brillig" }
-            ]
-        )

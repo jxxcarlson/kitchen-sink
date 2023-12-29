@@ -20,7 +20,7 @@ view model =
                 60
     in
     Element.column
-        [ Element.width Element.fill ]
+        [ Element.width Element.fill, Element.height (Element.px model.window.height) ]
         [ Element.column
             [ Element.spacing 50
             , Element.width Element.fill
@@ -29,38 +29,18 @@ view model =
             [ Pages.Parts.header { window = model.window, isCompact = False }
             , Element.column
                 [ Element.width Element.fill, Element.spacing 40 ]
-                [ Element.column Theme.contentAttributes [ content1 ]
-                , Element.column
-                    [ Element.width Element.fill
-                    , Element.spacing 24
-                    , Element.htmlAttribute (Html.Attributes.id ticketsHtmlId)
-                    ]
-                    [ Element.el Theme.contentAttributes content2
-                    ]
+                [ Element.column Theme.contentAttributes [ content ]
                 ]
             ]
-        , Theme.footer
+        , Pages.Parts.footer
         ]
 
 
-ticketsHtmlId =
-    "tickets"
-
-
-content1 : Element msg
-content1 =
+content : Element msg
+content =
     """
 
 
-Did you attend Elm Camp 2023? We're [open to contributions on Github](https://github.com/elm-camp/website/edit/main/src/Camp23Denmark/Artifacts.elm)!
+This is the begining of a starter template for Lamdera apps. The repo is on  [Github](https://github.com/jxxcarlson/kitchen-sink-template).
         """
-        |> MarkdownThemed.renderFull
-
-
-content2 : Element msg
-content2 =
-    """
-
-Content2
-"""
         |> MarkdownThemed.renderFull

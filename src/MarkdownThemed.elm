@@ -19,7 +19,6 @@ type alias Theme =
     , grey : Element.Color
     , lightGrey : Element.Color
     , link : Element.Color
-    , elmText : Element.Color
     }
 
 
@@ -28,9 +27,8 @@ lightTheme =
     { defaultText = Element.rgb255 30 50 46
     , mutedText = Element.rgb255 74 94 122
     , link = Element.rgb255 12 109 82
-    , lightGrey = Element.rgb255 220 240 255
+    , lightGrey = Element.rgb255 248 250 240
     , grey = Element.rgb255 200 220 240
-    , elmText = Element.rgb255 92 176 126
     }
 
 
@@ -128,7 +126,7 @@ renderer theme =
             ]
     , text = \s -> Element.el [] (Element.text s)
     , codeSpan =
-        \content -> Element.html (Html.code [] [ Html.text content ])
+        \content -> Element.html (Html.code [ Html.Attributes.style "color" "#220cb0" ] [ Html.text content ])
     , strong = \list -> Element.paragraph [ Element.Font.bold ] list
     , emphasis = \list -> Element.paragraph [ Element.Font.italic ] list
     , hardLineBreak = Element.html (Html.br [] [])
@@ -201,17 +199,27 @@ renderer theme =
                 )
     , codeBlock =
         \{ body } ->
+            let
+                numberOfLines =
+                    String.lines body
+                        |> List.length
+                        |> toFloat
+                        |> (\x -> 1.35 * x)
+                        |> round
+            in
             Element.column
                 [ Element.Font.family [ Element.Font.monospace ]
-                , Element.Background.color theme.lightGrey
+                , Element.Font.size 14
+                , Element.Font.color (Element.rgb255 34 12 176)
                 , Element.Border.rounded 5
                 , Element.padding 10
                 , Element.width Element.fill
+                , Element.height (Element.px <| 18 * numberOfLines)
                 , Element.htmlAttribute (Html.Attributes.class "preserve-white-space")
+                , Element.htmlAttribute (Html.Attributes.style "line-height" "1.4") -- Element.htmlAttribute ("line-height" "24")
                 , Element.scrollbarX
                 ]
-                [ Element.html (Html.text body)
-                ]
+                [ Element.html (Html.text body) ]
     , thematicBreak = Element.none
     , table = \children -> Element.column [ Element.width Element.fill ] children
     , tableHeader = \children -> Element.column [] children
@@ -240,7 +248,7 @@ heading theme { level, rawText, children } =
                 heading1
 
             2 ->
-                [ Element.Font.color theme.elmText
+                [ Element.Font.color theme.defaultText
                 , Element.Font.size 24
                 , Element.Font.extraBold
                 , Element.paddingEach { top = 0, right = 0, bottom = 20, left = 0 }

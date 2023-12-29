@@ -27,6 +27,7 @@ import MarkdownThemed
 import Pages.About
 import Pages.Brillig
 import Pages.Home
+import Pages.Notes
 import Pages.Parts
 import Ports
 import Route exposing (Route(..), SubPage(..))
@@ -345,9 +346,6 @@ view model =
     { title = "Elm Camp"
     , body =
         [ Theme.css
-
-        -- , W.Styles.globalStyles
-        -- , W.Styles.baseTheme
         , Element.layout
             [ Element.width Element.fill
             , Element.Font.color MarkdownThemed.lightTheme.defaultText
@@ -405,7 +403,18 @@ loadedView model =
                     (Element.padding 20 :: Theme.contentAttributes)
                     [ Pages.About.view model
                     ]
-                , Theme.footer
+                , Pages.Parts.footer
+                ]
+
+        Notes ->
+            Element.column
+                [ Element.width Element.fill, Element.height Element.fill ]
+                [ Pages.Parts.header { window = model.window, isCompact = True }
+                , Element.column
+                    (Element.padding 20 :: Theme.contentAttributes)
+                    [ Pages.Notes.view model
+                    ]
+                , Pages.Parts.footer
                 ]
 
         Brillig ->
@@ -416,7 +425,7 @@ loadedView model =
                     (Element.padding 20 :: Theme.contentAttributes)
                     [ Pages.Brillig.view model
                     ]
-                , Theme.footer
+                , Pages.Parts.footer
                 ]
 
         AdminRoute passM ->
@@ -561,7 +570,6 @@ formView model productId priceId ticket =
                 PurchaseForm.validateEmailAddress
                 form.billingEmail
             ]
-        , carbonOffsetForm textInput model.showCarbonOffsetTooltip form
         , opportunityGrant form textInput
         , sponsorships model form textInput
         , """
@@ -721,93 +729,7 @@ sponsorshipOption form s =
 
 backgroundColor : Element.Color
 backgroundColor =
-    Element.rgb255 255 244 225
-
-
-carbonOffsetForm textInput showCarbonOffsetTooltip form =
-    Element.column
-        [ Element.width Element.fill
-        , Element.spacing 24
-        , Element.paddingEach { left = 16, right = 16, top = 32, bottom = 16 }
-        , Element.Border.width 2
-        , Element.Border.color (Element.rgb255 94 176 125)
-        , Element.Border.rounded 12
-        , Element.el
-            [ (if showCarbonOffsetTooltip then
-                tooltip "We collect this info so we can estimate the carbon footprint of your trip. We pay Ecologi to offset some of the environmental impact (this is already priced in and doesn't change the shown ticket price)"
-
-               else
-                Element.none
-              )
-                |> Element.below
-            , Element.moveUp 20
-            , Element.moveRight 8
-            , Element.Background.color backgroundColor
-            ]
-            (Element.Input.button
-                [ Element.padding 8 ]
-                { onPress = Just PressedShowCarbonOffsetTooltip
-                , label =
-                    Element.row
-                        []
-                        [ Element.el [ Element.Font.size 20 ] (Element.text "🌲 Carbon offsetting ")
-                        , Element.el [ Element.Font.size 12 ] (Element.text "ℹ️")
-                        ]
-                }
-            )
-            |> Element.inFront
-        ]
-        [ textInput
-            (\a -> FormChanged { form | country = a })
-            "Country you live in"
-            (\text ->
-                case String.Nonempty.fromString text of
-                    Just nonempty ->
-                        Ok nonempty
-
-                    Nothing ->
-                        Err "Please type in the name of the country you live in"
-            )
-            form.country
-        , textInput
-            (\a -> FormChanged { form | originCity = a })
-            "City you live in (or nearest city to you)"
-            (\text ->
-                case String.Nonempty.fromString text of
-                    Just nonempty ->
-                        Ok nonempty
-
-                    Nothing ->
-                        Err "Please type in the name of city nearest to you"
-            )
-            form.originCity
-        , Element.column
-            [ Element.spacing 8 ]
-            [ Element.paragraph
-                [ Element.Font.semiBold ]
-                [ Element.text "What will be your primary method of travelling to the event?" ]
-            , TravelMode.all
-                |> List.map
-                    (\choice ->
-                        radioButton "travel-mode" (TravelMode.toString choice) (Just choice == form.primaryModeOfTravel)
-                            |> Element.map
-                                (\() ->
-                                    if Just choice == form.primaryModeOfTravel then
-                                        FormChanged { form | primaryModeOfTravel = Nothing }
-
-                                    else
-                                        FormChanged { form | primaryModeOfTravel = Just choice }
-                                )
-                    )
-                |> Element.column []
-            , case ( form.submitStatus, form.primaryModeOfTravel ) of
-                ( NotSubmitted PressedSubmit, Nothing ) ->
-                    errorText "Please select one of the above"
-
-                _ ->
-                    Element.none
-            ]
-        ]
+    Element.rgb255 255 250 235
 
 
 radioButton : String -> String -> Bool -> Element ()
