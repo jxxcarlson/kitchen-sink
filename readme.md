@@ -1,5 +1,5 @@
 
-## TLamdera Kitchen Sink Template
+## Lamdera Kitchen Sink Template
 
 https://elm.camp
 

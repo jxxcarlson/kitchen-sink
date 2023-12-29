@@ -343,7 +343,7 @@ includesAccom productId =
 
 view : FrontendModel -> Browser.Document FrontendMsg
 view model =
-    { title = "Elm Camp"
+    { title = "Lamdera Kitchen Sink"
     , body =
         [ Theme.css
         , Element.layout
