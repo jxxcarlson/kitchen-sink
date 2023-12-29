@@ -19,11 +19,11 @@ built-in features:
 - Ports: an example (not started)
 - Authentication (not started)
 - Custom element (not started)
-- RPC: (note started)
-- Markdown: .(in progress – style)
+- RPC: (not started)
+- Markdown: (in progress – style)
 
 The template is based on a stripped-down version of
-Mario Rogic's realworld example.
+Mario Rogic's [realworld](https://github.com/supermario/lamdera-realworld) code.
 For additional information, see the **Notes** tab.
 
 

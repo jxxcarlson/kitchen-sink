@@ -41,6 +41,8 @@ content =
     """
 
 
-This is the begining of a starter template for Lamdera apps. The repo is on  [Github](https://github.com/jxxcarlson/kitchen-sink-template).
+This is the begining of a starter template for Lamdera apps. Not much to
+show yet, but that will change bye and bye.
+The repo is on  [Github](https://github.com/jxxcarlson/kitchen-sink-template).
         """
         |> MarkdownThemed.renderFull

@@ -1,13 +1,15 @@
 
-## The Elm Camp website
+## TLamdera Kitchen Sink Template
 
 https://elm.camp
 
-Features:
+Features: not many yet, except for routing.  We will be
+adding more soon.
 
-- Static event info
-- Dynamic inventory & ticket sales management
-- Stripe integration
+This template is based on 
+a simplified version of 
+Mario Rogic's [realworld](https://github.com/supermario/lamdera-realworld) code.
+
 
 ### Local development:
 
