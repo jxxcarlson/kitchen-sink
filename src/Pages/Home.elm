@@ -28,7 +28,10 @@ view model =
             ]
             [ Pages.Parts.header { window = model.window, isCompact = False }
             , Element.column
-                [ Element.width Element.fill, Element.spacing 40 ]
+                [ Element.width Element.fill
+                , Element.spacing 40
+                , Element.paddingEach { left = 54, right = 0, top = 0, bottom = 0 }
+                ]
                 [ Element.column Theme.contentAttributes [ content ]
                 ]
             ]
