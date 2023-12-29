@@ -24,7 +24,7 @@ view model =
         [ Element.column
             [ Element.spacing 50
             , Element.width Element.fill
-            , Element.paddingEach { left = sidePadding, right = sidePadding, top = 0, bottom = 24 }
+            , Element.paddingEach { left = 0, right = sidePadding, top = 0, bottom = 24 }
             ]
             [ Pages.Parts.header { window = model.window, isCompact = False }
             , Element.column

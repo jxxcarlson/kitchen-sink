@@ -12,7 +12,7 @@ header config =
     Element.el
         [ Element.Background.color (Element.rgb255 64 64 109)
         , Element.paddingXY 24 16
-        , Element.width Element.fill
+        , Element.width (Element.px config.window.width)
         , Element.alignTop
         ]
         (Element.wrappedRow
