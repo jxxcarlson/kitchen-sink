@@ -241,9 +241,6 @@ updateFromFrontend sessionId clientId msg model =
 
                                 validProductAndForm =
                                     case ( productId == Id.fromString Product.ticket.couplesCamp, purchaseForm ) of
-                                        ( True, CouplesCampTicketPurchase _ ) ->
-                                            True && availability.couplesCampTicket
-
                                         ( False, CampTicketPurchase _ ) ->
                                             True && availability.campTicket
 
@@ -252,17 +249,6 @@ updateFromFrontend sessionId clientId msg model =
 
                                         _ ->
                                             False
-
-                                sponsorshipIdM =
-                                    purchaseForm |> PurchaseForm.commonPurchaseData |> .sponsorship
-
-                                sponsorship =
-                                    case sponsorshipIdM of
-                                        Just sponsorshipId ->
-                                            AssocList.get (Id.fromString sponsorshipId) model.prices
-
-                                        Nothing ->
-                                            Nothing
                             in
                             if validProductAndForm then
                                 ( model
@@ -272,7 +258,6 @@ updateFromFrontend sessionId clientId msg model =
                                             Stripe.createCheckoutSession
                                                 { priceId = priceId
                                                 , opportunityGrantDonation = purchaseForm |> PurchaseForm.commonPurchaseData |> .grantContribution
-                                                , sponsorship = sponsorship |> Maybe.map (.priceId >> Id.toString)
                                                 , emailAddress = PurchaseForm.billingEmail purchaseForm
                                                 , now = now
                                                 , expiresInMinutes = 30

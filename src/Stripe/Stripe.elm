@@ -125,12 +125,11 @@ createCheckoutSession :
     { priceId : Id PriceId
     , opportunityGrantDonation : Int
     , emailAddress : EmailAddress
-    , sponsorship : Maybe String
     , now : Time.Posix
     , expiresInMinutes : Int
     }
     -> Task Http.Error (Id StripeSessionId)
-createCheckoutSession { priceId, opportunityGrantDonation, emailAddress, sponsorship, now, expiresInMinutes } =
+createCheckoutSession { priceId, opportunityGrantDonation, emailAddress, now, expiresInMinutes } =
     -- @TODO support multiple prices, see Data.Tickets
     let
         opportunityGrantAttrs =
@@ -151,16 +150,6 @@ createCheckoutSession { priceId, opportunityGrantDonation, emailAddress, sponsor
 
             else
                 "2"
-
-        sponsorshipAttrs =
-            case sponsorship of
-                Just s ->
-                    [ ( "line_items[" ++ sponsorIndex ++ "][price]", s )
-                    , ( "line_items[" ++ sponsorIndex ++ "][quantity]", "1" )
-                    ]
-
-                Nothing ->
-                    []
 
         body =
             formBody <|
@@ -183,7 +172,6 @@ createCheckoutSession { priceId, opportunityGrantDonation, emailAddress, sponsor
                 , ( "customer_email", EmailAddress.toString emailAddress )
                 ]
                     ++ opportunityGrantAttrs
-                    ++ sponsorshipAttrs
     in
     Http.task
         { method = "POST"

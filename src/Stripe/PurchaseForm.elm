@@ -37,14 +37,12 @@ type alias PurchaseForm =
     , primaryModeOfTravel : Maybe TravelMode
     , grantContribution : String
     , grantApply : Bool
-    , sponsorship : Maybe String
     }
 
 
 type PurchaseFormValidated
     = CampfireTicketPurchase SinglePurchaseData
     | CampTicketPurchase SinglePurchaseData
-    | CouplesCampTicketPurchase CouplePurchaseData
 
 
 type alias SinglePurchaseData =
@@ -54,7 +52,6 @@ type alias SinglePurchaseData =
     , originCity : NonemptyString
     , primaryModeOfTravel : TravelMode
     , grantContribution : Int
-    , sponsorship : Maybe String
     }
 
 
@@ -66,7 +63,6 @@ type alias CouplePurchaseData =
     , originCity : NonemptyString
     , primaryModeOfTravel : TravelMode
     , grantContribution : Int
-    , sponsorship : Maybe String
     }
 
 
@@ -77,16 +73,6 @@ commonPurchaseData purchaseFormValidated =
 
         CampTicketPurchase a ->
             a
-
-        CouplesCampTicketPurchase a ->
-            { attendeeName = a.attendee1Name
-            , billingEmail = a.billingEmail
-            , country = a.country
-            , originCity = a.originCity
-            , primaryModeOfTravel = a.primaryModeOfTravel
-            , grantContribution = a.grantContribution
-            , sponsorship = a.sponsorship
-            }
 
 
 type SubmitStatus
@@ -109,9 +95,6 @@ billingEmail paymentForm =
         CampTicketPurchase a ->
             a.billingEmail
 
-        CouplesCampTicketPurchase a ->
-            a.billingEmail
-
 
 attendeeName : PurchaseFormValidated -> Name
 attendeeName paymentForm =
@@ -121,9 +104,6 @@ attendeeName paymentForm =
 
         CampTicketPurchase a ->
             a.attendeeName
-
-        CouplesCampTicketPurchase a ->
-            a.attendee1Name
 
 
 validateInt : String -> Result String Int
@@ -175,76 +155,44 @@ validateForm productId form =
 
         grantContribution =
             validateInt form.grantContribution
-
-        sponsorship =
-            case form.sponsorship of
-                Just id ->
-                    Product.sponsorshipItems |> List.filter (\s -> s.productId == id) |> List.head |> Result.fromMaybe "Invalid sponsorship" |> Result.map (.productId >> Just)
-
-                Nothing ->
-                    Ok Nothing
     in
-    if productId == Id.fromString Product.ticket.couplesCamp then
-        case T8 name1 name2 emailAddress form.primaryModeOfTravel country originCity grantContribution sponsorship of
-            T8 (Ok name1Ok) (Ok name2Ok) (Ok emailAddressOk) (Just primaryModeOfTravel) (Just countryOk) (Just originCityOk) (Ok grantContributionOk) (Ok sponsorshipOk) ->
-                CouplesCampTicketPurchase
-                    { attendee1Name = name1Ok
-                    , attendee2Name = name2Ok
-                    , billingEmail = emailAddressOk
-                    , country = countryOk
-                    , originCity = originCityOk
-                    , primaryModeOfTravel = primaryModeOfTravel
-                    , grantContribution = grantContributionOk
-                    , sponsorship = sponsorshipOk
-                    }
-                    |> Just
+    let
+        product =
+            if productId == Id.fromString Product.ticket.camp then
+                CampTicketPurchase
 
-            _ ->
-                Nothing
+            else
+                CampfireTicketPurchase
+    in
+    case T6 name1 emailAddress form.primaryModeOfTravel country originCity grantContribution of
+        T6 (Ok name1Ok) (Ok emailAddressOk) (Just primaryModeOfTravel) (Just countryOk) (Just originCityOk) (Ok grantContributionOk) ->
+            product
+                { attendeeName = name1Ok
+                , billingEmail = emailAddressOk
+                , country = countryOk
+                , originCity = originCityOk
+                , primaryModeOfTravel = primaryModeOfTravel
+                , grantContribution = grantContributionOk
+                }
+                |> Just
 
-    else
-        let
-            product =
-                if productId == Id.fromString Product.ticket.camp then
-                    CampTicketPurchase
-
-                else
-                    CampfireTicketPurchase
-        in
-        case T7 name1 emailAddress form.primaryModeOfTravel country originCity grantContribution sponsorship of
-            T7 (Ok name1Ok) (Ok emailAddressOk) (Just primaryModeOfTravel) (Just countryOk) (Just originCityOk) (Ok grantContributionOk) (Ok sponsorshipOk) ->
-                product
-                    { attendeeName = name1Ok
-                    , billingEmail = emailAddressOk
-                    , country = countryOk
-                    , originCity = originCityOk
-                    , primaryModeOfTravel = primaryModeOfTravel
-                    , grantContribution = grantContributionOk
-                    , sponsorship = sponsorshipOk
-                    }
-                    |> Just
-
-            _ ->
-                Nothing
+        _ ->
+            Nothing
 
 
 codec : Codec PurchaseFormValidated
 codec =
     Codec.custom
-        (\a b c value ->
+        (\a b value ->
             case value of
                 CampfireTicketPurchase data0 ->
                     a data0
 
                 CampTicketPurchase data0 ->
                     b data0
-
-                CouplesCampTicketPurchase data0 ->
-                    c data0
         )
         |> Codec.variant1 "CampfireTicketPurchase" CampfireTicketPurchase singlePurchaseDataCodec
         |> Codec.variant1 "CampTicketPurchase" CampTicketPurchase singlePurchaseDataCodec
-        |> Codec.variant1 "CouplesCampTicketPurchase" CouplesCampTicketPurchase couplePurchaseDataCodec
         |> Codec.buildCustom
 
 
@@ -257,7 +205,6 @@ singlePurchaseDataCodec =
         |> Codec.field "originCity" .originCity nonemptyStringCodec
         |> Codec.field "primaryModeOfTravel" .primaryModeOfTravel TravelMode.codec
         |> Codec.field "grantContribution" .grantContribution Codec.int
-        |> Codec.field "sponsorship" .sponsorship (Codec.maybe Codec.string)
         |> Codec.buildObject
 
 
@@ -271,7 +218,6 @@ couplePurchaseDataCodec =
         |> Codec.field "originCity" .originCity nonemptyStringCodec
         |> Codec.field "primaryModeOfTravel" .primaryModeOfTravel TravelMode.codec
         |> Codec.field "grantContribution" .grantContribution Codec.int
-        |> Codec.field "sponsorship" .sponsorship (Codec.maybe Codec.string)
         |> Codec.buildObject
 
 

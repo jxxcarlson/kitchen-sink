@@ -265,7 +265,6 @@ type StripePaymentId
 
 type Product
     = CampTicket Price
-    | CouplesCampTicket Price
     | CampfireTicket Price
 
 

@@ -94,9 +94,6 @@ isCampfireTicket order =
         CampTicketPurchase _ ->
             False
 
-        CouplesCampTicketPurchase _ ->
-            False
-
 
 isCampTicket : { order | form : PurchaseFormValidated } -> Bool
 isCampTicket order =
@@ -106,9 +103,6 @@ isCampTicket order =
 
         CampTicketPurchase _ ->
             True
-
-        CouplesCampTicketPurchase _ ->
-            False
 
 
 isCouplesCampTicket : { order | form : PurchaseFormValidated } -> Bool
@@ -120,9 +114,6 @@ isCouplesCampTicket order =
         CampTicketPurchase _ ->
             False
 
-        CouplesCampTicketPurchase _ ->
-            True
-
 
 isRoomTicketPurchase : { order | form : PurchaseFormValidated } -> Bool
 isRoomTicketPurchase order =
@@ -131,9 +122,6 @@ isRoomTicketPurchase order =
             False
 
         CampTicketPurchase _ ->
-            True
-
-        CouplesCampTicketPurchase _ ->
             True
 
 
@@ -145,6 +133,3 @@ orderToSlots order =
 
         CampTicketPurchase _ ->
             1
-
-        CouplesCampTicketPurchase _ ->
-            2
