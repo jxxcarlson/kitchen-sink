@@ -1,1 +1,0 @@
-idea64.exe --line %2 --column %3 %1

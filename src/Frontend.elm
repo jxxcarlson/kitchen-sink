@@ -77,6 +77,7 @@ init url key =
         route =
             Route.decode url
 
+        -- Use URL = localhost:8000/?organiser=true to see the admin view (??)
         isOrganiser =
             case url |> Url.Parser.parse (Url.Parser.top <?> queryBool "organiser") of
                 Just (Just isOrganiser_) ->
@@ -461,15 +462,6 @@ loadedView model =
 
 ticketsHtmlId =
     "tickets"
-
-
-
--- slotsLeftText : { a | slotsRemaining : Int } -> String
--- slotsLeftText model =
---     String.fromInt model.slotsRemaining
---         ++ "/"
---         ++ String.fromInt totalSlotsAvailable
---         ++ " slots left"
 
 
 normalButtonAttributes =
