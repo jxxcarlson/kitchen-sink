@@ -1,5 +1,7 @@
 module Backend exposing (..)
 
+-- import Stripe.Inventory as Inventory
+
 import AssocList
 import Duration
 import EmailAddress exposing (EmailAddress)
@@ -12,7 +14,6 @@ import List.Nonempty
 import Postmark exposing (PostmarkEmailBody(..))
 import Quantity
 import String.Nonempty exposing (NonemptyString(..))
-import Stripe.Inventory as Inventory
 import Stripe.Product as Product
 import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
@@ -111,7 +112,6 @@ update msg model =
                 clientId
                 (InitData
                     { prices = model.prices
-                    , slotsRemaining = Inventory.slotsRemaining model
                     , ticketsEnabled = model.ticketsEnabled
                     }
                 )
@@ -215,15 +215,7 @@ update msg model =
             ( model, Cmd.none )
     )
         |> (\( newModel, cmd ) ->
-                let
-                    newSlotsRemaining =
-                        Inventory.slotsRemaining newModel
-                in
-                if Inventory.slotsRemaining model == newSlotsRemaining then
-                    ( newModel, cmd )
-
-                else
-                    ( newModel, Cmd.batch [ cmd, Lamdera.broadcast (SlotRemainingChanged newSlotsRemaining) ] )
+                ( newModel, Cmd.batch [ cmd ] )
            )
 
 
@@ -236,16 +228,13 @@ updateFromFrontend sessionId clientId msg model =
                     case priceIdToProductId model priceId of
                         Just productId ->
                             let
-                                availability =
-                                    Inventory.slotsRemaining model
-
                                 validProductAndForm =
                                     case ( productId == Id.fromString Product.ticket.couplesCamp, purchaseForm ) of
                                         ( False, CampTicketPurchase _ ) ->
-                                            True && availability.campTicket
+                                            True
 
                                         ( False, CampfireTicketPurchase _ ) ->
-                                            True && availability.campfireTicket
+                                            True
 
                                         _ ->
                                             False

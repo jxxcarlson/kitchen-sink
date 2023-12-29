@@ -74,18 +74,12 @@ formView model productId priceId ticket =
 
         submitButton =
             Element.Input.button
-                (Theme.submitButtonAttributes (Stripe.Utility.purchaseable ticket.productId model))
+                Theme.submitButtonAttributes
                 { onPress = Just (PressedSubmitForm productId priceId)
                 , label =
                     Element.paragraph
                         [ Element.Font.center ]
-                        [ Element.text
-                            (if Stripe.Utility.purchaseable ticket.productId model then
-                                "Purchase "
-
-                             else
-                                "Waitlist"
-                            )
+                        [ Element.text "Purchase "
                         , case form.submitStatus of
                             NotSubmitted pressedSubmit ->
                                 Element.none
@@ -169,7 +163,7 @@ ticketCardsView model =
             (\( productId, ticket ) ->
                 case AssocList.get productId model.prices of
                     Just price ->
-                        Tickets.viewMobile (Stripe.Utility.purchaseable ticket.productId model) (PressedSelectTicket productId price.priceId) price.price ticket
+                        Tickets.viewMobile (PressedSelectTicket productId price.priceId) price.price ticket
 
                     Nothing ->
                         Element.text "No ticket prices found"
@@ -182,7 +176,7 @@ ticketCardsView model =
             (\( productId, ticket ) ->
                 case AssocList.get productId model.prices of
                     Just price ->
-                        Tickets.viewDesktop (Stripe.Utility.purchaseable ticket.productId model) (PressedSelectTicket productId price.priceId) price.price ticket
+                        Tickets.viewDesktop (PressedSelectTicket productId price.priceId) price.price ticket
 
                     Nothing ->
                         Element.text "No ticket prices found"

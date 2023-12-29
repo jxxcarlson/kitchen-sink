@@ -43,7 +43,6 @@ type alias LoadedModel =
     , form : PurchaseForm
     , route : Route
     , showCarbonOffsetTooltip : Bool
-    , slotsRemaining : TicketAvailability
     , isOrganiser : Bool
     , ticketsEnabled : TicketsEnabled
     , backendModel : Maybe BackendModel
@@ -311,7 +310,6 @@ type BackendMsg
 
 type alias InitData2 =
     { prices : AssocList.Dict (Id ProductId) { priceId : Id PriceId, price : Price }
-    , slotsRemaining : TicketAvailability
     , ticketsEnabled : TicketsEnabled
     }
 
@@ -319,7 +317,6 @@ type alias InitData2 =
 type ToFrontend
     = InitData InitData2
     | SubmitFormResponse (Result String (Id StripeSessionId))
-    | SlotRemainingChanged TicketAvailability
     | TicketsEnabledChanged TicketsEnabled
     | AdminInspectResponse BackendModel
 

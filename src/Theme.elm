@@ -105,15 +105,14 @@ panel attrs x =
         x
 
 
-submitButtonAttributes : Bool -> List (Element.Attribute msg)
-submitButtonAttributes isEnabled =
+submitButtonAttributes : List (Element.Attribute msg)
+submitButtonAttributes =
     [ Element.width Element.fill
     , Element.Background.color
-        (if isEnabled then
-            Element.rgb255 92 176 126
-
-         else
-            Element.rgb255 137 141 137
+        (Element.rgb255
+            92
+            176
+            126
         )
     , Element.padding 16
     , Element.Border.rounded 8

@@ -122,7 +122,7 @@ update msg model =
 tryLoading : LoadingModel -> ( FrontendModel, Cmd FrontendMsg )
 tryLoading loadingModel =
     Maybe.map2
-        (\window { slotsRemaining, prices, ticketsEnabled } ->
+        (\window { prices, ticketsEnabled } ->
             case loadingModel.route of
                 _ ->
                     ( Loaded
@@ -145,7 +145,6 @@ tryLoading loadingModel =
                             }
                         , route = loadingModel.route
                         , showCarbonOffsetTooltip = False
-                        , slotsRemaining = slotsRemaining
                         , isOrganiser = loadingModel.isOrganiser
                         , ticketsEnabled = ticketsEnabled
                         , backendModel = Nothing
@@ -193,13 +192,9 @@ updateLoaded msg model =
         PressedSelectTicket productId priceId ->
             case ( AssocList.get productId Tickets.dict, model.ticketsEnabled ) of
                 ( Just ticket, TicketsEnabled ) ->
-                    if Stripe.Utility.purchaseable ticket.productId model then
-                        ( { model | selectedTicket = Just ( productId, priceId ) }
-                        , scrollToTop
-                        )
-
-                    else
-                        ( model, Cmd.none )
+                    ( { model | selectedTicket = Just ( productId, priceId ) }
+                    , scrollToTop
+                    )
 
                 _ ->
                     ( model, Cmd.none )
@@ -222,23 +217,19 @@ updateLoaded msg model =
             in
             case ( AssocList.get productId Tickets.dict, model.ticketsEnabled ) of
                 ( Just ticket, TicketsEnabled ) ->
-                    if Stripe.Utility.purchaseable ticket.productId model then
-                        case ( form.submitStatus, PurchaseForm.validateForm productId form ) of
-                            ( NotSubmitted _, Just validated ) ->
-                                ( { model | form = { form | submitStatus = Submitting } }
-                                , Lamdera.sendToBackend (SubmitFormRequest priceId (Untrusted.untrust validated))
-                                )
+                    case ( form.submitStatus, PurchaseForm.validateForm productId form ) of
+                        ( NotSubmitted _, Just validated ) ->
+                            ( { model | form = { form | submitStatus = Submitting } }
+                            , Lamdera.sendToBackend (SubmitFormRequest priceId (Untrusted.untrust validated))
+                            )
 
-                            ( NotSubmitted _, Nothing ) ->
-                                ( { model | form = { form | submitStatus = NotSubmitted PressedSubmit } }
-                                , Cmd.none
-                                )
+                        ( NotSubmitted _, Nothing ) ->
+                            ( { model | form = { form | submitStatus = NotSubmitted PressedSubmit } }
+                            , Cmd.none
+                            )
 
-                            _ ->
-                                ( model, Cmd.none )
-
-                    else
-                        ( model, Cmd.none )
+                        _ ->
+                            ( model, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
@@ -281,8 +272,8 @@ updateFromBackend msg model =
 updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
 updateFromBackendLoaded msg model =
     case msg of
-        InitData { prices, slotsRemaining, ticketsEnabled } ->
-            ( { model | prices = prices, slotsRemaining = slotsRemaining, ticketsEnabled = ticketsEnabled }, Cmd.none )
+        InitData { prices, ticketsEnabled } ->
+            ( { model | prices = prices, ticketsEnabled = ticketsEnabled }, Cmd.none )
 
         SubmitFormResponse result ->
             case result of
@@ -297,9 +288,6 @@ updateFromBackendLoaded msg model =
                             model.form
                     in
                     ( { model | form = { form | submitStatus = SubmitBackendError str } }, Cmd.none )
-
-        SlotRemainingChanged slotsRemaining ->
-            ( { model | slotsRemaining = slotsRemaining }, Cmd.none )
 
         TicketsEnabledChanged ticketsEnabled ->
             ( { model | ticketsEnabled = ticketsEnabled }, Cmd.none )

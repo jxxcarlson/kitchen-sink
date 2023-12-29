@@ -68,8 +68,8 @@ dict =
         |> AssocList.fromList
 
 
-viewDesktop : Bool -> msg -> Price -> Ticket -> Element msg
-viewDesktop ticketAvailable onPress price ticket =
+viewDesktop : msg -> Price -> Ticket -> Element msg
+viewDesktop onPress price ticket =
     Theme.panel []
         [ Element.image [ Element.width (Element.px 120) ] { src = ticket.image, description = "Illustration of a camp" }
         , Element.paragraph [ Element.Font.semiBold, Element.Font.size 20 ] [ Element.text ticket.name ]
@@ -78,28 +78,18 @@ viewDesktop ticketAvailable onPress price ticket =
             [ Element.Font.bold, Element.Font.size 36, Element.alignBottom ]
             (Element.text (Theme.priceText price))
         , Element.Input.button
-            (Theme.submitButtonAttributes ticketAvailable)
+            Theme.submitButtonAttributes
             { onPress = Just onPress
             , label =
                 Element.el
                     [ Element.centerX, Element.Font.semiBold, Element.Font.color (Element.rgb 1 1 1) ]
-                    (Element.text
-                        (if ticketAvailable then
-                            "Select"
-
-                         else if ticket.name == "Campfire Ticket" then
-                            "Waitlist"
-
-                         else
-                            "Sold out!"
-                        )
-                    )
+                    (Element.text "Select")
             }
         ]
 
 
-viewMobile : Bool -> msg -> Price -> Ticket -> Element msg
-viewMobile ticketAvailable onPress { currency, amount } ticket =
+viewMobile : msg -> Price -> Ticket -> Element msg
+viewMobile onPress { currency, amount } ticket =
     Theme.panel []
         [ Element.row
             [ Element.spacing 16 ]
@@ -116,21 +106,11 @@ viewMobile ticketAvailable onPress { currency, amount } ticket =
                 { src = ticket.image, description = "Illustration of a camp" }
             ]
         , Element.Input.button
-            (Theme.submitButtonAttributes ticketAvailable)
+            Theme.submitButtonAttributes
             { onPress = Just onPress
             , label =
                 Element.el
                     [ Element.centerX ]
-                    (Element.text
-                        (if ticketAvailable then
-                            "Select"
-
-                         else if ticket.name == "Campfire Ticket" then
-                            "Waitlist"
-
-                         else
-                            "Sold out!"
-                        )
-                    )
+                    (Element.text "Select")
             }
         ]
