@@ -35,7 +35,7 @@ footer, add something like the below to
 `Pages.Parts.footer`:
 
 ```elm
-Element.link [] { url = Route.encode Notes, label = Element.text "Notes"
+Element.link [] { url = Route.encode Notes, label = Element.text "Notes" }
 ```
 
 Another possibility is to add a link to `Pages.parts.header`:
