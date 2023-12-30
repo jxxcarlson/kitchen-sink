@@ -8,7 +8,7 @@ adding more soon.
 
 This template is based on 
 a simplified version of 
-Mario Rogic's [realworld](https://github.com/supermario/lamdera-realworld) code.
+Mario Rogic's [Elm Camp](https://github.com/elm-camp/website) code.
 
 
 ### Local development:
