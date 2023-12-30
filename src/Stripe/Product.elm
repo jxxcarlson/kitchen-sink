@@ -1,6 +1,6 @@
 module Stripe.Product exposing (ticket)
 
-import Env exposing (..)
+import Env
 
 
 ticket : { campFire : String, camp : String, couplesCamp : String }

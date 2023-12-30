@@ -107,18 +107,3 @@ loadProdBackend =
         --     Env.adminPassword
     in
     Cmd.none
-
-
-
--- debugAssocList assoc =
---     assoc
---         |> AssocList.toList
---         |> List.map
---             (\data ->
---                 column
---                     [ width fill
---                     ]
---                     [ paragraph [] [ text (Debug.toString data) ]
---                     ]
---             )
---         |> column []

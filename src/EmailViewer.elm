@@ -5,7 +5,6 @@ import Html exposing (Html)
 import Html.Attributes
 import RPC
 import String.Nonempty exposing (NonemptyString)
-import Tickets
 
 
 main =

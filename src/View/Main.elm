@@ -1,48 +1,20 @@
 module View.Main exposing (view)
 
 import Admin
-import AssocList
 import Browser exposing (UrlRequest(..))
-import Browser.Dom
-import Browser.Events
-import Browser.Navigation
-import Dict
 import Element exposing (Element)
 import Element.Background
-import Element.Border
 import Element.Font
-import Element.Input
 import EmailAddress exposing (EmailAddress)
-import Env
-import Html exposing (Html)
-import Html.Attributes
-import Html.Events
-import Id exposing (Id)
-import Json.Decode
-import Lamdera
-import LiveSchedule
 import MarkdownThemed
 import Pages.About
 import Pages.Brillig
 import Pages.Home
 import Pages.Notes
 import Pages.Parts
-import Ports
 import Route exposing (Route(..), SubPage(..))
-import String.Nonempty
-import Stripe.Product as Product
-import Stripe.PurchaseForm as PurchaseForm exposing (PressedSubmit(..), PurchaseForm, PurchaseFormValidated(..), SubmitStatus(..))
-import Stripe.Stripe as Stripe
-import Stripe.Tickets as Tickets exposing (Product_)
-import Task
 import Theme
-import Time
-import TravelMode
 import Types exposing (..)
-import Untrusted
-import Url
-import Url.Parser exposing ((</>), (<?>))
-import Url.Parser.Query as Query
 import View.Style
 
 

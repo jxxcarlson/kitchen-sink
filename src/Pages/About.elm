@@ -16,11 +16,11 @@ built-in features:
 
 - Page routing (done)
 - Stripe (in progress)
-- Ports: an example (not started)
+- Ports: an example (Stripe)
 - Authentication (not started)
 - Custom element (not started)
 - RPC: (not started)
-- Markdown: (in progress – style)
+- Markdown: (done)
 
 The template is based on a stripped-down version of
 Mario Rogic's [realworld](https://github.com/supermario/lamdera-realworld) code.

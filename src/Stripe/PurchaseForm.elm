@@ -1,6 +1,5 @@
 module Stripe.PurchaseForm exposing
-    ( CouplePurchaseData
-    , PressedSubmit(..)
+    ( PressedSubmit(..)
     , PurchaseForm
     , PurchaseFormValidated(..)
     , SinglePurchaseData
@@ -17,14 +16,12 @@ module Stripe.PurchaseForm exposing
 
 import Codec exposing (Codec)
 import EmailAddress exposing (EmailAddress)
-import Env
 import Id exposing (Id)
 import Name exposing (Name)
 import String.Nonempty exposing (NonemptyString)
 import Stripe.Product as Product
 import Stripe.Stripe exposing (ProductId(..))
 import Toop exposing (T3(..), T4(..), T5(..), T6(..), T7(..), T8(..))
-import TravelMode exposing (TravelMode)
 
 
 type alias PurchaseForm =
@@ -34,8 +31,6 @@ type alias PurchaseForm =
     , billingEmail : String
     , country : String
     , originCity : String
-    , primaryModeOfTravel : Maybe TravelMode
-    , grantContribution : String
     , grantApply : Bool
     }
 
@@ -50,19 +45,6 @@ type alias SinglePurchaseData =
     , billingEmail : EmailAddress
     , country : NonemptyString
     , originCity : NonemptyString
-    , primaryModeOfTravel : TravelMode
-    , grantContribution : Int
-    }
-
-
-type alias CouplePurchaseData =
-    { attendee1Name : Name
-    , attendee2Name : Name
-    , billingEmail : EmailAddress
-    , country : NonemptyString
-    , originCity : NonemptyString
-    , primaryModeOfTravel : TravelMode
-    , grantContribution : Int
     }
 
 
@@ -152,9 +134,6 @@ validateForm productId form =
 
         originCity =
             String.Nonempty.fromString form.originCity
-
-        grantContribution =
-            validateInt form.grantContribution
     in
     let
         product =
@@ -164,15 +143,13 @@ validateForm productId form =
             else
                 CampfireTicketPurchase
     in
-    case T6 name1 emailAddress form.primaryModeOfTravel country originCity grantContribution of
-        T6 (Ok name1Ok) (Ok emailAddressOk) (Just primaryModeOfTravel) (Just countryOk) (Just originCityOk) (Ok grantContributionOk) ->
+    case T4 name1 emailAddress country originCity of
+        T4 (Ok name1Ok) (Ok emailAddressOk) (Just countryOk) (Just originCityOk) ->
             product
                 { attendeeName = name1Ok
                 , billingEmail = emailAddressOk
                 , country = countryOk
                 , originCity = originCityOk
-                , primaryModeOfTravel = primaryModeOfTravel
-                , grantContribution = grantContributionOk
                 }
                 |> Just
 
@@ -203,21 +180,6 @@ singlePurchaseDataCodec =
         |> Codec.field "billingEmail" .billingEmail emailAddressCodec
         |> Codec.field "country" .country nonemptyStringCodec
         |> Codec.field "originCity" .originCity nonemptyStringCodec
-        |> Codec.field "primaryModeOfTravel" .primaryModeOfTravel TravelMode.codec
-        |> Codec.field "grantContribution" .grantContribution Codec.int
-        |> Codec.buildObject
-
-
-couplePurchaseDataCodec : Codec CouplePurchaseData
-couplePurchaseDataCodec =
-    Codec.object CouplePurchaseData
-        |> Codec.field "attendee1Name" .attendee1Name Name.codec
-        |> Codec.field "attendee2Name" .attendee2Name Name.codec
-        |> Codec.field "billingEmail" .billingEmail emailAddressCodec
-        |> Codec.field "country" .country nonemptyStringCodec
-        |> Codec.field "originCity" .originCity nonemptyStringCodec
-        |> Codec.field "primaryModeOfTravel" .primaryModeOfTravel TravelMode.codec
-        |> Codec.field "grantContribution" .grantContribution Codec.int
         |> Codec.buildObject
 
 

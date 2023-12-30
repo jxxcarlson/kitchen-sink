@@ -41,8 +41,6 @@ purchaseForm (Untrusted a) =
                     , billingEmail = billingEmail
                     , country = b.country
                     , originCity = b.originCity
-                    , primaryModeOfTravel = b.primaryModeOfTravel
-                    , grantContribution = b.grantContribution
                     }
                         |> CampfireTicketPurchase
                         |> Just
@@ -57,8 +55,6 @@ purchaseForm (Untrusted a) =
                     , billingEmail = billingEmail
                     , country = b.country
                     , originCity = b.originCity
-                    , primaryModeOfTravel = b.primaryModeOfTravel
-                    , grantContribution = b.grantContribution
                     }
                         |> CampTicketPurchase
                         |> Just

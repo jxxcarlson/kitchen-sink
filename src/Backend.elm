@@ -244,7 +244,6 @@ updateFromFrontend sessionId clientId msg model =
                                         (\now ->
                                             Stripe.createCheckoutSession
                                                 { priceId = priceId
-                                                , opportunityGrantDonation = purchaseForm |> PurchaseForm.commonPurchaseData |> .grantContribution
                                                 , emailAddress = PurchaseForm.billingEmail purchaseForm
                                                 , now = now
                                                 , expiresInMinutes = 30

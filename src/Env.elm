@@ -4,6 +4,11 @@ import EmailAddress exposing (EmailAddress)
 import Postmark
 
 
+type Mode
+    = Development
+    | Production
+
+
 domain =
     "http://localhost:8000"
 
@@ -44,3 +49,7 @@ developerEmails =
 
 adminPassword =
     "123"
+
+
+mode =
+    Development

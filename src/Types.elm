@@ -324,7 +324,3 @@ type ToFrontend
 type TicketsEnabled
     = TicketsEnabled
     | TicketsDisabled { adminMessage : String }
-
-
-maxSlotsAvailable =
-    50

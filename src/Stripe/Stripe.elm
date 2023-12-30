@@ -26,7 +26,6 @@ import Json.Decode.Pipeline exposing (..)
 import Json.Encode as E
 import Money
 import Ports exposing (stripe_to_js)
-import Stripe.Product as Product
 import Task exposing (Task)
 import Time
 import Url exposing (percentEncode)
@@ -123,34 +122,14 @@ decodeCurrency =
 
 createCheckoutSession :
     { priceId : Id PriceId
-    , opportunityGrantDonation : Int
     , emailAddress : EmailAddress
     , now : Time.Posix
     , expiresInMinutes : Int
     }
     -> Task Http.Error (Id StripeSessionId)
-createCheckoutSession { priceId, opportunityGrantDonation, emailAddress, now, expiresInMinutes } =
+createCheckoutSession { priceId, emailAddress, now, expiresInMinutes } =
     -- @TODO support multiple prices, see Data.Tickets
     let
-        opportunityGrantAttrs =
-            if opportunityGrantDonation > 0 then
-                [ ( "line_items[1][price_data][currency]", "eur" )
-                , ( "line_items[1][price_data][product_data][name]", "Elm Camp Denmark 23 - Opportunity Grant Sponsorship" )
-                , ( "line_items[1][price_data][product_data][description]", "Thank you for your generous donation!" )
-                , ( "line_items[1][price_data][unit_amount_decimal]", String.fromInt (opportunityGrantDonation * 100) )
-                , ( "line_items[1][quantity]", "1" )
-                ]
-
-            else
-                []
-
-        sponsorIndex =
-            if opportunityGrantAttrs == [] then
-                "1"
-
-            else
-                "2"
-
         body =
             formBody <|
                 [ ( "line_items[0][price]", Id.toString priceId )
@@ -171,7 +150,6 @@ createCheckoutSession { priceId, opportunityGrantDonation, emailAddress, now, ex
                   )
                 , ( "customer_email", EmailAddress.toString emailAddress )
                 ]
-                    ++ opportunityGrantAttrs
     in
     Http.task
         { method = "POST"
