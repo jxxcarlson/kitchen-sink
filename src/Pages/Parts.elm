@@ -31,6 +31,9 @@ header config =
             , Element.link
                 []
                 { url = Route.encode Notes, label = Element.text "Notes" }
+            , Element.link
+                []
+                { url = Route.encode Purchase, label = Element.text "Purchase" }
             ]
         )
 

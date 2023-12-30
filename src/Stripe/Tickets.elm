@@ -21,7 +21,6 @@ type alias Product_ =
     { name : String
     , description : String
     , image : String
-    , slots : Int
     , productId : String
     }
 
@@ -31,7 +30,6 @@ basicPurchase =
     { name = "Version 5 Watchamacallit"
     , description = "A tool to fit all of your tinkering needs"
     , image = "/product2.webp"
-    , slots = 1
     , productId = Product.ticket.camp
     }
 

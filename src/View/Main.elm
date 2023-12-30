@@ -14,6 +14,7 @@ import Pages.Home
 import Pages.Notes
 import Pages.Parts
 import Route exposing (Route(..), SubPage(..))
+import Stripe.View
 import Theme
 import Types exposing (..)
 import View.Style
@@ -132,6 +133,22 @@ loadedView model =
 
         AdminRoute passM ->
             Admin.view model
+
+        Purchase ->
+            Element.column
+                [ Element.width Element.fill, Element.height Element.fill ]
+                [ Pages.Parts.header { window = model.window, isCompact = True }
+                , Element.column
+                    (Element.padding 20
+                        :: Element.scrollbarY
+                        :: Element.height (Element.px <| model.window.height - 95)
+                        :: Theme.contentAttributes
+                    )
+                    [-- Pages.Purchase.view model
+                     --  Stripe.View.formView model productId priceId ticket
+                    ]
+                , Pages.Parts.footer
+                ]
 
         PaymentSuccessRoute maybeEmailAddress ->
             Element.column

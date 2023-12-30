@@ -64,5 +64,52 @@ audio file that is played.
 Look in the `elm-pkg-js` directory and the module `Ports` for more examples.
 
 
+## Stripe
+
+*((This section and the supporting code in the template is a work in progress.
+I will remove this paragraph when the work is done.  In the meantime, if you
+suggestions, comments, or suggestions, let me know: jxxcarlson everywhere: slack, discourse, gmail))*
+
+To use Stripe you will need to set up a Stripe account, get a Stripe API key,
+and set up products and prices.  For the latter, you can use either the Stripe CLI or
+the Product Dashboard.  To to [stripe.com](https://stripe.com) to set up your account.
+
+
+**Articles**
+
+- [Stripe API Reference](https://stripe.com/docs/api)
+
+- [How to products and prices with the dashboard](https://support.stripe.com/questions/how-to-create-products-and-prices)
+
+
+**Links**
+
+- [Stripe Dashboard](https://dashboard.stripe.com/)
+
+- [Product Dashboard](https://dashboard.stripe.com/products)
+
+
+**Stripe CLI, selected commands:**
+
+To install the Stripe CLI, to [here](https://stripe.com/docs/stripe-cli#install).
+
+- `stripe login` logs you in to your Stripe account
+
+- `stripe resources` lists all the resources in your Stripe account, e.g., products and prices
+
+- `stripe products` usage: `stripe products <operation> [parameters...]`
+
+- `stripe products --help` gives help for the 'products' resource
+
+- `stripe products create` creates a product, use `--help for details`
+
+- `stripe products list` lists all your products
+
+- `stripe prices create` creates a price, use `--help for details`
+
+- `stripe prices list` lists all your prices
+
+- `stripe logs tail` tails the logs for your Stripe account
+
 """
         |> MarkdownThemed.renderFull

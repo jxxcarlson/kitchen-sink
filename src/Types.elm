@@ -263,14 +263,8 @@ type StripePaymentId
 
 
 type Product
-    = CampTicket Price
-    | CampfireTicket Price
-
-
-type Sponsorship
-    = SponsorBronze Price
-    | SponsorSilver Price
-    | SponsorGold Price
+    = Watchamacallit Price
+    | Thingamabob Price
 
 
 type alias CityCode =
@@ -278,7 +272,8 @@ type alias CityCode =
 
 
 type FrontendMsg
-    = UrlClicked UrlRequest
+    = NoOp
+    | UrlClicked UrlRequest
     | UrlChanged Url
     | Tick Time.Posix
     | GotWindowSize Int Int

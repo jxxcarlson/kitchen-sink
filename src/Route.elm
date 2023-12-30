@@ -15,6 +15,7 @@ type Route
     | Notes
     | Brillig
     | AdminRoute (Maybe String)
+    | Purchase
     | PaymentSuccessRoute (Maybe EmailAddress)
     | PaymentCancelRoute
 
@@ -30,6 +31,7 @@ decode url =
         [ Url.Parser.top |> Url.Parser.map HomepageRoute
         , Url.Parser.s "about" |> Url.Parser.map About
         , Url.Parser.s "notes" |> Url.Parser.map Notes
+        , Url.Parser.s "purchase" |> Url.Parser.map Purchase
         , Url.Parser.s "brillig" |> Url.Parser.map Brillig
         , Url.Parser.s "admin" <?> parseAdminPass |> Url.Parser.map AdminRoute
         , Url.Parser.s Stripe.successPath <?> parseEmail |> Url.Parser.map PaymentSuccessRoute
@@ -78,6 +80,9 @@ encode route =
             AdminRoute passM ->
                 [ "admin" ]
 
+            Purchase ->
+                [ "purchase" ]
+
             PaymentSuccessRoute _ ->
                 [ Stripe.successPath ]
 
@@ -98,6 +103,9 @@ encode route =
                 []
 
             AdminRoute passM ->
+                []
+
+            Purchase ->
                 []
 
             PaymentSuccessRoute maybeEmailAddress ->

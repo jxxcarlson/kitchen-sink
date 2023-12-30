@@ -152,6 +152,9 @@ tryLoading loadingModel =
 updateLoaded : FrontendMsg -> LoadedModel -> ( LoadedModel, Cmd FrontendMsg )
 updateLoaded msg model =
     case msg of
+        NoOp ->
+            ( model, Cmd.none )
+
         UrlClicked urlRequest ->
             case urlRequest of
                 Internal url ->
