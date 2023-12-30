@@ -180,10 +180,6 @@ updateLoaded msg model =
             ( { model | showTooltip = False, showCarbonOffsetTooltip = False }, Cmd.none )
 
         Chirp ->
-            let
-                _ =
-                    Debug.log "Chirp (1)" True
-            in
             ( model, Ports.playSound (Json.Encode.string "chirp.mp3") )
 
         -- STRIPE

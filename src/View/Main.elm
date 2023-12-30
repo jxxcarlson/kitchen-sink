@@ -97,10 +97,14 @@ loadedView model =
 
         Notes ->
             Element.column
-                [ Element.width Element.fill, Element.height Element.fill ]
+                [ Element.width Element.fill, Element.height Element.fill, Element.clipY ]
                 [ Pages.Parts.header { window = model.window, isCompact = True }
                 , Element.column
-                    (Element.padding 20 :: Theme.contentAttributes)
+                    (Element.padding 20
+                        :: Element.scrollbarY
+                        :: Element.height (Element.px <| model.window.height - 80)
+                        :: Theme.contentAttributes
+                    )
                     [ Pages.Notes.view model
                     ]
                 , Pages.Parts.footer
@@ -111,7 +115,9 @@ loadedView model =
                 [ Element.width Element.fill, Element.height Element.fill ]
                 [ Pages.Parts.header { window = model.window, isCompact = True }
                 , Element.column
-                    (Element.padding 20 :: Theme.contentAttributes)
+                    (Element.padding 20
+                        :: Theme.contentAttributes
+                    )
                     [ Pages.Brillig.view model
                     ]
                 , Pages.Parts.footer
