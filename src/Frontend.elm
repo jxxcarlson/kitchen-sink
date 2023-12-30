@@ -10,7 +10,9 @@ import Browser.Navigation
 import Dict
 import Env
 import Json.Decode
+import Json.Encode
 import Lamdera
+import Ports
 import Route exposing (Route(..), SubPage(..))
 import Stripe.PurchaseForm as PurchaseForm exposing (PressedSubmit(..), PurchaseForm, PurchaseFormValidated(..), SubmitStatus(..))
 import Stripe.Stripe as Stripe
@@ -176,6 +178,13 @@ updateLoaded msg model =
 
         MouseDown ->
             ( { model | showTooltip = False, showCarbonOffsetTooltip = False }, Cmd.none )
+
+        Chirp ->
+            let
+                _ =
+                    Debug.log "Chirp (1)" True
+            in
+            ( model, Ports.playSound (Json.Encode.string "chirp.mp3") )
 
         -- STRIPE
         PressedSelectTicket productId priceId ->

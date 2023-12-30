@@ -18,12 +18,24 @@ import Types exposing (..)
 import View.Style
 
 
+
+--E.layoutWith { options = [ E.focusStyle View.Utility.noFocus ] }
+
+
+noFocus : Element.FocusStyle
+noFocus =
+    { borderColor = Nothing
+    , backgroundColor = Nothing
+    , shadow = Nothing
+    }
+
+
 view : FrontendModel -> Browser.Document FrontendMsg
 view model =
     { title = "Lamdera Kitchen Sink"
     , body =
         [ Theme.css
-        , Element.layout
+        , Element.layoutWith { options = [ Element.focusStyle noFocus ] }
             [ Element.width Element.fill
             , Element.Font.color MarkdownThemed.lightTheme.defaultText
             , Element.Font.size 16

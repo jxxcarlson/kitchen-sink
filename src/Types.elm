@@ -290,6 +290,7 @@ type FrontendMsg
     | PressedCancelForm
     | PressedShowCarbonOffsetTooltip
     | SetViewport
+    | Chirp
 
 
 type ToBackend

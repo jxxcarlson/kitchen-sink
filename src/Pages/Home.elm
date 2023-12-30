@@ -7,6 +7,7 @@ import MarkdownThemed
 import Pages.Parts
 import Theme
 import Types exposing (..)
+import View.Button
 
 
 view : LoadedModel -> Element FrontendMsg
@@ -34,6 +35,13 @@ view model =
                 ]
                 [ Element.column Theme.contentAttributes [ content ]
                 ]
+            , Element.column
+                ([ Element.spacing 40
+                 , Element.paddingEach { left = 54, right = 0, top = 0, bottom = 0 }
+                 ]
+                    ++ Theme.contentAttributes
+                )
+                [ Element.row [ Element.spacing 24 ] [ Element.text "We use ports for this: ", View.Button.playSound ] ]
             ]
         , Pages.Parts.footer
         ]

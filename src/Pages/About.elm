@@ -16,7 +16,7 @@ built-in features:
 
 - Page routing (done)
 - Stripe (in progress)
-- Ports: an example (Stripe)
+- Ports, examples: (Stripe, Chirp button)
 - Authentication (not started)
 - Custom element (not started)
 - RPC: (not started)
