@@ -55,5 +55,11 @@ content =
 This is the begining of a starter template for Lamdera apps. Not much to
 show yet, but that will change bye and bye.
 The repo is on  [Github](https://github.com/jxxcarlson/kitchen-sink).
+
+See the **About** and **Note** tabs for more information. In **About** you will
+find a list of features that will be added to this template. In **Note** you will
+find details on implementing these features.
+
+Meanwhile, below is one such feature, a button that produces a sound when clicked.
         """
         |> MarkdownThemed.renderFull
