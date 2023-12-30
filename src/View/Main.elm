@@ -6,6 +6,7 @@ import Element exposing (Element)
 import Element.Background
 import Element.Font
 import EmailAddress exposing (EmailAddress)
+import Html.Attributes
 import MarkdownThemed
 import Pages.About
 import Pages.Brillig
@@ -89,7 +90,11 @@ loadedView model =
                 [ Element.width Element.fill, Element.height Element.fill ]
                 [ Pages.Parts.header { window = model.window, isCompact = True }
                 , Element.column
-                    (Element.padding 20 :: Theme.contentAttributes)
+                    (Element.padding 20
+                        :: Element.scrollbarY
+                        :: Element.height (Element.px <| model.window.height - 95)
+                        :: Theme.contentAttributes
+                    )
                     [ Pages.About.view model
                     ]
                 , Pages.Parts.footer
@@ -116,6 +121,8 @@ loadedView model =
                 [ Pages.Parts.header { window = model.window, isCompact = True }
                 , Element.column
                     (Element.padding 20
+                        :: Element.scrollbarY
+                        :: Element.height (Element.px <| model.window.height - 95)
                         :: Theme.contentAttributes
                     )
                     [ Pages.Brillig.view model

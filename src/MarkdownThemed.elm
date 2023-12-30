@@ -216,7 +216,7 @@ renderer theme =
                 , Element.width Element.fill
                 , Element.height (Element.px <| 18 * numberOfLines)
                 , Element.htmlAttribute (Html.Attributes.class "preserve-white-space")
-                , Element.htmlAttribute (Html.Attributes.style "line-height" "1.4") -- Element.htmlAttribute ("line-height" "24")
+                , Element.htmlAttribute (Html.Attributes.style "line-height" "1.4")
                 , Element.scrollbarX
                 ]
                 [ Element.html (Html.text body) ]
