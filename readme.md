@@ -1,8 +1,6 @@
 
 ## Lamdera Kitchen Sink Template
 
-https://elm.camp
-
 Features: not many yet, except for routing.  We will be
 adding more soon.
 
