@@ -102,7 +102,7 @@ loadedView model =
                 , Element.column
                     (Element.padding 20
                         :: Element.scrollbarY
-                        :: Element.height (Element.px <| model.window.height - 80)
+                        :: Element.height (Element.px <| model.window.height - 95)
                         :: Theme.contentAttributes
                     )
                     [ Pages.Notes.view model
