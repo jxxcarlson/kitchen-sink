@@ -64,7 +64,7 @@ audio file that is played.
 Look in the `elm-pkg-js` directory and the module `Ports` for more examples.
 
 
-## Stripe Account and API
+## Stripe: Account and API
 
 *((This section and the supporting code in the template is a work in progress.
 I will remove this paragraph when the work is done.  In the meantime, if you have
@@ -137,7 +137,7 @@ To install the Stripe CLI, to [here](https://stripe.com/docs/stripe-cli#install)
 
 
 
-# Displaying Product Information to the User
+## Stripe: Displaying Product Information to the User
 
 When the app is initialized, it makes a GET request to the Stripe API to get
 a list of products and prices.  This is done via the function call
@@ -175,6 +175,10 @@ Jumbo Package    200 image credits     $9
 
 **NOTE:** update issue
 
+
+## Stripe: Submitting a Purchase
+
+*(( Under construction ))*
 
 ```
 
