@@ -64,7 +64,7 @@ audio file that is played.
 Look in the `elm-pkg-js` directory and the module `Ports` for more examples.
 
 
-## Stripe
+## Stripe Account and API
 
 *((This section and the supporting code in the template is a work in progress.
 I will remove this paragraph when the work is done.  In the meantime, if you have
@@ -134,6 +134,51 @@ To install the Stripe CLI, to [here](https://stripe.com/docs/stripe-cli#install)
 - `stripe prices list` lists all your prices
 
 - `stripe logs tail` tails the logs for your Stripe account
+
+
+
+# Displaying Product Information to the User
+
+When the app is initialized, it makes a GET request to the Stripe API to get
+a list of products and prices.  This is done via the function call
+`tripe.getPrices GotPrices` in the backend model. This data is stored in the
+the `prices : AssocList.Dict (Id ProductId) Price2` field of the model.
+This is a dictionary whose keys are product ids and whose values are
+`Price2` records
+
+In addition to the product and price data returned by the Stripe API,
+there is a field `products : Stripe.Stripe.ProductInfoDict`
+which maps product ids to `Stripe.Stripe.ProductInfo` records.  These
+have a name and a description field.  The products dictionary
+is (at the moment) hard-coded in the backend model.
+
+At init time, both dictionaries sent to the frontend model and stored there.
+This information can be displayed to the user in the checkout page.
+
+Here is an example of what is returned:
+
+
+**Price and product info from Stripe**
+
+```
+prod_NwykP5NQq7KEJt  price_1NBJdgJtjekdqXYjglFb61DA  600
+prod_Nwym3t9YYdA0DD  price_1NBK0YJtjekdqXYjJfqCoryx  900
+```
+
+**Price and product view for user**
+
+```
+Basic Package    100 image credits     $6
+Jumbo Package    200 image credits     $9
+```
+
+
+**NOTE:** update issue
+
+
+```
+
+
 
 
 

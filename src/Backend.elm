@@ -43,7 +43,7 @@ init =
       , prices = AssocList.empty
       , time = Time.millisToPosix 0
       , ticketsEnabled = TicketsEnabled
-      , productInfoDict =
+      , products =
             AssocList.fromList
                 [ ( Id.fromString "prod_NwykP5NQq7KEJt"
                   , { name = "Basic Package"
@@ -139,7 +139,7 @@ update msg model =
                 clientId
                 (InitData
                     { prices = model.prices |> Debug.log "MODEL PRICES"
-                    , productInfo = model.productInfoDict |> Debug.log "productInfoDict (2)"
+                    , productInfo = model.products |> Debug.log "productInfoDict (2)"
                     }
                 )
             )

@@ -49,7 +49,7 @@ viewProductInfo dict ( productId, { priceId, price } ) =
             Element.row [ Element.spacing 12 ]
                 [ Element.el [ Element.width (Element.px 200) ] (Element.text productInfo.name)
                 , Element.el [ Element.width (Element.px 260) ] (Element.text productInfo.description)
-                , Element.el [ Element.width (Element.px 70) ] (Element.text (String.fromInt price.amount))
+                , Element.el [ Element.width (Element.px 70) ] (Element.text <| "$" ++ String.fromFloat (toFloat price.amount / 100.0))
                 ]
 
 

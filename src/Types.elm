@@ -64,7 +64,7 @@ type alias BackendModel =
     , prices : AssocList.Dict (Id ProductId) Price2
     , time : Time.Posix
     , ticketsEnabled : TicketsEnabled
-    , productInfoDict : Stripe.Stripe.ProductInfoDict
+    , products : Stripe.Stripe.ProductInfoDict
     }
 
 
@@ -81,7 +81,7 @@ backendModelCodec =
         |> Codec.field "prices" .prices (assocListCodec price2Codec)
         |> Codec.field "time" .time timeCodec
         |> Codec.field "ticketsEnabled" .ticketsEnabled ticketsEnabledCodec
-        |> Codec.field "productInfoDict" .productInfoDict (assocListCodec productInfoCodec)
+        |> Codec.field "productInfoDict" .products (assocListCodec productInfoCodec)
         |> Codec.buildObject
 
 

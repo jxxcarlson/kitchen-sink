@@ -15,7 +15,7 @@ Lamdera projects.  It comes with a number of
 built-in features:
 
 - Page routing (done)
-- Stripe (in progress)
+- Stripe (in progress, see **Purchase** tab)
 - Ports, examples: (Stripe, Chirp button)
 - Basic admin page (note started)
 - Authentication and basic user management (not started)
