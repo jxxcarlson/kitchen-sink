@@ -1,13 +1,12 @@
 module Stripe.PurchaseForm exposing
     ( PressedSubmit(..)
+    , PurchaseData
     , PurchaseForm
     , PurchaseFormValidated(..)
-    , SinglePurchaseData
     , SubmitStatus(..)
-    , attendeeName
     , billingEmail
     , codec
-    , commonPurchaseData
+    , purchaserName
     , validateEmailAddress
     , validateForm
     , validateInt
@@ -25,35 +24,22 @@ import Toop exposing (T3(..), T4(..), T5(..), T6(..), T7(..), T8(..))
 
 type alias PurchaseForm =
     { submitStatus : SubmitStatus
-    , attendee1Name : String
-    , attendee2Name : String
+    , name : String
     , billingEmail : String
     , country : String
-    , originCity : String
-    , grantApply : Bool
     }
 
 
 type PurchaseFormValidated
-    = CampfireTicketPurchase SinglePurchaseData
-    | CampTicketPurchase SinglePurchaseData
+    = ImageCreditPurchase PurchaseData
+    | ImageLibraryPackagePurchase PurchaseData
 
 
-type alias SinglePurchaseData =
-    { attendeeName : Name
+type alias PurchaseData =
+    { billingName : Name
     , billingEmail : EmailAddress
     , country : NonemptyString
-    , originCity : NonemptyString
     }
-
-
-commonPurchaseData purchaseFormValidated =
-    case purchaseFormValidated of
-        CampfireTicketPurchase a ->
-            a
-
-        CampTicketPurchase a ->
-            a
 
 
 type SubmitStatus
@@ -70,21 +56,21 @@ type PressedSubmit
 billingEmail : PurchaseFormValidated -> EmailAddress
 billingEmail paymentForm =
     case paymentForm of
-        CampfireTicketPurchase a ->
+        ImageCreditPurchase a ->
             a.billingEmail
 
-        CampTicketPurchase a ->
+        ImageLibraryPackagePurchase a ->
             a.billingEmail
 
 
-attendeeName : PurchaseFormValidated -> Name
-attendeeName paymentForm =
+purchaserName : PurchaseFormValidated -> Name
+purchaserName paymentForm =
     case paymentForm of
-        CampfireTicketPurchase a ->
-            a.attendeeName
+        ImageCreditPurchase a ->
+            a.billingName
 
-        CampTicketPurchase a ->
-            a.attendeeName
+        ImageLibraryPackagePurchase a ->
+            a.billingName
 
 
 validateInt : String -> Result String Int
@@ -119,36 +105,21 @@ validateEmailAddress text =
 validateForm : Id ProductId -> PurchaseForm -> Maybe PurchaseFormValidated
 validateForm productId form =
     let
-        name1 =
-            validateName form.attendee1Name
-
-        name2 =
-            validateName form.attendee2Name
+        name =
+            validateName form.name
 
         emailAddress =
             validateEmailAddress form.billingEmail
 
         country =
             String.Nonempty.fromString form.country
-
-        originCity =
-            String.Nonempty.fromString form.originCity
     in
-    let
-        product =
-            if productId == Id.fromString "Product.ticket.camp" then
-                CampTicketPurchase
-
-            else
-                CampfireTicketPurchase
-    in
-    case T4 name1 emailAddress country originCity of
-        T4 (Ok name1Ok) (Ok emailAddressOk) (Just countryOk) (Just originCityOk) ->
-            product
-                { attendeeName = name1Ok
+    case T3 name emailAddress country of
+        T3 (Ok nameOk) (Ok emailAddressOk) (Just countryOk) ->
+            ImageCreditPurchase
+                { billingName = nameOk
                 , billingEmail = emailAddressOk
                 , country = countryOk
-                , originCity = originCityOk
                 }
                 |> Just
 
@@ -161,24 +132,23 @@ codec =
     Codec.custom
         (\a b value ->
             case value of
-                CampfireTicketPurchase data0 ->
+                ImageCreditPurchase data0 ->
                     a data0
 
-                CampTicketPurchase data0 ->
+                ImageLibraryPackagePurchase data0 ->
                     b data0
         )
-        |> Codec.variant1 "CampfireTicketPurchase" CampfireTicketPurchase singlePurchaseDataCodec
-        |> Codec.variant1 "CampTicketPurchase" CampTicketPurchase singlePurchaseDataCodec
+        |> Codec.variant1 "ImageCreditPurchase" ImageCreditPurchase purchaseDataCodec
+        |> Codec.variant1 "ImageLibraryPackagePurchase" ImageLibraryPackagePurchase purchaseDataCodec
         |> Codec.buildCustom
 
 
-singlePurchaseDataCodec : Codec SinglePurchaseData
-singlePurchaseDataCodec =
-    Codec.object SinglePurchaseData
-        |> Codec.field "attendeeName" .attendeeName Name.codec
+purchaseDataCodec : Codec PurchaseData
+purchaseDataCodec =
+    Codec.object PurchaseData
+        |> Codec.field "billingName" .billingName Name.codec
         |> Codec.field "billingEmail" .billingEmail emailAddressCodec
         |> Codec.field "country" .country nonemptyStringCodec
-        |> Codec.field "originCity" .originCity nonemptyStringCodec
         |> Codec.buildObject
 
 

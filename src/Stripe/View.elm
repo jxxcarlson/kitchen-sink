@@ -127,16 +127,7 @@ formView model productId priceId ticket =
             , Element.spacing 24
             , Element.padding 16
             ]
-            [ textInput (\a -> FormChanged { form | attendee1Name = a }) "Your name" PurchaseForm.validateName form.attendee1Name
-            , if productId == Id.fromString "Product.ticket.couplesCamp" then
-                textInput
-                    (\a -> FormChanged { form | attendee2Name = a })
-                    "Person you're sharing a room with"
-                    PurchaseForm.validateName
-                    form.attendee2Name
-
-              else
-                Element.none
+            [ textInput (\a -> FormChanged { form | name = a }) "Your name" PurchaseForm.validateName form.name
             , textInput
                 (\a -> FormChanged { form | billingEmail = a })
                 "Billing email address"

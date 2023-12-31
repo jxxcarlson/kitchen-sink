@@ -128,12 +128,9 @@ tryLoading loadingModel =
                         , selectedTicket = Nothing
                         , form =
                             { submitStatus = NotSubmitted NotPressedSubmit
-                            , attendee1Name = ""
-                            , attendee2Name = ""
+                            , name = ""
                             , billingEmail = ""
                             , country = ""
-                            , originCity = ""
-                            , grantApply = False
                             }
                         , route = loadingModel.route
                         , showCarbonOffsetTooltip = False

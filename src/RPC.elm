@@ -98,7 +98,7 @@ purchaseCompletedEndpoint _ model request =
                                         { from = { name = "elm-camp", email = Backend.elmCampEmailAddress }
                                         , to =
                                             Nonempty
-                                                { name = PurchaseForm.attendeeName order.form |> Name.toString
+                                                { name = PurchaseForm.purchaserName order.form |> Name.toString
                                                 , email = PurchaseForm.billingEmail order.form
                                                 }
                                                 []

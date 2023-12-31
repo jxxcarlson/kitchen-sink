@@ -255,16 +255,10 @@ updateFromFrontend sessionId clientId msg model =
                     case priceIdToProductId model priceId of
                         Just productId ->
                             let
+                                validProductAndForm : Bool
+                                -- TODO Very bad code! Get rid of it!!
                                 validProductAndForm =
-                                    case ( productId == Id.fromString "?? ", purchaseForm ) of
-                                        ( False, CampTicketPurchase _ ) ->
-                                            True
-
-                                        ( False, CampfireTicketPurchase _ ) ->
-                                            True
-
-                                        _ ->
-                                            False
+                                    True
                             in
                             if validProductAndForm then
                                 ( model

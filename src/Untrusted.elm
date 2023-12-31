@@ -8,7 +8,7 @@ module Untrusted exposing
 
 import EmailAddress exposing (EmailAddress)
 import Name exposing (Name)
-import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
+import Stripe.PurchaseForm exposing (PurchaseFormValidated(..))
 import Toop exposing (T2(..), T3(..))
 
 
@@ -34,29 +34,27 @@ emailAddress (Untrusted a) =
 purchaseForm : Untrusted PurchaseFormValidated -> Maybe PurchaseFormValidated
 purchaseForm (Untrusted a) =
     case a of
-        CampfireTicketPurchase b ->
-            case T2 (untrust b.attendeeName |> name) (untrust b.billingEmail |> emailAddress) of
-                T2 (Just attendeeName) (Just billingEmail) ->
-                    { attendeeName = attendeeName
+        ImageCreditPurchase b ->
+            case T2 (untrust b.billingName |> name) (untrust b.billingEmail |> emailAddress) of
+                T2 (Just billingName) (Just billingEmail) ->
+                    { billingName = billingName
                     , billingEmail = billingEmail
                     , country = b.country
-                    , originCity = b.originCity
                     }
-                        |> CampfireTicketPurchase
+                        |> ImageCreditPurchase
                         |> Just
 
                 _ ->
                     Nothing
 
-        CampTicketPurchase b ->
-            case T2 (untrust b.attendeeName |> name) (untrust b.billingEmail |> emailAddress) of
-                T2 (Just attendeeName) (Just billingEmail) ->
-                    { attendeeName = attendeeName
+        ImageLibraryPackagePurchase b ->
+            case T2 (untrust b.billingName |> name) (untrust b.billingEmail |> emailAddress) of
+                T2 (Just billingName) (Just billingEmail) ->
+                    { billingName = billingName
                     , billingEmail = billingEmail
                     , country = b.country
-                    , originCity = b.originCity
                     }
-                        |> CampTicketPurchase
+                        |> ImageLibraryPackagePurchase
                         |> Just
 
                 _ ->
