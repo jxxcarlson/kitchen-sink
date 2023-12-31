@@ -30,7 +30,8 @@ orange =
 
 blue : E.Color
 blue =
-    E.rgb 0.0 0.0 1.0
+    -- used
+    E.rgb255 64 64 109
 
 
 messageGreen : E.Color

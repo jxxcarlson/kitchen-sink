@@ -6,15 +6,14 @@ import Element exposing (Element)
 import Element.Background
 import Element.Font
 import EmailAddress exposing (EmailAddress)
-import Html.Attributes
 import MarkdownThemed
 import Pages.About
 import Pages.Brillig
 import Pages.Home
 import Pages.Notes
 import Pages.Parts
+import Pages.Purchase
 import Route exposing (Route(..), SubPage(..))
-import Stripe.View
 import Theme
 import Types exposing (..)
 import View.Style
@@ -87,68 +86,19 @@ loadedView model =
             Pages.Home.view model
 
         About ->
-            Element.column
-                [ Element.width Element.fill, Element.height Element.fill ]
-                [ Pages.Parts.header { window = model.window, isCompact = True }
-                , Element.column
-                    (Element.padding 20
-                        :: Element.scrollbarY
-                        :: Element.height (Element.px <| model.window.height - 95)
-                        :: Theme.contentAttributes
-                    )
-                    [ Pages.About.view model
-                    ]
-                , Pages.Parts.footer
-                ]
+            Pages.Parts.generic model Pages.About.view
 
         Notes ->
-            Element.column
-                [ Element.width Element.fill, Element.height Element.fill, Element.clipY ]
-                [ Pages.Parts.header { window = model.window, isCompact = True }
-                , Element.column
-                    (Element.padding 20
-                        :: Element.scrollbarY
-                        :: Element.height (Element.px <| model.window.height - 95)
-                        :: Theme.contentAttributes
-                    )
-                    [ Pages.Notes.view model
-                    ]
-                , Pages.Parts.footer
-                ]
+            Pages.Parts.generic model Pages.Notes.view
 
         Brillig ->
-            Element.column
-                [ Element.width Element.fill, Element.height Element.fill ]
-                [ Pages.Parts.header { window = model.window, isCompact = True }
-                , Element.column
-                    (Element.padding 20
-                        :: Element.scrollbarY
-                        :: Element.height (Element.px <| model.window.height - 95)
-                        :: Theme.contentAttributes
-                    )
-                    [ Pages.Brillig.view model
-                    ]
-                , Pages.Parts.footer
-                ]
+            Pages.Parts.generic model Pages.Brillig.view
 
         AdminRoute passM ->
             Admin.view model
 
         Purchase ->
-            Element.column
-                [ Element.width Element.fill, Element.height Element.fill ]
-                [ Pages.Parts.header { window = model.window, isCompact = True }
-                , Element.column
-                    (Element.padding 20
-                        :: Element.scrollbarY
-                        :: Element.height (Element.px <| model.window.height - 95)
-                        :: Theme.contentAttributes
-                    )
-                    [-- Pages.Purchase.view model
-                     --  Stripe.View.formView model productId priceId ticket
-                    ]
-                , Pages.Parts.footer
-                ]
+            Pages.Parts.generic model Pages.Purchase.view
 
         PaymentSuccessRoute maybeEmailAddress ->
             Element.column

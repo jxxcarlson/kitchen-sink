@@ -220,6 +220,7 @@ update msg model =
 updateFromFrontend : SessionId -> ClientId -> ToBackend -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 updateFromFrontend sessionId clientId msg model =
     case msg of
+        -- STRIPE
         SubmitFormRequest priceId a ->
             case ( Untrusted.purchaseForm a, model.ticketsEnabled ) of
                 ( Just purchaseForm, TicketsEnabled ) ->

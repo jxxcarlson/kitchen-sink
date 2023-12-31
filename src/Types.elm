@@ -279,11 +279,13 @@ type FrontendMsg
     | GotWindowSize Int Int
     | PressedShowTooltip
     | MouseDown
+      -- STRIPE
     | PressedSelectTicket (Id ProductId) (Id PriceId)
     | FormChanged PurchaseForm
     | PressedSubmitForm (Id ProductId) (Id PriceId)
     | PressedCancelForm
     | PressedShowCarbonOffsetTooltip
+      --
     | SetViewport
     | Chirp
 
