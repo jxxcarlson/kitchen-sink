@@ -1,4 +1,4 @@
-module Stripe.View exposing (formView, ticketCardsView, ticketsHtmlId)
+module Stripe.View exposing (formView, prices, ticketCardsView, ticketsHtmlId)
 
 import AssocList
 import Element exposing (Element)
@@ -14,6 +14,20 @@ import Stripe.Tickets as Tickets exposing (Product_)
 import Theme
 import Types exposing (..)
 import View.Style
+
+
+prices : AssocList.Dict (Id Stripe.ProductId) { priceId : Id Stripe.PriceId, price : Stripe.Price } -> Element msg
+prices assocList =
+    Element.column [ Element.spacing 12, Element.paddingXY 0 24 ] (List.map viewEntry (AssocList.toList assocList))
+
+
+viewEntry : ( Id Stripe.ProductId, { priceId : Id Stripe.PriceId, price : Stripe.Price } ) -> Element msg
+viewEntry ( productId, { priceId, price } ) =
+    Element.row [ Element.spacing 12 ]
+        [ Element.el [ Element.width (Element.px 200) ] (Element.text (Id.toString productId))
+        , Element.el [ Element.width (Element.px 260) ] (Element.text (Id.toString priceId))
+        , Element.el [ Element.width (Element.px 70) ] (Element.text (String.fromInt price.amount))
+        ]
 
 
 formView : LoadedModel -> Id Stripe.ProductId -> Id Stripe.PriceId -> Product_ -> Element FrontendMsg

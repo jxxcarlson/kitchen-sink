@@ -14,8 +14,8 @@ domain =
 
 
 stripePrivateApiKey =
-    -- Test environment, prod key set in prod
-    "sk_test_BmyEiWFhwdb5PH3hGD5xZXft00r6mCGnKI"
+    -- Test environment, prod key set in prod (from JC app)
+    "sk_test_51NAzlOJtjekdqXYjLzfJqA8YUts8rrrn1YSdikUFlZh01GzaILQwb1CjJ63DGTWktITs6UXhdV0jtVzv8Th6IXHv009EHRocoM"
 
 
 stripePublicApiKey =
