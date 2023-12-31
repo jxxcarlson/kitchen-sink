@@ -7,7 +7,6 @@ import Element.Input
 import Id exposing (Id)
 import MarkdownThemed
 import Money
-import Stripe.Product as Product
 import Stripe.Stripe as Stripe exposing (Price, ProductId(..))
 import Theme
 

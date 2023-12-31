@@ -158,11 +158,6 @@ type alias Order =
     , submitTime : Time.Posix
     , form : PurchaseFormValidated
     , emailResult : EmailResult
-
-    --, products : List Product
-    --, sponsorship : Maybe Sponsorship
-    --, opportunityGrantContribution : Price
-    --, status : OrderStatus
     }
 
 

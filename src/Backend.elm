@@ -12,7 +12,6 @@ import List.Nonempty
 import Postmark exposing (PostmarkEmailBody(..))
 import Quantity
 import String.Nonempty exposing (NonemptyString(..))
-import Stripe.Product as Product
 import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
 import Task
@@ -257,7 +256,7 @@ updateFromFrontend sessionId clientId msg model =
                         Just productId ->
                             let
                                 validProductAndForm =
-                                    case ( productId == Id.fromString "Product.ticket.couplesCamp", purchaseForm ) of
+                                    case ( productId == Id.fromString "?? ", purchaseForm ) of
                                         ( False, CampTicketPurchase _ ) ->
                                             True
 
