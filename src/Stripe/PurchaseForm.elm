@@ -19,7 +19,6 @@ import EmailAddress exposing (EmailAddress)
 import Id exposing (Id)
 import Name exposing (Name)
 import String.Nonempty exposing (NonemptyString)
-import Stripe.Product as Product
 import Stripe.Stripe exposing (ProductId(..))
 import Toop exposing (T3(..), T4(..), T5(..), T6(..), T7(..), T8(..))
 
@@ -137,7 +136,7 @@ validateForm productId form =
     in
     let
         product =
-            if productId == Id.fromString Product.ticket.camp then
+            if productId == Id.fromString "Product.ticket.camp" then
                 CampTicketPurchase
 
             else

@@ -1,4 +1,11 @@
-module Stripe.View exposing (formView, prices, ticketCardsView, ticketsHtmlId)
+module Stripe.View exposing
+    ( formView
+    , prices
+    , productList
+    , ticketCardsView
+    , ticketsHtmlId
+    , viewProductInfo
+    )
 
 import AssocList
 import Element exposing (Element)
@@ -16,7 +23,39 @@ import Types exposing (..)
 import View.Style
 
 
-prices : AssocList.Dict (Id Stripe.ProductId) { priceId : Id Stripe.PriceId, price : Stripe.Price } -> Element msg
+productList :
+    Stripe.ProductInfoDict
+    -> AssocList.Dict (Id Stripe.ProductId) { priceId : Id Stripe.PriceId, price : Stripe.Price }
+    -> Element msg
+productList productInfoDict assocList =
+    --let
+    --    _ =
+    --        Debug.log "productInfoDict" productInfoDict
+    --in
+    Element.column [ Element.spacing 12, Element.paddingXY 0 24 ]
+        (List.map (viewProductInfo productInfoDict) (AssocList.toList assocList))
+
+
+viewProductInfo :
+    Stripe.ProductInfoDict
+    -> ( Id Stripe.ProductId, { priceId : Id Stripe.PriceId, price : Stripe.Price } )
+    -> Element msg
+viewProductInfo dict ( productId, { priceId, price } ) =
+    case AssocList.get productId dict of
+        Nothing ->
+            Element.text ("No product info found for " ++ Id.toString productId)
+
+        Just productInfo ->
+            Element.row [ Element.spacing 12 ]
+                [ Element.el [ Element.width (Element.px 200) ] (Element.text productInfo.name)
+                , Element.el [ Element.width (Element.px 260) ] (Element.text productInfo.description)
+                , Element.el [ Element.width (Element.px 70) ] (Element.text (String.fromInt price.amount))
+                ]
+
+
+prices :
+    AssocList.Dict (Id Stripe.ProductId) { priceId : Id Stripe.PriceId, price : Stripe.Price }
+    -> Element msg
 prices assocList =
     Element.column [ Element.spacing 12, Element.paddingXY 0 24 ] (List.map viewEntry (AssocList.toList assocList))
 
@@ -90,7 +129,7 @@ formView model productId priceId ticket =
             , Element.padding 16
             ]
             [ textInput (\a -> FormChanged { form | attendee1Name = a }) "Your name" PurchaseForm.validateName form.attendee1Name
-            , if productId == Id.fromString Product.ticket.couplesCamp then
+            , if productId == Id.fromString "Product.ticket.couplesCamp" then
                 textInput
                     (\a -> FormChanged { form | attendee2Name = a })
                     "Person you're sharing a room with"
@@ -178,7 +217,7 @@ errorText error =
 
 
 includesAccom productId =
-    if productId == Product.ticket.campFire then
+    if productId == "Product.ticket.campFire" then
         False
 
     else

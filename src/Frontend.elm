@@ -115,7 +115,7 @@ update msg model =
 tryLoading : LoadingModel -> ( FrontendModel, Cmd FrontendMsg )
 tryLoading loadingModel =
     Maybe.map2
-        (\window { prices, ticketsEnabled } ->
+        (\window { prices, productInfo } ->
             case loadingModel.route of
                 _ ->
                     ( Loaded
@@ -124,6 +124,7 @@ tryLoading loadingModel =
                         , window = window
                         , showTooltip = False
                         , prices = prices
+                        , productInfoDict = productInfo |> Debug.log "productInfoDict (1)"
                         , selectedTicket = Nothing
                         , form =
                             { submitStatus = NotSubmitted NotPressedSubmit
@@ -137,7 +138,6 @@ tryLoading loadingModel =
                         , route = loadingModel.route
                         , showCarbonOffsetTooltip = False
                         , isOrganiser = loadingModel.isOrganiser
-                        , ticketsEnabled = ticketsEnabled
                         , backendModel = Nothing
                         , pressedAudioButton = False
                         }
@@ -187,8 +187,8 @@ updateLoaded msg model =
 
         -- STRIPE
         PressedSelectTicket productId priceId ->
-            case ( AssocList.get productId Tickets.dict, model.ticketsEnabled ) of
-                ( Just ticket, TicketsEnabled ) ->
+            case AssocList.get productId Tickets.dict of
+                Just ticket ->
                     ( { model | selectedTicket = Just ( productId, priceId ) }
                     , scrollToTop
                     )
@@ -212,8 +212,8 @@ updateLoaded msg model =
                 form =
                     model.form
             in
-            case ( AssocList.get productId Tickets.dict, model.ticketsEnabled ) of
-                ( Just ticket, TicketsEnabled ) ->
+            case AssocList.get productId Tickets.dict of
+                Just ticket ->
                     case ( form.submitStatus, PurchaseForm.validateForm productId form ) of
                         ( NotSubmitted _, Just validated ) ->
                             ( { model | form = { form | submitStatus = Submitting } }
@@ -269,8 +269,8 @@ updateFromBackend msg model =
 updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
 updateFromBackendLoaded msg model =
     case msg of
-        InitData { prices, ticketsEnabled } ->
-            ( { model | prices = prices, ticketsEnabled = ticketsEnabled }, Cmd.none )
+        InitData { prices, productInfo } ->
+            ( { model | prices = prices, productInfoDict = productInfo }, Cmd.none )
 
         SubmitFormResponse result ->
             case result of
@@ -287,7 +287,7 @@ updateFromBackendLoaded msg model =
                     ( { model | form = { form | submitStatus = SubmitBackendError str } }, Cmd.none )
 
         TicketsEnabledChanged ticketsEnabled ->
-            ( { model | ticketsEnabled = ticketsEnabled }, Cmd.none )
+            ( model, Cmd.none )
 
         AdminInspectResponse backendModel ->
             ( { model | backendModel = Just backendModel }, Cmd.none )

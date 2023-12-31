@@ -39,12 +39,12 @@ type alias LoadedModel =
     , window : { width : Int, height : Int }
     , showTooltip : Bool
     , prices : AssocList.Dict (Id ProductId) { priceId : Id PriceId, price : Price }
+    , productInfoDict : AssocList.Dict (Id ProductId) Stripe.Stripe.ProductInfo
     , selectedTicket : Maybe ( Id ProductId, Id PriceId )
     , form : PurchaseForm
     , route : Route
     , showCarbonOffsetTooltip : Bool
     , isOrganiser : Bool
-    , ticketsEnabled : TicketsEnabled
     , backendModel : Maybe BackendModel
     , pressedAudioButton : Bool
     }
@@ -64,6 +64,7 @@ type alias BackendModel =
     , prices : AssocList.Dict (Id ProductId) Price2
     , time : Time.Posix
     , ticketsEnabled : TicketsEnabled
+    , productInfoDict : Stripe.Stripe.ProductInfoDict
     }
 
 
@@ -80,6 +81,7 @@ backendModelCodec =
         |> Codec.field "prices" .prices (assocListCodec price2Codec)
         |> Codec.field "time" .time timeCodec
         |> Codec.field "ticketsEnabled" .ticketsEnabled ticketsEnabledCodec
+        |> Codec.field "productInfoDict" .productInfoDict (assocListCodec productInfoCodec)
         |> Codec.buildObject
 
 
@@ -162,6 +164,14 @@ type alias Order =
     --, opportunityGrantContribution : Price
     --, status : OrderStatus
     }
+
+
+productInfoCodec : Codec Stripe.Stripe.ProductInfo
+productInfoCodec =
+    Codec.object Stripe.Stripe.ProductInfo
+        |> Codec.field "name" .name Codec.string
+        |> Codec.field "description" .description Codec.string
+        |> Codec.buildObject
 
 
 pendingOrderCodec : Codec PendingOrder
@@ -308,7 +318,7 @@ type BackendMsg
 
 type alias InitData2 =
     { prices : AssocList.Dict (Id ProductId) { priceId : Id PriceId, price : Price }
-    , ticketsEnabled : TicketsEnabled
+    , productInfo : AssocList.Dict (Id ProductId) Stripe.Stripe.ProductInfo
     }
 
 

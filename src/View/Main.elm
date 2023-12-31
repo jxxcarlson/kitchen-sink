@@ -42,27 +42,6 @@ view model =
             , Element.Font.size 16
             , Element.Font.medium
             , Element.Background.color View.Style.backgroundColor
-            , (case model of
-                Loading _ ->
-                    Element.none
-
-                Loaded loaded ->
-                    case loaded.ticketsEnabled of
-                        TicketsEnabled ->
-                            Element.none
-
-                        TicketsDisabled { adminMessage } ->
-                            Element.paragraph
-                                [ Element.Font.color (Element.rgb 1 1 1)
-                                , Element.Font.medium
-                                , Element.Font.size 20
-                                , Element.Background.color (Element.rgb 0.5 0 0)
-                                , Element.padding 8
-                                , Element.width Element.fill
-                                ]
-                                [ Element.text adminMessage ]
-              )
-                |> Element.inFront
             ]
             (case model of
                 Loading _ ->

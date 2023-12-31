@@ -3,6 +3,8 @@ module Stripe.Stripe exposing
     , PriceData
     , PriceId(..)
     , ProductId(..)
+    , ProductInfo
+    , ProductInfoDict
     , StripeSessionId(..)
     , Webhook(..)
     , cancelPath
@@ -16,6 +18,7 @@ module Stripe.Stripe exposing
     , successPath
     )
 
+import AssocList
 import EmailAddress exposing (EmailAddress)
 import Env
 import Http
@@ -52,6 +55,14 @@ type Webhook
     = StripeSessionCompleted (Id StripeSessionId)
 
 
+type alias ProductInfo =
+    { name : String, description : String }
+
+
+type alias ProductInfoDict =
+    AssocList.Dict (Id ProductId) ProductInfo
+
+
 decodeWebhook : D.Decoder Webhook
 decodeWebhook =
     D.field "type" D.string
@@ -73,6 +84,10 @@ type alias PriceData =
 
 getPrices : (Result Http.Error (List PriceData) -> msg) -> Cmd msg
 getPrices toMsg =
+    let
+        _ =
+            Debug.log "GET_PRICES" True
+    in
     Http.request
         { method = "GET"
         , headers = headers

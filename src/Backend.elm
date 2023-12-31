@@ -33,12 +33,29 @@ app =
 
 init : ( BackendModel, Cmd BackendMsg )
 init =
+    let
+        _ =
+            Debug.log "INIT: am going to get prices" True
+    in
     ( { orders = AssocList.empty
       , pendingOrder = AssocList.empty
       , expiredOrders = AssocList.empty
       , prices = AssocList.empty
       , time = Time.millisToPosix 0
       , ticketsEnabled = TicketsEnabled
+      , productInfoDict =
+            AssocList.fromList
+                [ ( Id.fromString "prod_NwykP5NQq7KEJt"
+                  , { name = "Basic Package"
+                    , description = "100 image credits"
+                    }
+                  )
+                , ( Id.fromString "prod_Nwym3t9YYdA0DD"
+                  , { name = "Jumbo Package"
+                    , description = "200 image credits"
+                    }
+                  )
+                ]
       }
     , Cmd.batch
         [ Time.now |> Task.perform GotTime
@@ -83,8 +100,16 @@ update msg model =
             )
 
         GotPrices result ->
+            let
+                _ =
+                    Debug.log "@@GOT_PRICES" result
+            in
             case result of
                 Ok prices ->
+                    let
+                        _ =
+                            Debug.log "GotPrices succeeded" prices
+                    in
                     ( { model
                         | prices =
                             List.filterMap
@@ -102,6 +127,10 @@ update msg model =
                     )
 
                 Err error ->
+                    let
+                        _ =
+                            Debug.log "GotPrices failed" error
+                    in
                     ( model, errorEmail ("GotPrices failed: " ++ HttpHelpers.httpErrorToString error) )
 
         OnConnected _ clientId ->
@@ -109,8 +138,8 @@ update msg model =
             , Lamdera.sendToFrontend
                 clientId
                 (InitData
-                    { prices = model.prices
-                    , ticketsEnabled = model.ticketsEnabled
+                    { prices = model.prices |> Debug.log "MODEL PRICES"
+                    , productInfo = model.productInfoDict |> Debug.log "productInfoDict (2)"
                     }
                 )
             )
@@ -228,7 +257,7 @@ updateFromFrontend sessionId clientId msg model =
                         Just productId ->
                             let
                                 validProductAndForm =
-                                    case ( productId == Id.fromString Product.ticket.couplesCamp, purchaseForm ) of
+                                    case ( productId == Id.fromString "Product.ticket.couplesCamp", purchaseForm ) of
                                         ( False, CampTicketPurchase _ ) ->
                                             True
 

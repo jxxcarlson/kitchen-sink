@@ -30,7 +30,7 @@ basicPurchase =
     { name = "Version 5 Watchamacallit"
     , description = "A tool to fit all of your tinkering needs"
     , image = "/product2.webp"
-    , productId = Product.ticket.camp
+    , productId = "Product.ticket.camp"
     }
 
 
