@@ -125,7 +125,7 @@ tryLoading loadingModel =
                         , showTooltip = False
                         , prices = prices
                         , productInfoDict = productInfo |> Debug.log "productInfoDict (1)"
-                        , selectedTicket = Nothing
+                        , selectedProduct = Nothing
                         , form =
                             { submitStatus = NotSubmitted NotPressedSubmit
                             , name = ""
@@ -184,12 +184,12 @@ updateLoaded msg model =
 
         -- STRIPE
         BuyProduct productId priceId product ->
-            ( model, Cmd.none )
+            ( { model | selectedProduct = Just ( productId, priceId, product ) }, Cmd.none )
 
         PressedSelectTicket productId priceId ->
             case AssocList.get productId Tickets.dict of
-                Just ticket ->
-                    ( { model | selectedTicket = Just ( productId, priceId ) }
+                Just product ->
+                    ( { model | selectedProduct = Just ( productId, priceId, product ) }
                     , scrollToTop
                     )
 
@@ -232,7 +232,7 @@ updateLoaded msg model =
                     ( model, Cmd.none )
 
         PressedCancelForm ->
-            ( { model | selectedTicket = Nothing }
+            ( { model | selectedProduct = Nothing }
             , Browser.Dom.getElement Stripe.View.ticketsHtmlId
                 |> Task.andThen (\{ element } -> Browser.Dom.setViewport 0 element.y)
                 |> Task.attempt (\_ -> SetViewport)

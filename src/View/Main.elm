@@ -16,6 +16,7 @@ import Pages.Purchase
 import Route exposing (Route(..), SubPage(..))
 import Theme
 import Types exposing (..)
+import View.Color
 import View.Style
 
 
@@ -41,7 +42,6 @@ view model =
             , Element.Font.color MarkdownThemed.lightTheme.defaultText
             , Element.Font.size 16
             , Element.Font.medium
-            , Element.Background.color View.Style.backgroundColor
             ]
             (case model of
                 Loading _ ->

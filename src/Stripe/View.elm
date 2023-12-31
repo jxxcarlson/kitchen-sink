@@ -1,5 +1,6 @@
 module Stripe.View exposing
     ( formView
+    , makeProduct_
     , prices
     , productList
     , ticketCardsView
@@ -48,8 +49,6 @@ viewProductInfo model dict ( productId, { priceId, price } ) =
                 [ Element.el [ Element.width (Element.px 200) ] (Element.text productInfo.name)
                 , Element.el [ Element.width (Element.px 260) ] (Element.text productInfo.description)
                 , Element.el [ Element.width (Element.px 70) ] (Element.text <| "$" ++ String.fromFloat (toFloat price.amount / 100.0))
-
-                --, formView model productId priceId (makeProduct_ productId productInfo)
                 , View.Button.buyProduct productId priceId (makeProduct_ productId productInfo)
                 ]
 
@@ -106,7 +105,7 @@ formView model productId priceId product_ =
 
         submitButton =
             Element.Input.button
-                Theme.submitButtonAttributes
+                View.Style.normalButtonAttributes
                 { onPress = Just (PressedSubmitForm productId priceId)
                 , label =
                     Element.paragraph
@@ -144,19 +143,8 @@ formView model productId priceId product_ =
                 "Billing email address"
                 PurchaseForm.validateEmailAddress
                 form.billingEmail
+            , Element.el [] (Element.text <| "Your have selected the " ++ product_.name ++ ".")
             ]
-        , """
-
-Please note: you have selected a ticket that ***${ticketAccom} accommodation***.
-"""
-            |> String.replace "${ticketAccom}"
-                (if includesAccom product_.productId then
-                    "includes"
-
-                 else
-                    "does not include"
-                )
-            |> MarkdownThemed.renderFull
         , case form.submitStatus of
             NotSubmitted pressedSubmit ->
                 Element.none
@@ -173,7 +161,7 @@ Please note: you have selected a ticket that ***${ticketAccom} accommodation***.
           else
             Element.column [ Element.width Element.fill, Element.spacing 16 ] [ submitButton, cancelButton ]
         , """
-Your order will be processed by XXX />.
+Your order will be processed by XXX.
 """ |> MarkdownThemed.renderFull
         ]
 

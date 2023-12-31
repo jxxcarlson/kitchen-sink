@@ -41,7 +41,7 @@ type alias LoadedModel =
     , showTooltip : Bool
     , prices : AssocList.Dict (Id ProductId) { priceId : Id PriceId, price : Price }
     , productInfoDict : AssocList.Dict (Id ProductId) Stripe.Stripe.ProductInfo
-    , selectedTicket : Maybe ( Id ProductId, Id PriceId )
+    , selectedProduct : Maybe ( Id ProductId, Id PriceId, Stripe.Tickets.Product_ )
     , form : PurchaseForm
     , route : Route
     , showCarbonOffsetTooltip : Bool

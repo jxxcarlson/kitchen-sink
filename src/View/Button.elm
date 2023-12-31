@@ -2,6 +2,7 @@ module View.Button exposing (buyProduct, playSound)
 
 import Element
 import Element.Background
+import Element.Border as Border
 import Element.Font
 import Element.Input
 import Id exposing (Id)
@@ -39,6 +40,7 @@ buttonStyle =
     [ Element.Font.color (Element.rgb 0.2 0.2 0.2)
     , Element.height Element.shrink
     , Element.paddingXY 8 8
+    , Border.rounded 8
     , Element.Background.color View.Color.blue
     , Element.Font.color View.Color.white
     ]
