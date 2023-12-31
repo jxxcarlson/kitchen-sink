@@ -39,7 +39,6 @@ purchaseForm (Untrusted a) =
                 T2 (Just billingName) (Just billingEmail) ->
                     { billingName = billingName
                     , billingEmail = billingEmail
-                    , country = b.country
                     }
                         |> ImageCreditPurchase
                         |> Just
@@ -52,7 +51,6 @@ purchaseForm (Untrusted a) =
                 T2 (Just billingName) (Just billingEmail) ->
                     { billingName = billingName
                     , billingEmail = billingEmail
-                    , country = b.country
                     }
                         |> ImageLibraryPackagePurchase
                         |> Just

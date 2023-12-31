@@ -38,7 +38,6 @@ type PurchaseFormValidated
 type alias PurchaseData =
     { billingName : Name
     , billingEmail : EmailAddress
-    , country : NonemptyString
     }
 
 
@@ -110,16 +109,12 @@ validateForm productId form =
 
         emailAddress =
             validateEmailAddress form.billingEmail
-
-        country =
-            String.Nonempty.fromString form.country
     in
-    case T3 name emailAddress country of
-        T3 (Ok nameOk) (Ok emailAddressOk) (Just countryOk) ->
+    case ( name, emailAddress ) of
+        ( Ok nameOk, Ok emailAddressOk ) ->
             ImageCreditPurchase
                 { billingName = nameOk
                 , billingEmail = emailAddressOk
-                , country = countryOk
                 }
                 |> Just
 
@@ -148,7 +143,6 @@ purchaseDataCodec =
     Codec.object PurchaseData
         |> Codec.field "billingName" .billingName Name.codec
         |> Codec.field "billingEmail" .billingEmail emailAddressCodec
-        |> Codec.field "country" .country nonemptyStringCodec
         |> Codec.buildObject
 
 
