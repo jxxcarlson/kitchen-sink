@@ -212,8 +212,12 @@ updateLoaded msg model =
                 form =
                     model.form
             in
-            case AssocList.get productId Tickets.dict of
-                Just ticket ->
+            case AssocList.get productId model.productInfoDict of
+                Just _ ->
+                    let
+                        _ =
+                            Debug.log "( submitStatus, validated? )" ( form.submitStatus, PurchaseForm.validateForm productId form )
+                    in
                     case ( form.submitStatus, PurchaseForm.validateForm productId form ) of
                         ( NotSubmitted _, Just validated ) ->
                             ( { model | form = { form | submitStatus = Submitting } }
