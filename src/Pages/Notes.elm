@@ -67,19 +67,28 @@ Look in the `elm-pkg-js` directory and the module `Ports` for more examples.
 ## Stripe
 
 *((This section and the supporting code in the template is a work in progress.
-I will remove this paragraph when the work is done.  In the meantime, if you
+I will remove this paragraph when the work is done.  In the meantime, if you have
 suggestions, comments, or suggestions, let me know: jxxcarlson everywhere: slack, discourse, gmail))*
 
 To use Stripe you will need to set up a Stripe account, get a Stripe API key,
-and set up products and prices.  For the latter, you can use either the Stripe CLI or
-the Product Dashboard.  To to [stripe.com](https://stripe.com) to set up your account.
+and set up products and prices. Go to [stripe.com](https://stripe.com) to set up your account,
+and use [dashboard.stripe.com/apikeys](https://dashboard.stripe.com/apikeys) to
+create an view your API keys. To create products and prices, it is best to use
+the [Stripe Dashboard](https://dashboard.stripe.com/) and in particular
+the [Product Dashboard](https://dashboard.stripe.com/products).
+
+Your app will interact with Stripe using Http requests.  See, for example
+the section **Getting lists of products and prices using the Stripe API** below.
+You will need this data to create a checkout page in your app.
+
+You can also use the Stripe CLI to create and view products and prices.
 
 
 **Articles**
 
 - [Stripe API Reference](https://stripe.com/docs/api)
 
-- [How to products and prices with the dashboard](https://support.stripe.com/questions/how-to-create-products-and-prices)
+- [How to create products and prices with the dashboard](https://support.stripe.com/questions/how-to-create-products-and-prices)
 
 
 **Links**
@@ -87,6 +96,21 @@ the Product Dashboard.  To to [stripe.com](https://stripe.com) to set up your ac
 - [Stripe Dashboard](https://dashboard.stripe.com/)
 
 - [Product Dashboard](https://dashboard.stripe.com/products)
+
+**Getting your product and price lists using the Stripe API**
+
+For a list of products, make a GET request with URL `https://api.stripe.com/v1/products`
+and header `Authorization` with value `Bearer <your secret key>`.  The
+test secret key looks like: `sk_test_...`  You find your keys at
+[dashboard.stripe.com/apikeys](https://dashboard.stripe.com/apikeys).
+Your data will be returned in JSON format.
+
+Note the button to switch between live and test mode.  Live mode
+ is for real transactions Because
+the secret key is sensitive information, any request using it MUST be
+made from the backend.
+
+For a list of prices, make a GET request with URL `https://api.stripe.com/v1/prices`.
 
 
 **Stripe CLI, selected commands:**
@@ -110,6 +134,8 @@ To install the Stripe CLI, to [here](https://stripe.com/docs/stripe-cli#install)
 - `stripe prices list` lists all your prices
 
 - `stripe logs tail` tails the logs for your Stripe account
+
+
 
 """
         |> MarkdownThemed.renderFull
