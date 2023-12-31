@@ -17,10 +17,11 @@ built-in features:
 - Page routing (done)
 - Stripe (in progress, see **Purchase** tab)
 - Ports, examples: (Stripe, Chirp button)
-- Basic admin page (note started)
-- Authentication and basic user management (not started)
+- Basic admin page (not started)
+- User module (not started)
+- Authentication (not started)
 - Custom element (not started)
-- RPC: (not started)
+- RPC: (in progress — Stripe)
 - Markdown: (done)
 
 The template is based on a stripped-down version of
