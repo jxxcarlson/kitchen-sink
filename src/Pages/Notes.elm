@@ -168,7 +168,7 @@ prod_Nwym3t9YYdA0DD  price_1NBK0YJtjekdqXYjJfqCoryx  900
 **Price and product view for user**
 
 ```
-Basic Package    100 image credits      $6
+Basic Package    100 image credits     $6
 Jumbo Package    200 image credits     $9
 ```
 
