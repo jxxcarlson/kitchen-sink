@@ -183,6 +183,9 @@ updateLoaded msg model =
             ( model, Ports.playSound (Json.Encode.string "chirp.mp3") )
 
         -- STRIPE
+        BuyProduct productId priceId product ->
+            ( model, Cmd.none )
+
         PressedSelectTicket productId priceId ->
             case AssocList.get productId Tickets.dict of
                 Just ticket ->

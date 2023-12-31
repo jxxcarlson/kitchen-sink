@@ -6,7 +6,7 @@ import Stripe.View
 import Types
 
 
-view : Types.LoadedModel -> Element.Element msg
+view : Types.LoadedModel -> Element.Element Types.FrontendMsg
 view model =
     let
         _ =
@@ -16,5 +16,5 @@ view model =
         [ Element.el [ Font.bold ] (Element.text "Price and product info from Stripe")
         , Stripe.View.prices model.prices
         , Element.el [ Font.bold ] (Element.text "Price and product view for user")
-        , Stripe.View.productList model.productInfoDict model.prices
+        , Stripe.View.productList model model.productInfoDict model.prices
         ]

@@ -19,27 +19,26 @@ import Stripe.Stripe as Stripe
 import Stripe.Tickets as Tickets exposing (Product_)
 import Theme
 import Types exposing (..)
+import View.Button
 import View.Style
 
 
 productList :
-    Stripe.ProductInfoDict
+    LoadedModel
+    -> Stripe.ProductInfoDict
     -> AssocList.Dict (Id Stripe.ProductId) { priceId : Id Stripe.PriceId, price : Stripe.Price }
-    -> Element msg
-productList productInfoDict assocList =
-    --let
-    --    _ =
-    --        Debug.log "productInfoDict" productInfoDict
-    --in
+    -> Element FrontendMsg
+productList model productInfoDict assocList =
     Element.column [ Element.spacing 12, Element.paddingXY 0 24 ]
-        (List.map (viewProductInfo productInfoDict) (AssocList.toList assocList))
+        (List.map (viewProductInfo model productInfoDict) (AssocList.toList assocList))
 
 
 viewProductInfo :
-    Stripe.ProductInfoDict
+    LoadedModel
+    -> Stripe.ProductInfoDict
     -> ( Id Stripe.ProductId, { priceId : Id Stripe.PriceId, price : Stripe.Price } )
-    -> Element msg
-viewProductInfo dict ( productId, { priceId, price } ) =
+    -> Element FrontendMsg
+viewProductInfo model dict ( productId, { priceId, price } ) =
     case AssocList.get productId dict of
         Nothing ->
             Element.text ("No product info found for " ++ Id.toString productId)
@@ -49,7 +48,19 @@ viewProductInfo dict ( productId, { priceId, price } ) =
                 [ Element.el [ Element.width (Element.px 200) ] (Element.text productInfo.name)
                 , Element.el [ Element.width (Element.px 260) ] (Element.text productInfo.description)
                 , Element.el [ Element.width (Element.px 70) ] (Element.text <| "$" ++ String.fromFloat (toFloat price.amount / 100.0))
+
+                --, formView model productId priceId (makeProduct_ productId productInfo)
+                , View.Button.buyProduct productId priceId (makeProduct_ productId productInfo)
                 ]
+
+
+makeProduct_ : Id Stripe.ProductId -> Stripe.ProductInfo -> Product_
+makeProduct_ productId productInfo =
+    { productId = Id.toString productId
+    , name = productInfo.name
+    , description = productInfo.description
+    , image = "none"
+    }
 
 
 prices :
@@ -69,7 +80,7 @@ viewEntry ( productId, { priceId, price } ) =
 
 
 formView : LoadedModel -> Id Stripe.ProductId -> Id Stripe.PriceId -> Product_ -> Element FrontendMsg
-formView model productId priceId ticket =
+formView model productId priceId product_ =
     let
         form =
             model.form
@@ -135,12 +146,11 @@ formView model productId priceId ticket =
                 form.billingEmail
             ]
         , """
-By purchasing a ticket, you agree to the event [Code of Conduct](/code-of-conduct).
 
 Please note: you have selected a ticket that ***${ticketAccom} accommodation***.
 """
             |> String.replace "${ticketAccom}"
-                (if includesAccom ticket.productId then
+                (if includesAccom product_.productId then
                     "includes"
 
                  else
@@ -163,7 +173,7 @@ Please note: you have selected a ticket that ***${ticketAccom} accommodation***.
           else
             Element.column [ Element.width Element.fill, Element.spacing 16 ] [ submitButton, cancelButton ]
         , """
-Your order will be processed by Elm Camp's fiscal host: <img src="/sponsors/cofoundry.png" width="100" />.
+Your order will be processed by XXX />.
 """ |> MarkdownThemed.renderFull
         ]
 

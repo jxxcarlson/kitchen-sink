@@ -1,9 +1,12 @@
-module View.Button exposing (playSound)
+module View.Button exposing (buyProduct, playSound)
 
 import Element
 import Element.Background
 import Element.Font
 import Element.Input
+import Id exposing (Id)
+import Stripe.Stripe as Stripe
+import Stripe.Tickets
 import Theme
 import Types
 import View.Color
@@ -12,6 +15,11 @@ import View.Color
 playSound : Element.Element Types.FrontendMsg
 playSound =
     button Types.Chirp "Chirp"
+
+
+buyProduct : Id Stripe.ProductId -> Id Stripe.PriceId -> Stripe.Tickets.Product_ -> Element.Element Types.FrontendMsg
+buyProduct productId priceId product =
+    button (Types.BuyProduct productId priceId product) "Buy"
 
 
 

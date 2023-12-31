@@ -13,6 +13,7 @@ import Postmark exposing (PostmarkSendResponse)
 import Route exposing (Route)
 import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseForm, PurchaseFormValidated)
 import Stripe.Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
+import Stripe.Tickets
 import Time
 import Untrusted exposing (Untrusted)
 import Url exposing (Url)
@@ -285,6 +286,7 @@ type FrontendMsg
     | PressedShowTooltip
     | MouseDown
       -- STRIPE
+    | BuyProduct (Id ProductId) (Id PriceId) Stripe.Tickets.Product_
     | PressedSelectTicket (Id ProductId) (Id PriceId)
     | FormChanged PurchaseForm
     | PressedSubmitForm (Id ProductId) (Id PriceId)
