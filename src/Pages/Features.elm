@@ -16,7 +16,7 @@ The kitchen sink app provides (or will provide) the features listed below.
 - Stripe (See *the *Purchase** tab)
 - Ports (Stripe, Chirp and Copy Pi buttons on the home page)
 - Basic admin page (not started)
-- User module (started, have mock-up of user sign-in page)
+- User module (started, have mock-up of user sign-in/up/out stuff, see page *Sign In* tab)
 - Authentication (not started)
 - Custom element (not started)
 - RPC: (used in the Stripe interface)
