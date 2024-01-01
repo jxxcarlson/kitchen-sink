@@ -78,7 +78,7 @@ update msg model =
             ( { model
                 | randomAtmosphericNumber =
                     case tryRandomAtmosphericNumber of
-                        Err err ->
+                        Err _ ->
                             model.randomAtmosphericNumber
 
                         Ok rn ->
@@ -263,7 +263,7 @@ updateFromFrontend sessionId clientId msg model =
             case Untrusted.purchaseForm a of
                 Just purchaseForm ->
                     case priceIdToProductId model priceId of
-                        Just productId ->
+                        Just _ ->
                             let
                                 validProductAndForm : Bool
                                 -- TODO Very bad code! Get rid of it!!
