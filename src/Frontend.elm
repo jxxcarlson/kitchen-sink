@@ -180,6 +180,10 @@ updateLoaded msg model =
         MouseDown ->
             ( { model | showTooltip = False, showCarbonOffsetTooltip = False }, Cmd.none )
 
+        -- PORTS EXAMPLES
+        CopyTextToClipboard text ->
+            ( model, Ports.supermario_copy_to_clipboard_to_js (Json.Encode.string text) )
+
         Chirp ->
             ( model, Ports.playSound (Json.Encode.string "chirp.mp3") )
 

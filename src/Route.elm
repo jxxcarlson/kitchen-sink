@@ -11,7 +11,7 @@ import Url.Parser.Query
 
 type Route
     = HomepageRoute
-    | About
+    | Features
     | Notes
     | Brillig
     | AdminRoute (Maybe String)
@@ -29,7 +29,7 @@ decode : Url -> Route
 decode url =
     Url.Parser.oneOf
         [ Url.Parser.top |> Url.Parser.map HomepageRoute
-        , Url.Parser.s "about" |> Url.Parser.map About
+        , Url.Parser.s "features" |> Url.Parser.map Features
         , Url.Parser.s "notes" |> Url.Parser.map Notes
         , Url.Parser.s "purchase" |> Url.Parser.map Purchase
         , Url.Parser.s "brillig" |> Url.Parser.map Brillig
@@ -68,8 +68,8 @@ encode route =
             HomepageRoute ->
                 []
 
-            About ->
-                [ "about" ]
+            Features ->
+                [ "features" ]
 
             Notes ->
                 [ "notes" ]
@@ -93,7 +93,7 @@ encode route =
             HomepageRoute ->
                 []
 
-            About ->
+            Features ->
                 []
 
             Notes ->

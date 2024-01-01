@@ -295,6 +295,8 @@ type FrontendMsg
     | PressedShowCarbonOffsetTooltip
       --
     | SetViewport
+      -- PORT EXAMPLES
+    | CopyTextToClipboard String
     | Chirp
 
 

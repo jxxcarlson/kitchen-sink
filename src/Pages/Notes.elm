@@ -10,10 +10,12 @@ view model =
     """
 #  Notes
 
-The Kitchen Sink Template is a template for creating Lamdera apps
-which has a lot of features already set up for you.
+The **Kitchen Sink Template** is a template for creating Lamdera apps
+which has a number of useful built-in features. The notes
+below provide some information on how they work and how
+to use them.
 
-## Adding a new page
+## Routing: Adding a new page
 
 Suppose that you want to add a new page for notes to your app.
 You must first set up and configure a the route for the page.

@@ -7,8 +7,8 @@ import Element.Background
 import Element.Font
 import EmailAddress exposing (EmailAddress)
 import MarkdownThemed
-import Pages.About
 import Pages.Brillig
+import Pages.Features
 import Pages.Home
 import Pages.Notes
 import Pages.Parts
@@ -62,10 +62,11 @@ loadedView : LoadedModel -> Element FrontendMsg
 loadedView model =
     case model.route of
         HomepageRoute ->
-            Pages.Home.view model
+            -- Pages.Home.view model
+            Pages.Parts.generic model Pages.Home.view
 
-        About ->
-            Pages.Parts.generic model Pages.About.view
+        Features ->
+            Pages.Parts.generic model Pages.Features.view
 
         Notes ->
             Pages.Parts.generic model Pages.Notes.view

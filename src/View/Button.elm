@@ -1,4 +1,4 @@
-module View.Button exposing (buyProduct, playSound)
+module View.Button exposing (buyProduct, copyTextToClipboard, playSound)
 
 import Element
 import Element.Background
@@ -11,6 +11,11 @@ import Stripe.Tickets
 import Theme
 import Types
 import View.Color
+
+
+copyTextToClipboard : String -> String -> Element.Element Types.FrontendMsg
+copyTextToClipboard label text =
+    button (Types.CopyTextToClipboard text) label
 
 
 playSound : Element.Element Types.FrontendMsg

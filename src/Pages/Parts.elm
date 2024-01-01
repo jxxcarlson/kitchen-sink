@@ -46,7 +46,7 @@ header config =
                 { url = Route.encode HomepageRoute, label = Element.text "Lamdera Kitchen Sink" }
             , Element.link
                 []
-                { url = Route.encode About, label = Element.text "About" }
+                { url = Route.encode Features, label = Element.text "Features" }
             , Element.link
                 []
                 { url = Route.encode Notes, label = Element.text "Notes" }

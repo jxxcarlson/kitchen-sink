@@ -13,9 +13,8 @@ view model =
         _ =
             Debug.log "model.productInfoDict" model.productInfoDict
     in
-    Element.column []
-        [ Element.el [ Font.bold, Font.size 24 ] (Element.text "Purchase Item")
-        , Element.el [ Font.italic, Font.size 15, Element.paddingXY 0 14 ] (Element.text "(( Purchasing is not yet operational. ))")
+    Element.column [ Element.paddingEach { top = 50, bottom = 9, left = 0, right = 0 } ]
+        [ Element.el [ Font.bold, Font.size 24 ] (Element.text "Purchase Item:")
         , Stripe.View.productList model model.productInfoDict model.prices
         , case model.selectedProduct of
             Nothing ->
@@ -33,12 +32,3 @@ view model =
             , Stripe.View.prices model.prices
             ]
         ]
-
-
-
---type alias ProductInfo =
---    { name : String, description : String }
---
---
---type alias ProductInfoDict =
---    AssocList.Dict (Id ProductId) ProductInfo
