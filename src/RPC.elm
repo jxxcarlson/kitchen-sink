@@ -23,7 +23,7 @@ import Stripe.PurchaseForm as PurchaseForm
 import Stripe.Stripe as Stripe exposing (Webhook(..))
 import Stripe.Tickets as Tickets exposing (Product_)
 import Task exposing (Task)
-import Types exposing (BackendModel, BackendMsg(..), TicketsEnabled(..), ToFrontend(..))
+import Types exposing (BackendModel, BackendMsg(..), ToFrontend(..))
 
 
 purchaseCompletedEndpoint :

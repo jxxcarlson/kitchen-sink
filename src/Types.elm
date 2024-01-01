@@ -115,10 +115,4 @@ type ToFrontend
     = InitData InitData2
     | GotMessage String
     | SubmitFormResponse (Result String (Id StripeSessionId))
-    | TicketsEnabledChanged TicketsEnabled
     | AdminInspectResponse BackendModel
-
-
-type TicketsEnabled
-    = TicketsEnabled
-    | TicketsDisabled { adminMessage : String }

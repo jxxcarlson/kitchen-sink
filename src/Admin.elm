@@ -42,21 +42,6 @@ viewAdmin backendModel =
         ]
 
 
-viewTicketsEnabled : TicketsEnabled -> Element msg
-viewTicketsEnabled ticketsEnabled =
-    column
-        [ width fill
-        ]
-        [ text "TicketsEnabled:"
-        , case ticketsEnabled of
-            TicketsEnabled ->
-                text "TicketsEnabled"
-
-            TicketsDisabled d ->
-                text <| "TicketsDisabled" ++ d.adminMessage
-        ]
-
-
 viewPrices : AssocList.Dict (Id ProductId) Stripe.Codec.Price2 -> Element msg
 viewPrices prices =
     column

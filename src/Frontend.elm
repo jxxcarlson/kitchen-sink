@@ -298,8 +298,5 @@ updateFromBackendLoaded msg model =
                     in
                     ( { model | form = { form | submitStatus = SubmitBackendError str } }, Cmd.none )
 
-        TicketsEnabledChanged ticketsEnabled ->
-            ( model, Cmd.none )
-
         AdminInspectResponse backendModel ->
             ( { model | backendModel = Just backendModel }, Cmd.none )
