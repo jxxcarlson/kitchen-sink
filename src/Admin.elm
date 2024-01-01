@@ -5,6 +5,7 @@ import Codec
 import Element exposing (..)
 import Id exposing (Id)
 import Lamdera
+import Stripe.Codec
 import Stripe.Stripe as Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
 import Types exposing (..)
 
@@ -38,7 +39,6 @@ viewAdmin backendModel =
         , viewPendingOrder backendModel.pendingOrder
         , viewExpiredOrders backendModel.expiredOrders
         , viewPrices backendModel.prices
-        , viewTicketsEnabled backendModel.ticketsEnabled
         ]
 
 
@@ -57,43 +57,43 @@ viewTicketsEnabled ticketsEnabled =
         ]
 
 
-viewPrices : AssocList.Dict (Id ProductId) Price2 -> Element msg
+viewPrices : AssocList.Dict (Id ProductId) Stripe.Codec.Price2 -> Element msg
 viewPrices prices =
     column
         [ width fill
         ]
         [ text "Prices"
-        , Codec.encodeToString 2 (Types.assocListCodec Types.price2Codec) prices |> text
+        , Codec.encodeToString 2 (Stripe.Codec.assocListCodec Stripe.Codec.price2Codec) prices |> text
         ]
 
 
-viewOrders : AssocList.Dict (Id StripeSessionId) Types.Order -> Element msg
+viewOrders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.Order -> Element msg
 viewOrders orders =
     column
         [ width fill
         ]
         [ text "Orders"
-        , Codec.encodeToString 2 (Types.assocListCodec Types.orderCodec) orders |> text
+        , Codec.encodeToString 2 (Stripe.Codec.assocListCodec Stripe.Codec.orderCodec) orders |> text
         ]
 
 
-viewPendingOrder : AssocList.Dict (Id StripeSessionId) PendingOrder -> Element msg
+viewPendingOrder : AssocList.Dict (Id StripeSessionId) Stripe.Codec.PendingOrder -> Element msg
 viewPendingOrder pendingOrders =
     column
         [ width fill
         ]
         [ text "Pending Orders"
-        , Codec.encodeToString 2 (Types.assocListCodec Types.pendingOrderCodec) pendingOrders |> text
+        , Codec.encodeToString 2 (Stripe.Codec.assocListCodec Stripe.Codec.pendingOrderCodec) pendingOrders |> text
         ]
 
 
-viewExpiredOrders : AssocList.Dict (Id StripeSessionId) PendingOrder -> Element msg
+viewExpiredOrders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.PendingOrder -> Element msg
 viewExpiredOrders expiredOrders =
     column
         [ width fill
         ]
         [ text "Expired Orders"
-        , Codec.encodeToString 2 (Types.assocListCodec Types.pendingOrderCodec) expiredOrders |> text
+        , Codec.encodeToString 2 (Stripe.Codec.assocListCodec Stripe.Codec.pendingOrderCodec) expiredOrders |> text
         ]
 
 

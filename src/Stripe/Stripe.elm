@@ -281,3 +281,23 @@ formBody : List ( String, String ) -> Http.Body
 formBody =
     cgiParameters
         >> Http.stringBody "application/x-www-form-urlencoded"
+
+
+type OrderStatus
+    = Pending
+    | Failed String
+    | Paid StripePaymentId
+    | Refunded StripePaymentId
+
+
+type StripePaymentId
+    = StripePaymentId String
+
+
+type Product
+    = Watchamacallit Price
+    | Thingamabob Price
+
+
+type alias CityCode =
+    String

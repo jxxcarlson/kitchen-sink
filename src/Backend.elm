@@ -2,6 +2,7 @@ module Backend exposing (..)
 
 import AssocList
 import Duration
+import Email
 import EmailAddress exposing (EmailAddress)
 import Env
 import HttpHelpers
@@ -41,7 +42,6 @@ init =
       , expiredOrders = AssocList.empty
       , prices = AssocList.empty
       , time = Time.millisToPosix 0
-      , ticketsEnabled = TicketsEnabled
       , products =
             AssocList.fromList
                 [ ( Id.fromString "prod_NwykP5NQq7KEJt"
@@ -216,7 +216,7 @@ update msg model =
                                 | orders =
                                     AssocList.insert
                                         stripeSessionId
-                                        { order | emailResult = EmailSuccess data }
+                                        { order | emailResult = Email.EmailSuccess data }
                                         model.orders
                               }
                             , Cmd.none
@@ -227,7 +227,7 @@ update msg model =
                                 | orders =
                                     AssocList.insert
                                         stripeSessionId
-                                        { order | emailResult = EmailFailed error }
+                                        { order | emailResult = Email.EmailFailed error }
                                         model.orders
                               }
                             , errorEmail ("Confirmation email failed: " ++ HttpHelpers.httpErrorToString error)
@@ -251,8 +251,8 @@ updateFromFrontend sessionId clientId msg model =
     case msg of
         -- STRIPE
         SubmitFormRequest priceId a ->
-            case ( Untrusted.purchaseForm a, model.ticketsEnabled ) of
-                ( Just purchaseForm, TicketsEnabled ) ->
+            case Untrusted.purchaseForm a of
+                Just purchaseForm ->
                     case priceIdToProductId model priceId of
                         Just productId ->
                             let

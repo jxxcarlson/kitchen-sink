@@ -3,6 +3,7 @@ module RPC exposing (..)
 import AssocList
 import Backend
 import Codec
+import Email
 import Email.Html as Html
 import Email.Html.Attributes as Attributes
 import EmailAddress exposing (EmailAddress)
@@ -22,25 +23,7 @@ import Stripe.PurchaseForm as PurchaseForm
 import Stripe.Stripe as Stripe exposing (Webhook(..))
 import Stripe.Tickets as Tickets exposing (Product_)
 import Task exposing (Task)
-import Types exposing (BackendModel, BackendMsg(..), EmailResult(..), TicketsEnabled(..), ToFrontend(..))
-
-
-backendModelEndpoint :
-    SessionId
-    -> BackendModel
-    -> Json.Decode.Value
-    -> ( Result Http.Error Json.Decode.Value, BackendModel, Cmd BackendMsg )
-backendModelEndpoint _ model request =
-    case Json.Decode.decodeValue Json.Decode.string request of
-        Ok ok ->
-            if ok == Env.adminPassword then
-                ( Ok (Codec.encodeToValue Types.backendModelCodec model), model, Cmd.none )
-
-            else
-                ( Http.BadBody "Invalid admin password" |> Err, model, Cmd.none )
-
-        Err _ ->
-            ( Http.BadBody "Expected request body to look like this: \"SECRET_KEY\"" |> Err, model, Cmd.none )
+import Types exposing (BackendModel, BackendMsg(..), TicketsEnabled(..), ToFrontend(..))
 
 
 purchaseCompletedEndpoint :
@@ -88,7 +71,7 @@ purchaseCompletedEndpoint _ model request =
                                                 { priceId = order.priceId
                                                 , submitTime = order.submitTime
                                                 , form = order.form
-                                                , emailResult = SendingEmail
+                                                , emailResult = Email.SendingEmail
                                                 }
                                                 model.orders
                                       }
@@ -194,25 +177,6 @@ lamdera_handleEndpoints args model =
     case args.endpoint of
         "stripe" ->
             LamderaRPC.handleEndpointJson purchaseCompletedEndpoint args model
-
-        "backend-model" ->
-            LamderaRPC.handleEndpointJson backendModelEndpoint args model
-
-        "tickets-enabled" ->
-            ( LamderaRPC.ResultString "enabled"
-            , { model | ticketsEnabled = TicketsEnabled }
-            , Lamdera.broadcast (TicketsEnabledChanged TicketsEnabled)
-            )
-
-        "tickets-disabled" ->
-            let
-                ticketStatus =
-                    TicketsDisabled { adminMessage = "Ticket sales temporarily disabled" }
-            in
-            ( LamderaRPC.ResultString "enabled"
-            , { model | ticketsEnabled = ticketStatus }
-            , Lamdera.broadcast (TicketsEnabledChanged ticketStatus)
-            )
 
         _ ->
             ( LamderaRPC.ResultFailure <| Http.BadBody <| "Unknown endpoint " ++ args.endpoint, model, Cmd.none )
