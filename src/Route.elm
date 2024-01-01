@@ -26,7 +26,7 @@ decode url =
         [ Url.Parser.top |> Url.Parser.map HomepageRoute
         , Url.Parser.s "features" |> Url.Parser.map Features
         , Url.Parser.s "notes" |> Url.Parser.map Notes
-        , Url.Parser.s "notes" |> Url.Parser.map Notes
+        , Url.Parser.s "purchase" |> Url.Parser.map Purchase
         , Url.Parser.s "signin" |> Url.Parser.map SignIn
         , Url.Parser.s "brillig" |> Url.Parser.map Brillig
         , Url.Parser.s "admin" <?> parseAdminPass |> Url.Parser.map AdminRoute

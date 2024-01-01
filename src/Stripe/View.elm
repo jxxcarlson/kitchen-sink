@@ -21,6 +21,7 @@ import Stripe.Stripe as Stripe
 import Theme
 import Types exposing (..)
 import View.Button
+import View.Input
 import View.Style
 
 
@@ -88,13 +89,15 @@ formView model productId priceId product_ =
         textInput onChange title validator text =
             Element.column
                 [ Element.spacing 4, Element.width Element.fill ]
-                [ Element.Input.text
-                    [ Element.Border.rounded 8 ]
-                    { text = text
-                    , onChange = onChange
-                    , placeholder = Nothing
-                    , label = Element.Input.labelAbove [ Element.Font.semiBold ] (Element.text title)
-                    }
+                [ View.Input.template title text onChange
+
+                --Element.Input.text
+                --    [ Element.Border.rounded 8 ]
+                --    { text = text
+                --    , onChange = onChange
+                --    , placeholder = Nothing
+                --    , label = Element.Input.labelAbove [ Element.Font.semiBold ] (Element.text title)
+                --    }
                 , case ( form.submitStatus, validator text ) of
                     ( NotSubmitted PressedSubmit, Err error ) ->
                         errorText error
