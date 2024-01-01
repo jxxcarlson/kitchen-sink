@@ -126,6 +126,9 @@ type ToBackend
 
 type BackendMsg
     = GotTime Time.Posix
+      --
+    | GotAtomsphericRandomNumber (Result Http.Error String)
+      -- STRIPE
     | GotPrices (Result Http.Error (List PriceData))
     | OnConnected SessionId ClientId
     | CreatedCheckoutSession SessionId ClientId (Id PriceId) PurchaseFormValidated (Result Http.Error ( Id StripeSessionId, Time.Posix ))

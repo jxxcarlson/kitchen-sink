@@ -19,9 +19,9 @@ The kitchen sink app provides (or will provide) the features listed below.
 - User module (started, have mock-up of user sign-in/up/out stuff, see the *Sign In* tab)
 - Authentication (not started)
 - UUIDs (generate on backend and provide as service, not started)
-- Custom element (not started)
-- RPC: (used in the Stripe interface)
-- Markdown (used in this document)
+- Custom element (not started; possibly do a calendar element)
+- RPC (used in the Stripe interface)
+- Markdown (used in this document, etc.)
 
 The template is based on a stripped-down version of
 Mario Rogic's [Elm Camp Website](https://github.com/elm-camp/website) code.
