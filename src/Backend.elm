@@ -18,6 +18,7 @@ import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId
 import Task
 import Time
 import Types exposing (..)
+import UUID
 import Unsafe
 import Untrusted
 
@@ -38,6 +39,7 @@ init =
       , expiredOrders = AssocList.empty
       , prices = AssocList.empty
       , time = Time.millisToPosix 0
+      , randomAtmosphericNumber = Nothing
       , products =
             AssocList.fromList
                 [ ( Id.fromString "prod_NwykP5NQq7KEJt"
@@ -55,6 +57,7 @@ init =
     , Cmd.batch
         [ Time.now |> Task.perform GotTime
         , Stripe.getPrices GotPrices
+        , UUID.getAtmosphericRandomNumber
         ]
     )
 
@@ -69,7 +72,26 @@ subscriptions _ =
 
 update : BackendMsg -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 update msg model =
+    -- Replace existing randomAtmosphericNumber with a new one if possible
     (case msg of
+        GotAtmosphericRandomNumber tryRandomAtmosphericNumber ->
+            ( { model
+                | randomAtmosphericNumber =
+                    case tryRandomAtmosphericNumber of
+                        Err err ->
+                            model.randomAtmosphericNumber
+
+                        Ok rn ->
+                            case String.toInt (String.trim rn) of
+                                Nothing ->
+                                    model.randomAtmosphericNumber
+
+                                Just n ->
+                                    Just n
+              }
+            , Cmd.none
+            )
+
         GotTime time ->
             let
                 ( expiredOrders, remainingOrders ) =
@@ -97,10 +119,6 @@ update msg model =
         GotPrices result ->
             case result of
                 Ok prices ->
-                    let
-                        _ =
-                            Debug.log "GotPrices succeeded" prices
-                    in
                     ( { model
                         | prices =
                             List.filterMap
@@ -122,13 +140,16 @@ update msg model =
 
         OnConnected _ clientId ->
             ( model
-            , Lamdera.sendToFrontend
-                clientId
-                (InitData
-                    { prices = model.prices
-                    , productInfo = model.products
-                    }
-                )
+            , Cmd.batch
+                [ UUID.getAtmosphericRandomNumber
+                , Lamdera.sendToFrontend
+                    clientId
+                    (InitData
+                        { prices = model.prices
+                        , productInfo = model.products
+                        }
+                    )
+                ]
             )
 
         CreatedCheckoutSession sessionId clientId priceId purchaseForm result ->

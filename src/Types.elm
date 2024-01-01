@@ -75,7 +75,10 @@ type SignInState
 
 
 type alias BackendModel =
-    { orders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.Order
+    { randomAtmosphericNumber : Maybe Int
+
+    --STRIPE
+    , orders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.Order
     , pendingOrder : AssocList.Dict (Id StripeSessionId) Stripe.Codec.PendingOrder
     , expiredOrders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.PendingOrder
     , prices : AssocList.Dict (Id ProductId) Stripe.Codec.Price2
@@ -127,7 +130,7 @@ type ToBackend
 type BackendMsg
     = GotTime Time.Posix
       --
-    | GotAtomsphericRandomNumber (Result Http.Error String)
+    | GotAtmosphericRandomNumber (Result Http.Error String)
       -- STRIPE
     | GotPrices (Result Http.Error (List PriceData))
     | OnConnected SessionId ClientId

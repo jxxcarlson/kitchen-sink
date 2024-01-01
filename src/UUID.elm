@@ -1,14 +1,14 @@
-module UUID exposing (..)
+module UUID exposing (getAtmosphericRandomNumber)
 
 import Http
 import Types
 
 
-getRandomNumber : Cmd Types.BackendMsg
-getRandomNumber =
+getAtmosphericRandomNumber : Cmd Types.BackendMsg
+getAtmosphericRandomNumber =
     Http.get
         { url = randomNumberUrl 9
-        , expect = Http.expectString Types.GotAtomsphericRandomNumber
+        , expect = Http.expectString Types.GotAtmosphericRandomNumber
         }
 
 
