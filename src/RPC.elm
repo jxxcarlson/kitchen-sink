@@ -1,4 +1,4 @@
-module RPC exposing (..)
+module RPC exposing (lamdera_handleEndpoints, requestPurchaseCompletedEndpoint)
 
 import AssocList
 import Backend

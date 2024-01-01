@@ -1,4 +1,9 @@
-module Stripe.Tickets exposing (Product_, basicPurchase, dict, viewDesktop, viewMobile)
+module Stripe.Tickets exposing
+    ( Product_
+    , dict
+    , viewDesktop
+    , viewMobile
+    )
 
 import AssocList
 import Element exposing (Element)
@@ -24,18 +29,9 @@ type alias Product_ =
     }
 
 
-basicPurchase : Product_
-basicPurchase =
-    { name = "Version 5 Watchamacallit"
-    , description = "A tool to fit all of your tinkering needs"
-    , image = "/product2.webp"
-    , productId = "Product.ticket.camp"
-    }
-
-
 dict : AssocList.Dict (Id ProductId) Product_
 dict =
-    [ basicPurchase ]
+    []
         |> List.map (\t -> ( Id.fromString t.productId, t ))
         |> AssocList.fromList
 

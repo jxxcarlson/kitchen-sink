@@ -1,4 +1,4 @@
-module Email exposing (..)
+module Email exposing (EmailResult(..), PostmarkSendResponse, emailResultCodec, postmarkSendResponseCodec)
 
 import Codec exposing (Codec)
 import Http exposing (Error)

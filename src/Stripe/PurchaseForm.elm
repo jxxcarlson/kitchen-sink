@@ -1,6 +1,5 @@
 module Stripe.PurchaseForm exposing
     ( PressedSubmit(..)
-    , PurchaseData
     , PurchaseForm
     , PurchaseFormValidated(..)
     , SubmitStatus(..)
@@ -9,7 +8,6 @@ module Stripe.PurchaseForm exposing
     , purchaserName
     , validateEmailAddress
     , validateForm
-    , validateInt
     , validateName
     )
 

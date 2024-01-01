@@ -1,4 +1,12 @@
-module Stripe.Codec exposing (..)
+module Stripe.Codec exposing
+    ( Order
+    , PendingOrder
+    , Price2
+    , assocListCodec
+    , orderCodec
+    , pendingOrderCodec
+    , price2Codec
+    )
 
 import AssocList
 import Codec exposing (Codec)
