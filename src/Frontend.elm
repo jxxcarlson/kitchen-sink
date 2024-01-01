@@ -207,7 +207,7 @@ updateLoaded msg model =
                 Submitting ->
                     ( model, Cmd.none )
 
-                SubmitBackendError str ->
+                SubmitBackendError _ ->
                     ( { model | form = form }, Cmd.none )
 
         PressedSubmitForm productId priceId ->
