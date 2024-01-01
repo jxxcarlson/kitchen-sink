@@ -25,7 +25,7 @@ import Element as E
 
 orange : E.Color
 orange =
-    E.rgb 1.0 0.4 0.0
+    E.rgb 1.0 0.7 0.0
 
 
 blue : E.Color
