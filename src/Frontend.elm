@@ -124,7 +124,7 @@ tryLoading loadingModel =
                         , window = window
                         , showTooltip = False
                         , prices = prices
-                        , productInfoDict = productInfo |> Debug.log "productInfoDict (1)"
+                        , productInfoDict = productInfo
                         , selectedProduct = Nothing
                         , form =
                             { submitStatus = NotSubmitted NotPressedSubmit
@@ -217,10 +217,6 @@ updateLoaded msg model =
             in
             case AssocList.get productId model.productInfoDict of
                 Just _ ->
-                    let
-                        _ =
-                            Debug.log "( submitStatus, validated? )" ( form.submitStatus, PurchaseForm.validateForm productId form )
-                    in
                     case ( form.submitStatus, PurchaseForm.validateForm productId form ) of
                         ( NotSubmitted _, Just validated ) ->
                             ( { model | form = { form | submitStatus = Submitting } }

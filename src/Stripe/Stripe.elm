@@ -84,10 +84,6 @@ type alias PriceData =
 
 getPrices : (Result Http.Error (List PriceData) -> msg) -> Cmd msg
 getPrices toMsg =
-    let
-        _ =
-            Debug.log "GET_PRICES" True
-    in
     Http.request
         { method = "GET"
         , headers = headers

@@ -9,10 +9,6 @@ import Types
 
 view : Types.LoadedModel -> Element.Element Types.FrontendMsg
 view model =
-    let
-        _ =
-            Debug.log "model.productInfoDict" model.productInfoDict
-    in
     Element.column [ Element.paddingEach { top = 50, bottom = 9, left = 0, right = 0 } ]
         [ Element.el [ Font.bold, Font.size 24 ] (Element.text "Purchase Item:")
         , Stripe.View.productList model model.productInfoDict model.prices
