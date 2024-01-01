@@ -10,7 +10,7 @@ view model =
     """
 # Features
 
-The kitchen sink app provides the features listed below.
+The kitchen sink app provides (or will provide) the features listed below.
 
 - Page routing
 - Stripe (See *the *Purchase** tab)
