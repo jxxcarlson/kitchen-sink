@@ -42,31 +42,30 @@ header route config =
                 ++ Theme.contentAttributes
             )
             [ Element.link
-                [ tabColor route HomepageRoute ]
+                (linkStyle route HomepageRoute)
                 { url = Route.encode HomepageRoute, label = Element.text "Lamdera Kitchen Sink" }
             , Element.link
-                [ tabColor route Features
-                ]
+                (linkStyle route Features)
                 { url = Route.encode Features, label = Element.text "Features" }
             , Element.link
-                [ tabColor route Notes ]
+                (linkStyle route Notes)
                 { url = Route.encode Notes, label = Element.text "Notes" }
             , Element.link
-                [ tabColor route Purchase ]
+                (linkStyle route Purchase)
                 { url = Route.encode Purchase, label = Element.text "Purchase" }
             , Element.link
-                [ tabColor route SignIn ]
+                (linkStyle route SignIn)
                 { url = Route.encode SignIn, label = Element.text "Sign In" }
             ]
         )
 
 
-tabColor currentRoute route =
+linkStyle currentRoute route =
     if currentRoute == route then
-        Element.Font.color View.Color.yellow
+        [ Element.Font.underline, Element.Font.color View.Color.yellow ]
 
     else
-        Element.Font.color View.Color.white
+        [ Element.Font.color View.Color.white ]
 
 
 footer : Route -> Types.LoadedModel -> Element msg
@@ -85,7 +84,7 @@ footer route model =
                 ++ Theme.contentAttributes
             )
             [ Element.link
-                [ tabColor route Brillig ]
+                (linkStyle route Brillig)
                 { url = Route.encode Brillig, label = Element.text "Brillig" }
             , Element.el [ Element.Background.color View.Color.black, Element.Font.color View.Color.white ] (Element.text model.message)
             ]
