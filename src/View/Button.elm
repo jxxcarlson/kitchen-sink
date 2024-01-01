@@ -1,5 +1,6 @@
 module View.Button exposing
-    ( buyProduct
+    ( askToRenewPrices
+    , buyProduct
     , copyTextToClipboard
     , playSound
     , setSignInState
@@ -19,6 +20,10 @@ import Types
 import View.Color
 
 
+
+-- USER
+
+
 signIn : Element.Element Types.FrontendMsg
 signIn =
     button Types.SubmitSignIn "Submit"
@@ -34,6 +39,10 @@ setSignInState label state =
     button (Types.SetSignInState state) label
 
 
+
+-- PORTS
+
+
 copyTextToClipboard : String -> String -> Element.Element Types.FrontendMsg
 copyTextToClipboard label text =
     button (Types.CopyTextToClipboard text) label
@@ -44,9 +53,18 @@ playSound =
     button Types.Chirp "Chirp"
 
 
+
+-- STRIPE
+
+
 buyProduct : Id Stripe.ProductId -> Id Stripe.PriceId -> Stripe.Product.Product_ -> Element.Element Types.FrontendMsg
 buyProduct productId priceId product =
     button (Types.BuyProduct productId priceId product) "Buy"
+
+
+askToRenewPrices : Element.Element Types.FrontendMsg
+askToRenewPrices =
+    button Types.AskToRenewPrices "Renew Prices"
 
 
 

@@ -279,6 +279,9 @@ updateLoaded msg model =
                 |> Task.attempt (\_ -> SetViewport)
             )
 
+        AskToRenewPrices ->
+            ( model, Lamdera.sendToBackend RenewPrices )
+
         -- /STRIPE
         SetViewport ->
             ( model, Cmd.none )

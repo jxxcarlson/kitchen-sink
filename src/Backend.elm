@@ -117,6 +117,10 @@ update msg model =
             )
 
         GotPrices result ->
+            let
+                _ =
+                    Debug.log "@@GotPrices" result
+            in
             case result of
                 Ok prices ->
                     ( { model
@@ -133,6 +137,38 @@ update msg model =
                                 |> AssocList.fromList
                       }
                     , Cmd.none
+                    )
+
+                Err error ->
+                    ( model, errorEmail ("GotPrices failed: " ++ HttpHelpers.httpErrorToString error) )
+
+        GotPrices2 clientId result ->
+            let
+                _ =
+                    Debug.log "@@GotPrices2" result
+            in
+            case result of
+                Ok prices ->
+                    ( { model
+                        | prices =
+                            List.filterMap
+                                (\price ->
+                                    if price.isActive then
+                                        Just ( price.productId, { priceId = price.priceId, price = price.price } )
+
+                                    else
+                                        Nothing
+                                )
+                                prices
+                                |> AssocList.fromList
+                      }
+                    , Lamdera.sendToFrontend
+                        clientId
+                        (InitData
+                            { prices = model.prices
+                            , productInfo = model.products
+                            }
+                        )
                     )
 
                 Err error ->
@@ -259,6 +295,9 @@ updateFromFrontend : SessionId -> ClientId -> ToBackend -> BackendModel -> ( Bac
 updateFromFrontend sessionId clientId msg model =
     case msg of
         -- STRIPE
+        RenewPrices ->
+            ( model, Stripe.getPrices (GotPrices2 clientId) )
+
         SubmitFormRequest priceId a ->
             case Untrusted.purchaseForm a of
                 Just purchaseForm ->

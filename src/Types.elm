@@ -101,6 +101,7 @@ type FrontendMsg
     | FormChanged PurchaseForm
     | PressedSubmitForm (Id ProductId) (Id PriceId)
     | PressedCancelForm
+    | AskToRenewPrices
       -- USER
     | SignIn
     | SetSignInState SignInState
@@ -122,6 +123,8 @@ type ToBackend
     = SubmitFormRequest (Id PriceId) (Untrusted PurchaseFormValidated)
     | CancelPurchaseRequest
     | AdminInspect String
+      -- STRIPE
+    | RenewPrices
       -- USER
     | SignInRequest String String
     | SignUpRequest String String String String
@@ -133,6 +136,7 @@ type BackendMsg
     | GotAtmosphericRandomNumber (Result Http.Error String)
       -- STRIPE
     | GotPrices (Result Http.Error (List PriceData))
+    | GotPrices2 ClientId (Result Http.Error (List PriceData))
     | OnConnected SessionId ClientId
     | CreatedCheckoutSession SessionId ClientId (Id PriceId) PurchaseFormValidated (Result Http.Error ( Id StripeSessionId, Time.Posix ))
     | ExpiredStripeSession (Id StripeSessionId) (Result Http.Error ())
@@ -151,3 +155,7 @@ type ToFrontend
     | GotMessage String
     | SubmitFormResponse (Result String (Id StripeSessionId))
     | AdminInspectResponse BackendModel
+
+
+
+-- STRIPE
