@@ -13,7 +13,7 @@ import Json.Decode
 import Json.Encode
 import Lamdera
 import Ports
-import Route exposing (Route(..), SubPage(..))
+import Route exposing (Route(..))
 import Stripe.Product as Tickets exposing (Product_)
 import Stripe.PurchaseForm as PurchaseForm exposing (PressedSubmit(..), PurchaseForm, PurchaseFormValidated(..), SubmitStatus(..))
 import Stripe.Stripe as Stripe

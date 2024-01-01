@@ -1,7 +1,6 @@
-module Route exposing (Route(..), SubPage(..), decode, encode)
+module Route exposing (Route(..), decode, encode)
 
 import EmailAddress exposing (EmailAddress)
-import Id exposing (Id)
 import Stripe.Stripe as Stripe exposing (StripeSessionId(..))
 import Url exposing (Url)
 import Url.Builder
@@ -13,16 +12,12 @@ type Route
     = HomepageRoute
     | Features
     | Notes
+    | SignIn
     | Brillig
     | AdminRoute (Maybe String)
     | Purchase
     | PaymentSuccessRoute (Maybe EmailAddress)
     | PaymentCancelRoute
-
-
-type SubPage
-    = Home
-    | Artifacts
 
 
 decode : Url -> Route
@@ -31,17 +26,14 @@ decode url =
         [ Url.Parser.top |> Url.Parser.map HomepageRoute
         , Url.Parser.s "features" |> Url.Parser.map Features
         , Url.Parser.s "notes" |> Url.Parser.map Notes
-        , Url.Parser.s "purchase" |> Url.Parser.map Purchase
+        , Url.Parser.s "notes" |> Url.Parser.map Notes
+        , Url.Parser.s "signin" |> Url.Parser.map SignIn
         , Url.Parser.s "brillig" |> Url.Parser.map Brillig
         , Url.Parser.s "admin" <?> parseAdminPass |> Url.Parser.map AdminRoute
         , Url.Parser.s Stripe.successPath <?> parseEmail |> Url.Parser.map PaymentSuccessRoute
         , Url.Parser.s Stripe.cancelPath |> Url.Parser.map PaymentCancelRoute
         ]
         |> (\a -> Url.Parser.parse a url |> Maybe.withDefault HomepageRoute)
-
-
-liveSchedulePath =
-    "live"
 
 
 parseEmail : Url.Parser.Query.Parser (Maybe EmailAddress)
@@ -56,11 +48,6 @@ parseAdminPass =
     Url.Parser.Query.string "pass"
 
 
-parseStripeSessionId : Url.Parser.Query.Parser (Maybe (Id StripeSessionId))
-parseStripeSessionId =
-    Url.Parser.Query.map (Maybe.map Id.fromString) (Url.Parser.Query.string Stripe.stripeSessionIdParameter)
-
-
 encode : Route -> String
 encode route =
     Url.Builder.absolute
@@ -73,6 +60,9 @@ encode route =
 
             Notes ->
                 [ "notes" ]
+
+            SignIn ->
+                [ "signin" ]
 
             Brillig ->
                 [ "brillig" ]
@@ -97,6 +87,9 @@ encode route =
                 []
 
             Notes ->
+                []
+
+            SignIn ->
                 []
 
             Brillig ->

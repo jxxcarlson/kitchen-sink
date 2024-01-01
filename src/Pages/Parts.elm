@@ -54,6 +54,9 @@ header route config =
             , Element.link
                 [ tabColor route Purchase ]
                 { url = Route.encode Purchase, label = Element.text "Purchase" }
+            , Element.link
+                [ tabColor route SignIn ]
+                { url = Route.encode SignIn, label = Element.text "Sign In" }
             ]
         )
 

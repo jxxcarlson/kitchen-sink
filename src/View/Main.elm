@@ -13,7 +13,8 @@ import Pages.Home
 import Pages.Notes
 import Pages.Parts
 import Pages.Purchase
-import Route exposing (Route(..), SubPage(..))
+import Pages.SignIn
+import Route exposing (Route(..))
 import Theme
 import Types exposing (..)
 import View.Color
@@ -70,6 +71,9 @@ loadedView model =
 
         Notes ->
             Pages.Parts.generic model Pages.Notes.view
+
+        SignIn ->
+            Pages.Parts.generic model Pages.SignIn.view
 
         Brillig ->
             Pages.Parts.generic model Pages.Brillig.view
