@@ -60,7 +60,7 @@ header route config =
 
 tabColor currentRoute route =
     if currentRoute == route then
-        Element.Font.color View.Color.orange
+        Element.Font.color View.Color.yellow
 
     else
         Element.Font.color View.Color.white

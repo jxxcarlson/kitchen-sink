@@ -41,7 +41,7 @@ messageGreen =
 
 yellow : E.Color
 yellow =
-    E.rgb 0.8 0.8 0
+    E.rgb 1.0 0.9 0.7
 
 
 white : E.Color
