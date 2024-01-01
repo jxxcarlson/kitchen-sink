@@ -54,8 +54,8 @@ header route config =
                 (linkStyle route Purchase)
                 { url = Route.encode Purchase, label = Element.text "Purchase" }
             , Element.link
-                (linkStyle route SignIn)
-                { url = Route.encode SignIn, label = Element.text "Sign In" }
+                (linkStyle route SignInRoute)
+                { url = Route.encode SignInRoute, label = Element.text "Sign In" }
             ]
         )
 

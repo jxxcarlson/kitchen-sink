@@ -72,7 +72,7 @@ loadedView model =
         Notes ->
             Pages.Parts.generic model Pages.Notes.view
 
-        SignIn ->
+        SignInRoute ->
             Pages.Parts.generic model Pages.SignIn.view
 
         Brillig ->

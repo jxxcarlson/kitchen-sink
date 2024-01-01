@@ -274,6 +274,14 @@ updateFromFrontend sessionId clientId msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        -- USER
+        SignInRequest username password ->
+            ( model, Cmd.none )
+
+        SignUpRequest realname username email password ->
+            ( model, Cmd.none )
+
+        -- STRIPE
         CancelPurchaseRequest ->
             case sessionIdToStripeSessionId sessionId model of
                 Just stripeSessionId ->

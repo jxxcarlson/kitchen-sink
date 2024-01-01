@@ -1,4 +1,11 @@
-module View.Button exposing (buyProduct, copyTextToClipboard, playSound)
+module View.Button exposing
+    ( buyProduct
+    , copyTextToClipboard
+    , playSound
+    , setSignInState
+    , signIn
+    , signUp
+    )
 
 import Element
 import Element.Background
@@ -8,9 +15,23 @@ import Element.Input
 import Id exposing (Id)
 import Stripe.Product
 import Stripe.Stripe as Stripe
-import Theme
 import Types
 import View.Color
+
+
+signIn : Element.Element Types.FrontendMsg
+signIn =
+    button Types.SubmitSignIn "Submit"
+
+
+signUp : Element.Element Types.FrontendMsg
+signUp =
+    button Types.SubmitSignUp "Submit"
+
+
+setSignInState : String -> Types.SignInState -> Element.Element Types.FrontendMsg
+setSignInState label state =
+    button (Types.SetSignInState state) label
 
 
 copyTextToClipboard : String -> String -> Element.Element Types.FrontendMsg

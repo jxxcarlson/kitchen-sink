@@ -139,6 +139,9 @@ tryLoading loadingModel =
                         , email = ""
                         , password = ""
                         , passwordConfirmation = ""
+                        , signInState = SignedOut
+
+                        --
                         , route = loadingModel.route
                         , isOrganiser = loadingModel.isOrganiser
                         , backendModel = Nothing
@@ -193,6 +196,18 @@ updateLoaded msg model =
             ( model, Ports.playSound (Json.Encode.string "chirp.mp3") )
 
         -- USER
+        SetSignInState state ->
+            ( { model | signInState = state }, Cmd.none )
+
+        SignIn ->
+            ( model, Cmd.none )
+
+        SubmitSignIn ->
+            ( model, Lamdera.sendToBackend (SignInRequest model.username model.password) )
+
+        SubmitSignUp ->
+            ( model, Lamdera.sendToBackend (SignUpRequest model.realname model.username model.email model.password) )
+
         InputRealname str ->
             ( { model | realname = str }, Cmd.none )
 

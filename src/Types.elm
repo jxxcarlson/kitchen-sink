@@ -53,6 +53,7 @@ type alias LoadedModel =
     , form : PurchaseForm
 
     -- USER
+    , signInState : SignInState
     , realname : String
     , username : String
     , email : String
@@ -67,11 +68,10 @@ type alias LoadedModel =
     }
 
 
-type alias TicketAvailability =
-    { campTicket : Bool
-    , couplesCampTicket : Bool
-    , campfireTicket : Bool
-    }
+type SignInState
+    = SignedOut
+    | SignUp
+    | SignedIn
 
 
 type alias BackendModel =
@@ -99,6 +99,10 @@ type FrontendMsg
     | PressedSubmitForm (Id ProductId) (Id PriceId)
     | PressedCancelForm
       -- USER
+    | SignIn
+    | SetSignInState SignInState
+    | SubmitSignIn
+    | SubmitSignUp
     | InputRealname String
     | InputUsername String
     | InputEmail String
@@ -115,6 +119,9 @@ type ToBackend
     = SubmitFormRequest (Id PriceId) (Untrusted PurchaseFormValidated)
     | CancelPurchaseRequest
     | AdminInspect String
+      -- USER
+    | SignInRequest String String
+    | SignUpRequest String String String String
 
 
 type BackendMsg
