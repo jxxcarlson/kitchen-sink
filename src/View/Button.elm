@@ -6,8 +6,8 @@ import Element.Border as Border
 import Element.Font
 import Element.Input
 import Id exposing (Id)
+import Stripe.Product
 import Stripe.Stripe as Stripe
-import Stripe.Tickets
 import Theme
 import Types
 import View.Color
@@ -23,7 +23,7 @@ playSound =
     button Types.Chirp "Chirp"
 
 
-buyProduct : Id Stripe.ProductId -> Id Stripe.PriceId -> Stripe.Tickets.Product_ -> Element.Element Types.FrontendMsg
+buyProduct : Id Stripe.ProductId -> Id Stripe.PriceId -> Stripe.Product.Product_ -> Element.Element Types.FrontendMsg
 buyProduct productId priceId product =
     button (Types.BuyProduct productId priceId product) "Buy"
 

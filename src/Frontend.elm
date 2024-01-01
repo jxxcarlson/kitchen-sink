@@ -14,9 +14,9 @@ import Json.Encode
 import Lamdera
 import Ports
 import Route exposing (Route(..), SubPage(..))
+import Stripe.Product as Tickets exposing (Product_)
 import Stripe.PurchaseForm as PurchaseForm exposing (PressedSubmit(..), PurchaseForm, PurchaseFormValidated(..), SubmitStatus(..))
 import Stripe.Stripe as Stripe
-import Stripe.Tickets as Tickets exposing (Product_)
 import Stripe.View
 import Task
 import Time

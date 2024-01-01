@@ -1,4 +1,4 @@
-module Stripe.Tickets exposing
+module Stripe.Product exposing
     ( Product_
     , dict
     , viewDesktop

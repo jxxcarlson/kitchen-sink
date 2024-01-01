@@ -15,9 +15,9 @@ import Element.Font
 import Element.Input
 import Id exposing (Id)
 import MarkdownThemed
+import Stripe.Product as Tickets exposing (Product_)
 import Stripe.PurchaseForm as PurchaseForm exposing (PressedSubmit(..), PurchaseForm, PurchaseFormValidated(..), SubmitStatus(..))
 import Stripe.Stripe as Stripe
-import Stripe.Tickets as Tickets exposing (Product_)
 import Theme
 import Types exposing (..)
 import View.Button

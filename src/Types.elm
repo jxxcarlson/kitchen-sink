@@ -9,9 +9,9 @@ import Lamdera exposing (ClientId, SessionId)
 import Postmark exposing (PostmarkSendResponse)
 import Route exposing (Route)
 import Stripe.Codec
+import Stripe.Product
 import Stripe.PurchaseForm exposing (PurchaseForm, PurchaseFormValidated)
 import Stripe.Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
-import Stripe.Tickets
 import Time
 import Untrusted exposing (Untrusted)
 import Url exposing (Url)
@@ -39,7 +39,7 @@ type alias LoadedModel =
     , showTooltip : Bool
     , prices : AssocList.Dict (Id ProductId) { priceId : Id PriceId, price : Price }
     , productInfoDict : AssocList.Dict (Id ProductId) Stripe.Stripe.ProductInfo
-    , selectedProduct : Maybe ( Id ProductId, Id PriceId, Stripe.Tickets.Product_ )
+    , selectedProduct : Maybe ( Id ProductId, Id PriceId, Stripe.Product.Product_ )
     , form : PurchaseForm
     , route : Route
     , showCarbonOffsetTooltip : Bool
@@ -76,7 +76,7 @@ type FrontendMsg
     | PressedShowTooltip
     | MouseDown
       -- STRIPE
-    | BuyProduct (Id ProductId) (Id PriceId) Stripe.Tickets.Product_
+    | BuyProduct (Id ProductId) (Id PriceId) Stripe.Product.Product_
     | PressedSelectTicket (Id ProductId) (Id PriceId)
     | FormChanged PurchaseForm
     | PressedSubmitForm (Id ProductId) (Id PriceId)
