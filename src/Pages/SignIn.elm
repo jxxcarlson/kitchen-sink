@@ -6,12 +6,14 @@ import Types exposing (..)
 import View.Input
 
 
-view : LoadedModel -> Element msg
+view : LoadedModel -> Element FrontendMsg
 view model =
-    Element.column []
-        --[ View.Input.template "Email" model.email
-        --        --]
-        []
+    Element.column [ Element.spacing 18 ]
+        [ View.Input.template "Real Name" model.realname InputRealname
+        , View.Input.template "User Name" model.username InputUsername
+        , View.Input.template "Password" model.password InputPassword
+        , View.Input.template "Password again" model.password InputPasswordConfirmation
+        ]
 
 
 foo =
