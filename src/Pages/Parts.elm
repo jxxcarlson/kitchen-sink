@@ -22,7 +22,7 @@ generic model view =
             )
             [ view model
             ]
-        , footer
+        , footer model
         ]
 
 
@@ -57,8 +57,8 @@ header config =
         )
 
 
-footer : Element msg
-footer =
+footer : Types.LoadedModel -> Element msg
+footer model =
     Element.el
         [ Element.Background.color View.Color.blue
         , Element.paddingXY 24 16
@@ -75,5 +75,6 @@ footer =
             [ Element.link
                 []
                 { url = Route.encode Brillig, label = Element.text "Brillig" }
+            , Element.el [ Element.Background.color View.Color.black, Element.Font.color View.Color.white ] (Element.text model.message)
             ]
         )

@@ -48,6 +48,7 @@ type alias LoadedModel =
     , isOrganiser : Bool
     , backendModel : Maybe BackendModel
     , pressedAudioButton : Bool
+    , message : String
     }
 
 
@@ -321,6 +322,7 @@ type alias InitData2 =
 
 type ToFrontend
     = InitData InitData2
+    | GotMessage String
     | SubmitFormResponse (Result String (Id StripeSessionId))
     | TicketsEnabledChanged TicketsEnabled
     | AdminInspectResponse BackendModel

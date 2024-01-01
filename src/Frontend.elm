@@ -137,6 +137,7 @@ tryLoading loadingModel =
                         , isOrganiser = loadingModel.isOrganiser
                         , backendModel = Nothing
                         , pressedAudioButton = False
+                        , message = ""
                         }
                     , Cmd.none
                     )
@@ -275,6 +276,9 @@ updateFromBackendLoaded msg model =
     case msg of
         InitData { prices, productInfo } ->
             ( { model | prices = prices, productInfoDict = productInfo }, Cmd.none )
+
+        GotMessage message ->
+            ( { model | message = message }, Cmd.none )
 
         SubmitFormResponse result ->
             case result of

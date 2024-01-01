@@ -185,6 +185,7 @@ update msg model =
                     , Cmd.batch
                         [ SubmitFormResponse (Err err) |> Lamdera.sendToFrontend clientId
                         , errorEmail err
+                        , Lamdera.sendToFrontend clientId (GotMessage err)
                         ]
                     )
 
