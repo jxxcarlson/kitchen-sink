@@ -173,15 +173,29 @@ Jumbo Package    200 image credits     $9
 ```
 
 
-**NOTE:** update issue
-
 
 ## Stripe: Submitting a Purchase
 
-*(( Under construction ))*
+The code & UI is now in place to make purchases using Stripe.
+I've run the deployed app and made a purchase using the test API keys.
+As the log below shows, the purchase was successful.
+
+To get a log like this use the Stripe CLI:
 
 ```
+$ stripe login
+$ stripe logs tail
+```
 
+```
+2023-12-31 21:19:06 [200] POST /v1/checkout/sessions/:id/expire [req_AZUOd0YTu2CjZ2]
+2023-12-31 21:20:34 [200] POST /v1/payment_methods [req_2p6JzfZEPJAG1J]
+2023-12-31 21:20:35 [200] POST /v1/payment_pages/:id/confirm [req_BNEucq56JENSQf]
+2023-12-31 21:20:38 [200] GET /v1/checkout/sessions/completed_webhook_delivered/:id [req_n3R7HHrcJOWfHr]
+2023-12-31 21:20:38 [200] GET /v1/checkout/sessions/completed_webhook_delivered/:id [req_7lRYJcxaUBQkjc]
+```
+
+NEXT: Documenting the code.
 
 
 

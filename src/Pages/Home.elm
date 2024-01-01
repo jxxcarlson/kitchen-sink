@@ -43,7 +43,7 @@ view model =
                 )
                 [ View.Button.playSound ]
             ]
-        , Pages.Parts.footer
+        , Pages.Parts.footer model
         ]
 
 
