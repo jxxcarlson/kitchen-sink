@@ -18,7 +18,7 @@ The kitchen sink app provides (or will provide) the features listed below.
 - Basic admin page (not started)
 - User module (started, have mock-up of user sign-in/up/out stuff, see the *Sign In* tab)
 - Authentication (not started)
-- UUIDs (generate on backend and provide as service, not started)
+- UUIDs (generate on backend and provide as service, started (get random atmospheric numbers))
 - Custom element (not started; possibly do a calendar element)
 - RPC (used in the Stripe interface)
 - Markdown (used in this document, etc.)
