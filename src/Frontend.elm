@@ -132,6 +132,13 @@ tryLoading loadingModel =
                             , billingEmail = ""
                             , country = ""
                             }
+
+                        -- USER
+                        , realname = ""
+                        , username = ""
+                        , email = ""
+                        , password = ""
+                        , passwordConfirmation = ""
                         , route = loadingModel.route
                         , isOrganiser = loadingModel.isOrganiser
                         , backendModel = Nothing
@@ -184,6 +191,22 @@ updateLoaded msg model =
 
         Chirp ->
             ( model, Ports.playSound (Json.Encode.string "chirp.mp3") )
+
+        -- USER
+        InputRealname str ->
+            ( { model | realname = str }, Cmd.none )
+
+        InputUsername str ->
+            ( { model | username = str }, Cmd.none )
+
+        InputEmail str ->
+            ( { model | email = str }, Cmd.none )
+
+        InputPassword str ->
+            ( { model | password = str }, Cmd.none )
+
+        InputPasswordConfirmation str ->
+            ( { model | passwordConfirmation = str }, Cmd.none )
 
         -- STRIPE
         BuyProduct productId priceId product ->

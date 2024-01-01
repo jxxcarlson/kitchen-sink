@@ -52,6 +52,13 @@ type alias LoadedModel =
     , selectedProduct : Maybe ( Id ProductId, Id PriceId, Stripe.Product.Product_ )
     , form : PurchaseForm
 
+    -- USER
+    , realname : String
+    , username : String
+    , email : String
+    , password : String
+    , passwordConfirmation : String
+
     --
     , route : Route
     , isOrganiser : Bool
@@ -91,6 +98,12 @@ type FrontendMsg
     | FormChanged PurchaseForm
     | PressedSubmitForm (Id ProductId) (Id PriceId)
     | PressedCancelForm
+      -- USER
+    | InputRealname String
+    | InputUsername String
+    | InputEmail String
+    | InputPassword String
+    | InputPasswordConfirmation String
       --
     | SetViewport
       -- PORT EXAMPLES
