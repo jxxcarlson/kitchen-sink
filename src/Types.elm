@@ -33,19 +33,29 @@ type alias LoadingModel =
 
 
 type alias LoadedModel =
+    --type alias User =
+    --    { id : Int
+    --    , name : String
+    --    , email : String
+    --    , password : String
+    --    , created_at : Time.Posix
+    --    , updated_at : Time.Posix
+    --    }
     { key : Key
     , now : Time.Posix
     , window : { width : Int, height : Int }
     , showTooltip : Bool
+
+    -- STRIPE
     , prices : AssocList.Dict (Id ProductId) { priceId : Id PriceId, price : Price }
     , productInfoDict : AssocList.Dict (Id ProductId) Stripe.Stripe.ProductInfo
     , selectedProduct : Maybe ( Id ProductId, Id PriceId, Stripe.Product.Product_ )
     , form : PurchaseForm
+
+    --
     , route : Route
-    , showCarbonOffsetTooltip : Bool
     , isOrganiser : Bool
     , backendModel : Maybe BackendModel
-    , pressedAudioButton : Bool
     , message : String
     }
 
@@ -81,7 +91,6 @@ type FrontendMsg
     | FormChanged PurchaseForm
     | PressedSubmitForm (Id ProductId) (Id PriceId)
     | PressedCancelForm
-    | PressedShowCarbonOffsetTooltip
       --
     | SetViewport
       -- PORT EXAMPLES

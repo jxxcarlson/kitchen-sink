@@ -133,10 +133,8 @@ tryLoading loadingModel =
                             , country = ""
                             }
                         , route = loadingModel.route
-                        , showCarbonOffsetTooltip = False
                         , isOrganiser = loadingModel.isOrganiser
                         , backendModel = Nothing
-                        , pressedAudioButton = False
                         , message = ""
                         }
                     , Cmd.none
@@ -178,7 +176,7 @@ updateLoaded msg model =
             ( { model | showTooltip = True }, Cmd.none )
 
         MouseDown ->
-            ( { model | showTooltip = False, showCarbonOffsetTooltip = False }, Cmd.none )
+            ( { model | showTooltip = False }, Cmd.none )
 
         -- PORTS EXAMPLES
         CopyTextToClipboard text ->
@@ -248,9 +246,6 @@ updateLoaded msg model =
             )
 
         -- /STRIPE
-        PressedShowCarbonOffsetTooltip ->
-            ( { model | showCarbonOffsetTooltip = True }, Cmd.none )
-
         SetViewport ->
             ( model, Cmd.none )
 
