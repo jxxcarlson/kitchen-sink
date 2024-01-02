@@ -59,6 +59,11 @@ frontendMsg old =
     MsgUnchanged
 
 
+toFrontend : Evergreen.V45.Types.ToFrontend -> MsgMigration Evergreen.V47.Types.ToFrontend Evergreen.V47.Types.FrontendMsg
+toFrontend old =
+    MsgUnchanged
+
+
 toBackend : Evergreen.V45.Types.ToBackend -> MsgMigration Evergreen.V47.Types.ToBackend Evergreen.V47.Types.BackendMsg
 toBackend old =
     MsgUnchanged
