@@ -27,13 +27,21 @@ to use them.
 
 ## Admin page
 
-There is now a rudimentary Admin page.  At the moment,
+There is now a rudimentary Admin page.  At the moment        ,
 it can do two things:
 
-- Display user data or data on the stripe interface.
+- Display user data
+- Display data on the stripe interface.
+
+Use the buttons at the top of the Admin page to select
+the view you want.
+
+Here is a sample of the user data that is displayed
+for users.
 
 ```
 User Data
+
 realname: Aristotle
 username: aristotle
 email: aristotle@philosophy.gr
