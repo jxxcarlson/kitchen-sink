@@ -8,6 +8,7 @@ import Pages.Parts
 import Theme
 import Types exposing (..)
 import View.Button
+import View.Utility
 
 
 view : LoadedModel -> Element FrontendMsg
@@ -22,6 +23,7 @@ view model =
             [ View.Button.playSound
             , View.Button.copyTextToClipboard "Copy Pi to Clipboard" "3.141592653589793238462643383279502884197169399375105820974944592307816406286"
             ]
+        , View.Utility.datePickerElement [] [] |> Element.html
         ]
 
 
