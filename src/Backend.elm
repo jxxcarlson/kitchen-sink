@@ -5,6 +5,7 @@ import Duration
 import Email
 import EmailAddress exposing (EmailAddress)
 import Env
+import Http
 import HttpHelpers
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
@@ -40,6 +41,7 @@ init =
       , prices = AssocList.empty
       , time = Time.millisToPosix 0
       , randomAtmosphericNumbers = Nothing
+      , localUuidData = Nothing
       , products =
             AssocList.fromList
                 [ ( Id.fromString "prod_NwykP5NQq7KEJt"
@@ -57,7 +59,7 @@ init =
     , Cmd.batch
         [ Time.now |> Task.perform GotTime
         , Stripe.getPrices GotPrices
-        , LocalUUID.getAtmosphericRandomNumbers
+        , getAtmosphericRandomNumbers
         ]
     )
 
@@ -75,11 +77,11 @@ update msg model =
     -- Replace existing randomAtmosphericNumber with a new one if possible
     (case msg of
         GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers ->
-            ( { model
-                | randomAtmosphericNumbers =
+            let
+                ( numbers, data_ ) =
                     case tryRandomAtmosphericNumbers of
                         Err _ ->
-                            model.randomAtmosphericNumbers
+                            ( model.randomAtmosphericNumbers, model.localUuidData )
 
                         Ok rns ->
                             let
@@ -90,8 +92,15 @@ update msg model =
                                         |> List.map String.trim
                                         |> List.filterMap String.toInt
                                         |> Debug.log "@@parts (2)"
+
+                                data =
+                                    LocalUUID.initFrom4List parts
                             in
-                            Just parts
+                            ( Just parts, data )
+            in
+            ( { model
+                | randomAtmosphericNumbers = numbers |> Debug.log "@@RANDOM_NUMBERS"
+                , localUuidData = data_ |> Debug.log "@@UUID_DATA"
               }
             , Cmd.none
             )
@@ -181,7 +190,7 @@ update msg model =
         OnConnected _ clientId ->
             ( model
             , Cmd.batch
-                [ LocalUUID.getAtmosphericRandomNumbers
+                [ getAtmosphericRandomNumbers
                 , Lamdera.sendToFrontend
                     clientId
                     (InitData
@@ -420,3 +429,11 @@ errorEmail errorMessage =
 elmCampEmailAddress : EmailAddress
 elmCampEmailAddress =
     Unsafe.emailAddress "team@elm.camp"
+
+
+getAtmosphericRandomNumbers : Cmd Types.BackendMsg
+getAtmosphericRandomNumbers =
+    Http.get
+        { url = LocalUUID.randomNumberUrl 4 9
+        , expect = Http.expectString Types.GotAtmosphericRandomNumbers
+        }

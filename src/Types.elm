@@ -6,6 +6,7 @@ import Browser.Navigation exposing (Key)
 import Http
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
+import LocalUUID
 import Postmark exposing (PostmarkSendResponse)
 import Route exposing (Route)
 import Stripe.Codec
@@ -76,6 +77,7 @@ type SignInState
 
 type alias BackendModel =
     { randomAtmosphericNumbers : Maybe (List Int)
+    , localUuidData : Maybe LocalUUID.Data
 
     --STRIPE
     , orders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.Order
