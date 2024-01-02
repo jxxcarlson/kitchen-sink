@@ -3,6 +3,7 @@ module Types exposing (..)
 import AssocList
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
+import Dict
 import Http
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
@@ -16,6 +17,7 @@ import Stripe.Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessi
 import Time
 import Untrusted exposing (Untrusted)
 import Url exposing (Url)
+import User
 
 
 type FrontendModel
@@ -78,6 +80,9 @@ type SignInState
 type alias BackendModel =
     { randomAtmosphericNumbers : Maybe (List Int)
     , localUuidData : Maybe LocalUUID.Data
+
+    -- USER
+    , userDictionary : Dict.Dict String User.User
 
     --STRIPE
     , orders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.Order

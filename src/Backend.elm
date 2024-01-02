@@ -2,6 +2,7 @@ module Backend exposing (..)
 
 import AssocList
 import BackendHelper
+import Dict
 import Duration
 import Email
 import Env
@@ -29,7 +30,10 @@ app =
 
 init : ( BackendModel, Cmd BackendMsg )
 init =
-    ( { orders = AssocList.empty
+    ( { userDictionary = Dict.empty
+
+      --STRIPE
+      , orders = AssocList.empty
       , pendingOrder = AssocList.empty
       , expiredOrders = AssocList.empty
       , prices = AssocList.empty

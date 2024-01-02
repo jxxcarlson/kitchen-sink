@@ -2,6 +2,7 @@ module RPC exposing (lamdera_handleEndpoints, requestPurchaseCompletedEndpoint)
 
 import AssocList
 import Backend
+import BackendHelper
 import Codec
 import Email
 import Email.Html as Html
@@ -49,7 +50,7 @@ purchaseCompletedEndpoint _ model request =
                             let
                                 maybeTicket : Maybe Product_
                                 maybeTicket =
-                                    case Backend.priceIdToProductId model order.priceId of
+                                    case BackendHelper.priceIdToProductId model order.priceId of
                                         Just productId ->
                                             AssocList.get productId Tickets.dict
 
@@ -78,7 +79,7 @@ purchaseCompletedEndpoint _ model request =
                                     , Postmark.sendEmail
                                         (ConfirmationEmailSent stripeSessionId)
                                         Env.postmarkApiKey
-                                        { from = { name = "elm-camp", email = Backend.elmCampEmailAddress }
+                                        { from = { name = "elm-camp", email = BackendHelper.elmCampEmailAddress }
                                         , to =
                                             Nonempty
                                                 { name = PurchaseForm.purchaserName order.form |> Name.toString
@@ -99,7 +100,7 @@ purchaseCompletedEndpoint _ model request =
                                                 ++ ", stripeSessionId: "
                                                 ++ Id.toString stripeSessionId
                                     in
-                                    ( Err (Http.BadBody error), model, Backend.errorEmail error )
+                                    ( Err (Http.BadBody error), model, BackendHelper.errorEmail error )
 
                         Nothing ->
                             let
@@ -107,7 +108,7 @@ purchaseCompletedEndpoint _ model request =
                                     "Stripe session not found: stripeSessionId: "
                                         ++ Id.toString stripeSessionId
                             in
-                            ( Err (Http.BadBody error), model, Backend.errorEmail error )
+                            ( Err (Http.BadBody error), model, BackendHelper.errorEmail error )
 
         Err error ->
             let
@@ -115,7 +116,7 @@ purchaseCompletedEndpoint _ model request =
                     "Failed to decode webhook: "
                         ++ Json.Decode.errorToString error
             in
-            ( Err (Http.BadBody errorText), model, Backend.errorEmail errorText )
+            ( Err (Http.BadBody errorText), model, BackendHelper.errorEmail errorText )
 
 
 confirmationEmail : Product_ -> { subject : NonemptyString, textBody : String, htmlBody : Html.Html }
@@ -135,7 +136,7 @@ confirmationEmail ticket =
             ++ Env.domain
             ++ "/#schedule"
             ++ ". If you have any questions, email us at "
-            ++ EmailAddress.toString Backend.elmCampEmailAddress
+            ++ EmailAddress.toString BackendHelper.elmCampEmailAddress
             ++ " (or just reply to this email)"
     , htmlBody =
         Html.div
@@ -152,8 +153,8 @@ confirmationEmail ticket =
                     [ Html.text "You can review the schedule here" ]
                 , Html.text ". If you have any questions, email us at "
                 , Html.a
-                    [ Attributes.href ("mailto:" ++ EmailAddress.toString Backend.elmCampEmailAddress) ]
-                    [ Html.text (EmailAddress.toString Backend.elmCampEmailAddress) ]
+                    [ Attributes.href ("mailto:" ++ EmailAddress.toString BackendHelper.elmCampEmailAddress) ]
+                    [ Html.text (EmailAddress.toString BackendHelper.elmCampEmailAddress) ]
                 , Html.text " (or just reply to this email)"
                 ]
             ]
