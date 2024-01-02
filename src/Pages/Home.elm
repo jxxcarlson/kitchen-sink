@@ -45,6 +45,13 @@ See the **Features** and **Note** tabs for more information. The first
 of these lists the main features of the template and their status. The
  second gives details on thier implementation
 
+ *During the testing phase, the app comes preloaded with two users, `jxxcarlson`
+ and `aristotle`, both with password `1234`.  Some Stripe data is also preloaded.
+ You can add more users if you
+ wish, and you can play administrator by signing in as `jxxcarlson`.  Do note
+ that in this initial phase, I am doing destructive migrations. Consequently
+ all data except that which is preloaded is lost.*
+
  Below are examples of how one uses ports to (a) play a sound and (b) copy text to the clipboard.
         """
         |> MarkdownThemed.renderFull
