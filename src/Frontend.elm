@@ -206,6 +206,16 @@ updateLoaded msg model =
         SubmitSignIn ->
             ( model, Lamdera.sendToBackend (SignInRequest model.username model.password) )
 
+        SubmitSignOut ->
+            ( { model
+                | currentUser = Nothing
+                , signInState = SignedOut
+                , username = ""
+                , password = ""
+              }
+            , Cmd.none
+            )
+
         SubmitSignUp ->
             ( model, Lamdera.sendToBackend (SignUpRequest model.realname model.username model.email model.password) )
 
@@ -338,7 +348,27 @@ updateFromBackendLoaded msg model =
         UserSignedIn maybeUser ->
             case maybeUser of
                 Nothing ->
-                    ( { model | signInState = SignedOut, currentUser = Nothing }, Cmd.none )
+                    ( { model
+                        | signInState = SignedOut
+                        , realname = ""
+                        , username = ""
+                        , email = ""
+                        , password = ""
+                        , passwordConfirmation = ""
+                        , currentUser = Nothing
+                      }
+                    , Cmd.none
+                    )
 
                 Just user ->
-                    ( { model | signInState = SignedIn, currentUser = Just user }, Cmd.none )
+                    ( { model
+                        | signInState = SignedIn
+                        , realname = ""
+                        , username = ""
+                        , email = ""
+                        , password = ""
+                        , passwordConfirmation = ""
+                        , currentUser = Just user
+                      }
+                    , Cmd.none
+                    )

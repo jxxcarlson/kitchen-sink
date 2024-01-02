@@ -36,14 +36,6 @@ type alias LoadingModel =
 
 
 type alias LoadedModel =
-    --type alias User =
-    --    { id : Int
-    --    , name : String
-    --    , email : String
-    --    , password : String
-    --    , created_at : Time.Posix
-    --    , updated_at : Time.Posix
-    --    }
     { key : Key
     , now : Time.Posix
     , window : { width : Int, height : Int }
@@ -114,6 +106,7 @@ type FrontendMsg
     | SignIn
     | SetSignInState SignInState
     | SubmitSignIn
+    | SubmitSignOut
     | SubmitSignUp
     | InputRealname String
     | InputUsername String

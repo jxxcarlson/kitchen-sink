@@ -5,6 +5,7 @@ module View.Button exposing
     , playSound
     , setSignInState
     , signIn
+    , signOut
     , signUp
     )
 
@@ -27,6 +28,11 @@ import View.Color
 signIn : Element.Element Types.FrontendMsg
 signIn =
     button Types.SubmitSignIn "Submit"
+
+
+signOut : Element.Element Types.FrontendMsg
+signOut =
+    button Types.SubmitSignOut "Sign out"
 
 
 signUp : Element.Element Types.FrontendMsg

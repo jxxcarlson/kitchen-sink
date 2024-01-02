@@ -13,7 +13,7 @@ generic : Types.LoadedModel -> (Types.LoadedModel -> Element msg) -> Element msg
 generic model view =
     Element.column
         [ Element.width Element.fill, Element.height Element.fill ]
-        [ header model.route { window = model.window, isCompact = True }
+        [ header model model.route { window = model.window, isCompact = True }
         , Element.column
             (Element.padding 20
                 :: Element.scrollbarY
@@ -26,8 +26,8 @@ generic model view =
         ]
 
 
-header : Route -> { window : { width : Int, height : Int }, isCompact : Bool } -> Element msg
-header route config =
+header : Types.LoadedModel -> Route -> { window : { width : Int, height : Int }, isCompact : Bool } -> Element msg
+header model route config =
     Element.el
         [ Element.Background.color View.Color.blue
         , Element.paddingXY 24 16
@@ -55,7 +55,17 @@ header route config =
                 { url = Route.encode Purchase, label = Element.text "Purchase" }
             , Element.link
                 (linkStyle route SignInRoute)
-                { url = Route.encode SignInRoute, label = Element.text "Sign In" }
+                { url = Route.encode SignInRoute
+                , label =
+                    Element.text
+                        (case model.currentUser of
+                            Just user ->
+                                "User" ++ user.email
+
+                            Nothing ->
+                                "Sign in"
+                        )
+                }
             ]
         )
 

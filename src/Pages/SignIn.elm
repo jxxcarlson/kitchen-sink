@@ -4,6 +4,7 @@ import Element exposing (Element)
 import Element.Font
 import Types exposing (..)
 import View.Button
+import View.Color
 import View.Input
 
 
@@ -14,7 +15,7 @@ view model =
             signIn model
 
         SignedIn ->
-            Element.text <| "Signed in (" ++ model.username ++ ")"
+            signedIn model
 
         SignUp ->
             signUp model
@@ -24,7 +25,14 @@ signIn : LoadedModel -> Element FrontendMsg
 signIn model =
     Element.column [ Element.spacing 18, topPadding ]
         [ Element.el [ Element.Font.bold, Element.Font.size 24 ] (Element.text "Sign in")
-        , Element.el [ Element.Font.size 18 ] (Element.text "(( Mock-up: not working ))")
+        , Element.column [ Element.spacing 8, Element.Font.italic ]
+            [ Element.el [ Element.Font.size 14 ] (Element.text "This is a mock sign in page.")
+            , Element.el [ Element.Font.size 14 ] (Element.text "Put in a throwaway password - NOT one you use elsewhere.")
+            , Element.el [ Element.Font.size 14 ] (Element.text "There is ABSOLUTELY NO security here.")
+            , Element.el [ Element.Font.size 14 ] (Element.text "This for initial testing only.")
+            , Element.el [ Element.Font.size 14 ] (Element.text "From time to time the database will be reset and all will be lost.")
+            , Element.el [ Element.Font.size 14 ] (Element.text "PS: no validation yet.")
+            ]
         , View.Input.template "User Name" model.username InputUsername
         , View.Input.template "Password" model.password InputPassword
         , Element.row [ Element.spacing 18 ]
@@ -34,11 +42,26 @@ signIn model =
         ]
 
 
+signedIn : LoadedModel -> Element FrontendMsg
+signedIn model =
+    Element.column [ Element.spacing 18, topPadding, Element.Font.size 24, Element.Font.color View.Color.darkGray ]
+        [ Element.text <| "Signed in as " ++ (Maybe.map .username model.currentUser |> Maybe.withDefault "??")
+        , View.Button.signOut
+        ]
+
+
 signUp : LoadedModel -> Element FrontendMsg
 signUp model =
     Element.column [ Element.spacing 18, topPadding ]
         [ Element.el [ Element.Font.bold, Element.Font.size 24 ] (Element.text "Sign up")
-        , Element.el [ Element.Font.size 18 ] (Element.text "(( Mock-up: not working ))")
+        , Element.column [ Element.spacing 8, Element.Font.italic ]
+            [ Element.el [ Element.Font.size 14 ] (Element.text "This is a mock sign up page.")
+            , Element.el [ Element.Font.size 14 ] (Element.text "Put in a throwaway password - NOT one you use elsewhere.")
+            , Element.el [ Element.Font.size 14 ] (Element.text "There is ABSOLUTELY NO security here.")
+            , Element.el [ Element.Font.size 14 ] (Element.text "This for initial testing only.")
+            , Element.el [ Element.Font.size 14 ] (Element.text "From time to time the database will be reset and all will be lost.")
+            , Element.el [ Element.Font.size 14 ] (Element.text "PS: no validation yet.")
+            ]
         , View.Input.template "Real Name" model.realname InputRealname
         , View.Input.template "User Name" model.username InputUsername
         , View.Input.template "Password" model.password InputPassword
