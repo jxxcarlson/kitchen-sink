@@ -10,10 +10,10 @@ exports.init =  async function(app) {
         initCalendar();
     };
     
-    calendarJs.src = "https://cdn.skypack.dev/calendar-native-web-component@0.0.32";;
+    calendarJs.src = "https://cdn.skypack.dev/calendar-native-web-component@0.0.32";
 
     document.head.appendChild(calendarJs);
-    console.log("elm-katex: III (1) have appended calendarJs to document.head");
+    console.log("I have appended calendarJs to document.head");
 
 
     function initCalendar() {
@@ -27,7 +27,7 @@ exports.init =  async function(app) {
                 // Create a shadow root
                 this.attachShadow({ mode: 'open' });
 
-                // Create elements
+                // Create element
                 const wrapper = document.createElement('div');
                 wrapper.setAttribute('class', 'date-picker');
 
@@ -52,7 +52,10 @@ exports.init =  async function(app) {
         }
 
        // Define the new element
-        customElements.define('date-picker', DatePicker);
+        customElements.define(' date-picker', DatePicker);
 
     }
 }
+
+
+// SOURCE: https://www.skypack.dev/view/calendar-native-web-component

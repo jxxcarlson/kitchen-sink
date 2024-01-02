@@ -10,6 +10,7 @@ import HttpHelpers
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
 import LocalUUID
+import Predicate
 import Quantity
 import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
@@ -393,8 +394,8 @@ updateFromFrontend sessionId clientId msg model =
                 Nothing ->
                     ( model, Cmd.none )
 
-        AdminInspect pass ->
-            if pass == Env.adminPassword then
+        AdminInspect maybeUser ->
+            if Predicate.isAdmin maybeUser then
                 ( model, Lamdera.sendToFrontend clientId (AdminInspectResponse model) )
 
             else

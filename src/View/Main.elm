@@ -14,6 +14,7 @@ import Pages.Notes
 import Pages.Parts
 import Pages.Purchase
 import Pages.SignIn
+import Predicate
 import Route exposing (Route(..))
 import Theme
 import Types exposing (..)
@@ -78,8 +79,12 @@ loadedView model =
         Brillig ->
             Pages.Parts.generic model Pages.Brillig.view
 
-        AdminRoute passM ->
-            Admin.view model
+        AdminRoute ->
+            if Predicate.isAdmin model.currentUser then
+                Pages.Parts.generic model Admin.view
+
+            else
+                Pages.Parts.generic model Pages.Home.view
 
         Purchase ->
             Pages.Parts.generic model Pages.Purchase.view

@@ -3,6 +3,7 @@ module Admin exposing (..)
 import AssocList
 import Codec
 import Element exposing (..)
+import Element.Font
 import Id exposing (Id)
 import Lamdera
 import Stripe.Codec
@@ -14,14 +15,14 @@ view : LoadedModel -> Element msg
 view model =
     case model.backendModel of
         Just backendModel ->
-            viewAdmin backendModel
+            viewStripeData backendModel
 
         Nothing ->
-            text "loading"
+            text "loading .."
 
 
-viewAdmin : BackendModel -> Element msg
-viewAdmin backendModel =
+viewStripeData : BackendModel -> Element msg
+viewStripeData backendModel =
     -- type alias BackendModel =
     --     { orders : AssocList.Dict (Id StripeSessionId) Order
     --     , pendingOrder : AssocList.Dict (Id StripeSessionId) PendingOrder
@@ -34,7 +35,7 @@ viewAdmin backendModel =
         [ width fill
         , spacing 40
         ]
-        [ text "Admin"
+        [ Element.el [ Element.Font.bold, Element.Font.size 18 ] (text "Stripe Data")
         , viewOrders backendModel.orders
         , viewPendingOrder backendModel.pendingOrder
         , viewExpiredOrders backendModel.expiredOrders

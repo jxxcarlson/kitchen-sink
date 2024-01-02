@@ -15,11 +15,11 @@ The kitchen sink app provides (or will provide) the features listed below.
 - Page routing
 - Stripe (See *the *Purchase** tab)
 - Ports (Stripe, Chirp and Copy Pi buttons on the home page)
-- Basic admin page (not started)
+- Basic admin page (started, accessible if the user is the signed-in admin)
 - User module (mock-up of user sign-in/up/out stuff, see the *Sign In* tab)
 - Authentication (not started)
 - UUIDs (generate on backend and provide as service)
-- Custom element (not started; possibly do a calendar element)
+- Custom element (                                                                                                  started; possibly do a calendar element)
 - RPC (used in the Stripe interface)
 - Markdown (used in this document and others)
 

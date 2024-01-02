@@ -1,6 +1,5 @@
 module View.Utility exposing
     ( count
-    , datePickerElement
     , decrementModN
     , elementAttribute
     , focusOnElement
@@ -24,11 +23,6 @@ import Html.Events
 import Json.Decode
 import Task exposing (Task)
 import Types exposing (FrontendMsg, LoadedModel)
-
-
-datePickerElement : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
-datePickerElement =
-    Html.node "date-picker"
 
 
 scrollToTop : Cmd FrontendMsg

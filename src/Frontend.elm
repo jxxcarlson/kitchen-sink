@@ -13,6 +13,7 @@ import Json.Decode
 import Json.Encode
 import Lamdera
 import Ports
+import Predicate
 import Route exposing (Route(..))
 import Stripe.Product as Tickets exposing (Product_)
 import Stripe.PurchaseForm as PurchaseForm exposing (PressedSubmit(..), PurchaseForm, PurchaseFormValidated(..), SubmitStatus(..))
@@ -82,14 +83,6 @@ init url key =
         , case route of
             PaymentCancelRoute ->
                 Lamdera.sendToBackend CancelPurchaseRequest
-
-            AdminRoute passM ->
-                case passM of
-                    Just pass ->
-                        Lamdera.sendToBackend (AdminInspect pass)
-
-                    Nothing ->
-                        Cmd.none
 
             _ ->
                 Cmd.none
@@ -370,5 +363,9 @@ updateFromBackendLoaded msg model =
                         , passwordConfirmation = ""
                         , currentUser = Just user
                       }
-                    , Cmd.none
+                    , if Predicate.isAdmin (Just user) then
+                        Lamdera.sendToBackend (AdminInspect maybeUser)
+
+                      else
+                        Cmd.none
                     )

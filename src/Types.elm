@@ -123,7 +123,7 @@ type FrontendMsg
 type ToBackend
     = SubmitFormRequest (Id PriceId) (Untrusted PurchaseFormValidated)
     | CancelPurchaseRequest
-    | AdminInspect String
+    | AdminInspect (Maybe User.User)
       -- STRIPE
     | RenewPrices
       -- USER

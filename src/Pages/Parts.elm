@@ -3,6 +3,7 @@ module Pages.Parts exposing (footer, generic, header)
 import Element exposing (Element)
 import Element.Background
 import Element.Font
+import Predicate
 import Route exposing (Route(..))
 import Theme
 import Types
@@ -44,6 +45,13 @@ header model route config =
             [ Element.link
                 (linkStyle route HomepageRoute)
                 { url = Route.encode HomepageRoute, label = Element.text "Lamdera Kitchen Sink" }
+            , if Predicate.isAdmin model.currentUser then
+                Element.link
+                    (linkStyle route AdminRoute)
+                    { url = Route.encode AdminRoute, label = Element.text "Admin" }
+
+              else
+                Element.none
             , Element.link
                 (linkStyle route Features)
                 { url = Route.encode Features, label = Element.text "Features" }
