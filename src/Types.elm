@@ -75,7 +75,7 @@ type SignInState
 
 
 type alias BackendModel =
-    { randomAtmosphericNumber : Maybe Int
+    { randomAtmosphericNumbers : Maybe (List Int)
 
     --STRIPE
     , orders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.Order
@@ -133,7 +133,7 @@ type ToBackend
 type BackendMsg
     = GotTime Time.Posix
       --
-    | GotAtmosphericRandomNumber (Result Http.Error String)
+    | GotAtmosphericRandomNumbers (Result Http.Error String)
       -- STRIPE
     | GotPrices (Result Http.Error (List PriceData))
     | GotPrices2 ClientId (Result Http.Error (List PriceData))

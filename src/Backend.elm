@@ -10,6 +10,7 @@ import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
 import List.Extra as List
 import List.Nonempty
+import LocalUUID
 import Postmark exposing (PostmarkEmailBody(..))
 import Quantity
 import String.Nonempty exposing (NonemptyString(..))
@@ -18,7 +19,6 @@ import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId
 import Task
 import Time
 import Types exposing (..)
-import UUID
 import Unsafe
 import Untrusted
 
@@ -39,7 +39,7 @@ init =
       , expiredOrders = AssocList.empty
       , prices = AssocList.empty
       , time = Time.millisToPosix 0
-      , randomAtmosphericNumber = Nothing
+      , randomAtmosphericNumbers = Nothing
       , products =
             AssocList.fromList
                 [ ( Id.fromString "prod_NwykP5NQq7KEJt"
@@ -57,7 +57,7 @@ init =
     , Cmd.batch
         [ Time.now |> Task.perform GotTime
         , Stripe.getPrices GotPrices
-        , UUID.getAtmosphericRandomNumber
+        , LocalUUID.getAtmosphericRandomNumbers
         ]
     )
 
@@ -74,20 +74,24 @@ update : BackendMsg -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 update msg model =
     -- Replace existing randomAtmosphericNumber with a new one if possible
     (case msg of
-        GotAtmosphericRandomNumber tryRandomAtmosphericNumber ->
+        GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers ->
             ( { model
-                | randomAtmosphericNumber =
-                    case tryRandomAtmosphericNumber of
+                | randomAtmosphericNumbers =
+                    case tryRandomAtmosphericNumbers of
                         Err _ ->
-                            model.randomAtmosphericNumber
+                            model.randomAtmosphericNumbers
 
-                        Ok rn ->
-                            case String.toInt (String.trim rn) of
-                                Nothing ->
-                                    model.randomAtmosphericNumber
-
-                                Just n ->
-                                    Just n
+                        Ok rns ->
+                            let
+                                parts =
+                                    rns
+                                        |> Debug.log "@@parts (1)"
+                                        |> String.split "\t"
+                                        |> List.map String.trim
+                                        |> List.filterMap String.toInt
+                                        |> Debug.log "@@parts (2)"
+                            in
+                            Just parts
               }
             , Cmd.none
             )
@@ -177,7 +181,7 @@ update msg model =
         OnConnected _ clientId ->
             ( model
             , Cmd.batch
-                [ UUID.getAtmosphericRandomNumber
+                [ LocalUUID.getAtmosphericRandomNumbers
                 , Lamdera.sendToFrontend
                     clientId
                     (InitData
