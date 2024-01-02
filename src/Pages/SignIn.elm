@@ -64,8 +64,9 @@ signUp model =
             ]
         , View.Input.template "Real Name" model.realname InputRealname
         , View.Input.template "User Name" model.username InputUsername
+        , View.Input.template "Email" model.email InputEmail
         , View.Input.template "Password" model.password InputPassword
-        , View.Input.template "Password again" model.password InputPasswordConfirmation
+        , View.Input.template "Password again" model.passwordConfirmation InputPasswordConfirmation
         , Element.row [ Element.spacing 18 ]
             [ View.Button.signUp
             , View.Button.setSignInState "Cancel" SignedOut

@@ -56,10 +56,13 @@ type alias LoadedModel =
     , password : String
     , passwordConfirmation : String
 
+    -- ADMIN
+    , adminDisplay : AdminDisplay
+    , backendModel : Maybe BackendModel
+
     --
     , route : Route
     , isOrganiser : Bool
-    , backendModel : Maybe BackendModel
     , message : String
     }
 
@@ -68,6 +71,11 @@ type SignInState
     = SignedOut
     | SignUp
     | SignedIn
+
+
+type AdminDisplay
+    = ADStripe
+    | ADUser
 
 
 type alias BackendModel =

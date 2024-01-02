@@ -135,6 +135,9 @@ tryLoading loadingModel =
                         , passwordConfirmation = ""
                         , signInState = SignedOut
 
+                        -- ADMIN
+                        , adminDisplay = ADUser
+
                         --
                         , route = loadingModel.route
                         , isOrganiser = loadingModel.isOrganiser
