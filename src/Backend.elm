@@ -1,26 +1,20 @@
 module Backend exposing (..)
 
 import AssocList
+import BackendHelper
 import Duration
 import Email
-import EmailAddress exposing (EmailAddress)
 import Env
-import Http
 import HttpHelpers
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
-import List.Extra as List
-import List.Nonempty
 import LocalUUID
-import Postmark exposing (PostmarkEmailBody(..))
 import Quantity
-import String.Nonempty exposing (NonemptyString(..))
 import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
 import Task
 import Time
 import Types exposing (..)
-import Unsafe
 import Untrusted
 
 
@@ -59,7 +53,7 @@ init =
     , Cmd.batch
         [ Time.now |> Task.perform GotTime
         , Stripe.getPrices GotPrices
-        , getAtmosphericRandomNumbers
+        , BackendHelper.getAtmosphericRandomNumbers
         ]
     )
 
@@ -153,7 +147,7 @@ update msg model =
                     )
 
                 Err error ->
-                    ( model, errorEmail ("GotPrices failed: " ++ HttpHelpers.httpErrorToString error) )
+                    ( model, BackendHelper.errorEmail ("GotPrices failed: " ++ HttpHelpers.httpErrorToString error) )
 
         GotPrices2 clientId result ->
             let
@@ -185,12 +179,12 @@ update msg model =
                     )
 
                 Err error ->
-                    ( model, errorEmail ("GotPrices failed: " ++ HttpHelpers.httpErrorToString error) )
+                    ( model, BackendHelper.errorEmail ("GotPrices failed: " ++ HttpHelpers.httpErrorToString error) )
 
         OnConnected _ clientId ->
             ( model
             , Cmd.batch
-                [ getAtmosphericRandomNumbers
+                [ BackendHelper.getAtmosphericRandomNumbers
                 , Lamdera.sendToFrontend
                     clientId
                     (InitData
@@ -242,7 +236,7 @@ update msg model =
                     ( model
                     , Cmd.batch
                         [ SubmitFormResponse (Err err) |> Lamdera.sendToFrontend clientId
-                        , errorEmail err
+                        , BackendHelper.errorEmail err
                         , Lamdera.sendToFrontend clientId (GotMessage err)
                         ]
                     )
@@ -263,7 +257,7 @@ update msg model =
                             ( model, Cmd.none )
 
                 Err error ->
-                    ( model, errorEmail ("ExpiredStripeSession failed: " ++ HttpHelpers.httpErrorToString error ++ " stripeSessionId: " ++ Id.toString stripeSessionId) )
+                    ( model, BackendHelper.errorEmail ("ExpiredStripeSession failed: " ++ HttpHelpers.httpErrorToString error ++ " stripeSessionId: " ++ Id.toString stripeSessionId) )
 
         ConfirmationEmailSent stripeSessionId result ->
             case AssocList.get stripeSessionId model.orders of
@@ -288,12 +282,12 @@ update msg model =
                                         { order | emailResult = Email.EmailFailed error }
                                         model.orders
                               }
-                            , errorEmail ("Confirmation email failed: " ++ HttpHelpers.httpErrorToString error)
+                            , BackendHelper.errorEmail ("Confirmation email failed: " ++ HttpHelpers.httpErrorToString error)
                             )
 
                 Nothing ->
                     ( model
-                    , errorEmail ("StripeSessionId not found for confirmation email: " ++ Id.toString stripeSessionId)
+                    , BackendHelper.errorEmail ("StripeSessionId not found for confirmation email: " ++ Id.toString stripeSessionId)
                     )
 
         ErrorEmailSent _ ->
@@ -314,7 +308,7 @@ updateFromFrontend sessionId clientId msg model =
         SubmitFormRequest priceId a ->
             case Untrusted.purchaseForm a of
                 Just purchaseForm ->
-                    case priceIdToProductId model priceId of
+                    case BackendHelper.priceIdToProductId model priceId of
                         Just _ ->
                             let
                                 validProductAndForm : Bool
@@ -356,7 +350,7 @@ updateFromFrontend sessionId clientId msg model =
 
         -- STRIPE
         CancelPurchaseRequest ->
-            case sessionIdToStripeSessionId sessionId model of
+            case BackendHelper.sessionIdToStripeSessionId sessionId model of
                 Just stripeSessionId ->
                     ( model
                     , Stripe.expireSession stripeSessionId |> Task.attempt (ExpiredStripeSession stripeSessionId)
@@ -371,69 +365,3 @@ updateFromFrontend sessionId clientId msg model =
 
             else
                 ( model, Cmd.none )
-
-
-sessionIdToStripeSessionId : SessionId -> BackendModel -> Maybe (Id StripeSessionId)
-sessionIdToStripeSessionId sessionId model =
-    AssocList.toList model.pendingOrder
-        |> List.findMap
-            (\( stripeSessionId, data ) ->
-                if data.sessionId == sessionId then
-                    Just stripeSessionId
-
-                else
-                    Nothing
-            )
-
-
-priceIdToProductId : BackendModel -> Id PriceId -> Maybe (Id ProductId)
-priceIdToProductId model priceId =
-    AssocList.toList model.prices
-        |> List.findMap
-            (\( productId, prices ) ->
-                if prices.priceId == priceId then
-                    Just productId
-
-                else
-                    Nothing
-            )
-
-
-errorEmail : String -> Cmd BackendMsg
-errorEmail errorMessage =
-    case List.Nonempty.fromList Env.developerEmails of
-        Just to ->
-            Postmark.sendEmail
-                ErrorEmailSent
-                Env.postmarkApiKey
-                { from = { name = "elm-camp", email = elmCampEmailAddress }
-                , to = List.Nonempty.map (\email -> { name = "", email = email }) to
-                , subject =
-                    NonemptyString 'E'
-                        ("rror occurred "
-                            ++ (if Env.isProduction then
-                                    "(prod)"
-
-                                else
-                                    "(dev)"
-                               )
-                        )
-                , body = BodyText errorMessage
-                , messageStream = "outbound"
-                }
-
-        Nothing ->
-            Cmd.none
-
-
-elmCampEmailAddress : EmailAddress
-elmCampEmailAddress =
-    Unsafe.emailAddress "team@elm.camp"
-
-
-getAtmosphericRandomNumbers : Cmd Types.BackendMsg
-getAtmosphericRandomNumbers =
-    Http.get
-        { url = LocalUUID.randomNumberUrl 4 9
-        , expect = Http.expectString Types.GotAtmosphericRandomNumbers
-        }
