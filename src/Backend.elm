@@ -370,10 +370,20 @@ updateFromFrontend sessionId clientId msg model =
                     Debug.log "@@(username, password)" ( username, password )
             in
             if Just password == Maybe.map .password maybeUser then
-                ( model, Lamdera.sendToFrontend clientId (UserSignedIn maybeUser) )
+                ( model
+                , Cmd.batch
+                    [ Lamdera.sendToFrontend clientId (GotMessage "Sign in successful!")
+                    , Lamdera.sendToFrontend clientId (UserSignedIn maybeUser)
+                    ]
+                )
 
             else
-                ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
+                ( model
+                , Cmd.batch
+                    [ Lamdera.sendToFrontend clientId (UserSignedIn Nothing)
+                    , Lamdera.sendToFrontend clientId (GotMessage "Username and password do not match. ")
+                    ]
+                )
 
         SignUpRequest realname username email password ->
             case model.localUuidData of

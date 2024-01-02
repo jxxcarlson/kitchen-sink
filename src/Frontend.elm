@@ -198,7 +198,16 @@ updateLoaded msg model =
 
         -- USER
         SetSignInState state ->
-            ( { model | signInState = state }, Cmd.none )
+            ( { model
+                | signInState = state
+                , username = ""
+                , realname = ""
+                , email = ""
+                , password = ""
+                , passwordConfirmation = ""
+              }
+            , Cmd.none
+            )
 
         SignIn ->
             ( model, Cmd.none )
@@ -217,7 +226,45 @@ updateLoaded msg model =
             )
 
         SubmitSignUp ->
-            ( model, Lamdera.sendToBackend (SignUpRequest model.realname model.username model.email model.password) )
+            let
+                msg1 : Maybe String
+                msg1 =
+                    if model.password == model.passwordConfirmation then
+                        Nothing
+
+                    else
+                        Just "Passwords do not match"
+
+                msg2 : Maybe String
+                msg2 =
+                    if String.length model.password < 8 then
+                        Just "Password must be at least 8 characters long"
+
+                    else
+                        Nothing
+
+                msg3 : Maybe String
+                msg3 =
+                    if not <| String.contains "@" model.email then
+                        Just "Email must contain @"
+
+                    else
+                        Nothing
+
+                messages : List String
+                messages =
+                    List.filterMap identity [ msg1, msg2, msg3 ]
+
+                message =
+                    String.join ", " messages
+            in
+            ( { model | message = message }
+            , if messages == [] then
+                Lamdera.sendToBackend (SignUpRequest model.realname model.username model.email model.password)
+
+              else
+                Cmd.none
+            )
 
         InputRealname str ->
             ( { model | realname = str }, Cmd.none )

@@ -39,6 +39,7 @@ signIn model =
             [ View.Button.signIn
             , View.Button.setSignInState "Need an account?" SignUp
             ]
+        , Element.el [] (Element.text model.message)
         ]
 
 
