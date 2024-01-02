@@ -4,9 +4,11 @@ module BackendHelper exposing
     , getAtmosphericRandomNumbers
     , priceIdToProductId
     , sessionIdToStripeSessionId
+    , testUserDictionary
     )
 
 import AssocList
+import Dict
 import EmailAddress
 import Env
 import Http
@@ -18,8 +20,36 @@ import LocalUUID
 import Postmark
 import String.Nonempty
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
+import Time
 import Types
 import Unsafe
+import User
+
+
+testUserDictionary : Dict.Dict String User.User
+testUserDictionary =
+    Dict.fromList
+        [ ( "jxxcarlson"
+          , { realname = "Jim Carlson"
+            , username = "jxxcarlson"
+            , email = "jxxcarlson@gmail.com"
+            , password = "1234"
+            , id = "661b76d8-eee8-42fb-a28d-cf8ada73f869"
+            , created_at = Time.millisToPosix 1704237963000
+            , updated_at = Time.millisToPosix 1704237963000
+            }
+          )
+        , ( "aristotle"
+          , { realname = "Aristotle"
+            , username = "aristotle"
+            , email = "aritotle@gmail.com"
+            , password = "1234"
+            , id = "38952d62-9772-4e5d-a927-b8e41b6ef2ed"
+            , created_at = Time.millisToPosix 1704237963000
+            , updated_at = Time.millisToPosix 1704237963000
+            }
+          )
+        ]
 
 
 getAtmosphericRandomNumbers : Cmd Types.BackendMsg

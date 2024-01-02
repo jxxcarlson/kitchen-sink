@@ -68,7 +68,7 @@ header model route config =
                     Element.text
                         (case model.currentUser of
                             Just user ->
-                                "User" ++ user.email
+                                user.username
 
                             Nothing ->
                                 "Sign in"

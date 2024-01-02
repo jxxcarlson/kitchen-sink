@@ -71,6 +71,7 @@ signUp model =
             [ View.Button.signUp
             , View.Button.setSignInState "Cancel" SignedOut
             ]
+        , Element.el [ Element.Font.size 14, Element.Font.italic, Element.Font.color View.Color.darkGray ] (Element.text model.message)
         ]
 
 

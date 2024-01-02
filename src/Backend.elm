@@ -31,7 +31,7 @@ app =
 
 init : ( BackendModel, Cmd BackendMsg )
 init =
-    ( { userDictionary = Dict.empty
+    ( { userDictionary = BackendHelper.testUserDictionary |> Debug.log "@@USER_DICT (0, init)"
 
       --STRIPE
       , orders = AssocList.empty
@@ -73,6 +73,10 @@ subscriptions _ =
 
 update : BackendMsg -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 update msg model =
+    let
+        _ =
+            Debug.log "@@2.3 USER DICT" model.userDictionary
+    in
     -- Replace existing randomAtmosphericNumber with a new one if possible
     (case msg of
         GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers ->
@@ -86,11 +90,9 @@ update msg model =
                             let
                                 parts =
                                     rns
-                                        |> Debug.log "@@parts (1)"
                                         |> String.split "\t"
                                         |> List.map String.trim
                                         |> List.filterMap String.toInt
-                                        |> Debug.log "@@parts (2)"
 
                                 data =
                                     LocalUUID.initFrom4List parts
@@ -98,8 +100,14 @@ update msg model =
                             ( Just parts, data )
             in
             ( { model
-                | randomAtmosphericNumbers = numbers |> Debug.log "@@RANDOM_NUMBERS"
-                , localUuidData = data_ |> Debug.log "@@UUID_DATA"
+                | randomAtmosphericNumbers = numbers
+                , localUuidData = data_
+                , userDictionary =
+                    if Dict.isEmpty model.userDictionary then
+                        BackendHelper.testUserDictionary |> Debug.log "@@USER_DICT (3.8, GotAtmosphericRandomNumbers)"
+
+                    else
+                        model.userDictionary
               }
             , Cmd.none
             )
@@ -132,6 +140,9 @@ update msg model =
             let
                 _ =
                     Debug.log "@@GotPrices" result
+
+                _ =
+                    Debug.log "@@UserDict 1.55" model.userDictionary
             in
             case result of
                 Ok prices ->
@@ -349,8 +360,14 @@ updateFromFrontend sessionId clientId msg model =
         -- USER
         SignInRequest username password ->
             let
+                _ =
+                    Debug.log "@@USER DICT (1, SignInRequest)" model.userDictionary
+
                 maybeUser =
-                    Dict.get username model.userDictionary
+                    Dict.get username model.userDictionary |> Debug.log "@@Maybe_USER"
+
+                _ =
+                    Debug.log "@@(username, password)" ( username, password )
             in
             if Just password == Maybe.map .password maybeUser then
                 ( model, Lamdera.sendToFrontend clientId (UserSignedIn maybeUser) )
@@ -378,7 +395,7 @@ updateFromFrontend sessionId clientId msg model =
                     in
                     ( { model
                         | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
-                        , userDictionary = Dict.insert username user model.userDictionary |> Debug.log "@@USER_DICT"
+                        , userDictionary = Dict.insert username user model.userDictionary |> Debug.log "@@USER_DICT (2)"
                       }
                     , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
                     )
