@@ -185,6 +185,10 @@ updateLoaded msg model =
         MouseDown ->
             ( { model | showTooltip = False }, Cmd.none )
 
+        -- ADMIN
+        SetAdminDisplay adminDisplay ->
+            ( { model | adminDisplay = adminDisplay }, Cmd.none )
+
         -- PORTS EXAMPLES
         CopyTextToClipboard text ->
             ( model, Ports.supermario_copy_to_clipboard_to_js (Json.Encode.string text) )

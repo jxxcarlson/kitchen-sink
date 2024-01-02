@@ -3,6 +3,7 @@ module View.Button exposing
     , buyProduct
     , copyTextToClipboard
     , playSound
+    , setAdminDisplay
     , setSignInState
     , signIn
     , signOut
@@ -45,6 +46,19 @@ setSignInState label state =
     button (Types.SetSignInState state) label
 
 
+setAdminDisplay : Types.AdminDisplay -> Types.AdminDisplay -> String -> Element.Element Types.FrontendMsg
+setAdminDisplay currentDisplay newDisplay label =
+    highlightableButton (currentDisplay == newDisplay) (Types.SetAdminDisplay newDisplay) label
+
+
+highlight condition =
+    if condition then
+        [ Element.Font.color View.Color.yellow ]
+
+    else
+        [ Element.Font.color View.Color.white ]
+
+
 
 -- PORTS
 
@@ -83,6 +97,15 @@ button msg label =
         { onPress = Just msg
         , label =
             Element.el buttonLabelStyle (Element.text label)
+        }
+
+
+highlightableButton condition msg label =
+    Element.Input.button
+        buttonStyle
+        { onPress = Just msg
+        , label =
+            Element.el (buttonLabelStyle ++ highlight condition) (Element.text label)
         }
 
 

@@ -121,6 +121,8 @@ type FrontendMsg
     | InputEmail String
     | InputPassword String
     | InputPasswordConfirmation String
+      -- ADMIN
+    | SetAdminDisplay AdminDisplay
       --
     | SetViewport
       -- PORT EXAMPLES

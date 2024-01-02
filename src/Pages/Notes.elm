@@ -15,6 +15,36 @@ which has a number of useful built-in features. The notes
 below provide some information on how they work and how
 to use them.
 
+**Contents**
+
+- Admin page
+- Routing: Adding a new page
+- Ports: sending a message to JavaScript
+- Stripe: Account and API
+- Stripe: Displaying Product Information to the User
+- Stripe: Submitting a Purchase
+
+
+## Admin page
+
+There is now a rudimentary Admin page.  At the moment,
+it can do two things:
+
+- Display user data or data on the stripe interface.
+
+```
+User Data
+realname: Aristotle
+username: aristotle
+email: aristotle@philosophy.gr
+id: 38952d62-9772-4e5d-a927-b8e41b6ef2ed
+
+realname: Jim
+username: jxxcarlson
+email: jxxcarlson@gmail.com
+id: 661b76d8-eee8-42fb-a28d-cf8ada73f869
+```
+
 ## Routing: Adding a new page
 
 Suppose that you want to add a new page for notes to your app.

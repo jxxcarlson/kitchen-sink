@@ -11,6 +11,7 @@ import Stripe.Codec
 import Stripe.Stripe as Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
 import Types exposing (..)
 import User
+import View.Button
 import View.Geometry
 
 
@@ -20,24 +21,30 @@ type alias Window =
     }
 
 
-view : LoadedModel -> Element msg
+view : LoadedModel -> Element FrontendMsg
 view model =
-    case model.adminDisplay of
-        ADUser ->
-            case model.backendModel of
-                Just backendModel ->
-                    viewUserData model.window backendModel
+    Element.column []
+        [ Element.row [ Element.spacing 24, Element.paddingEach { left = 0, right = 0, top = 0, bottom = 24 } ]
+            [ View.Button.setAdminDisplay model.adminDisplay ADUser "Users"
+            , View.Button.setAdminDisplay model.adminDisplay ADStripe "Stripe Data"
+            ]
+        , case model.adminDisplay of
+            ADUser ->
+                case model.backendModel of
+                    Just backendModel ->
+                        viewUserData model.window backendModel
 
-                Nothing ->
-                    text "Can't find User data"
+                    Nothing ->
+                        text "Can't find User data"
 
-        ADStripe ->
-            case model.backendModel of
-                Just backendModel ->
-                    viewStripeData backendModel
+            ADStripe ->
+                case model.backendModel of
+                    Just backendModel ->
+                        viewStripeData backendModel
 
-                Nothing ->
-                    text "Can't find Stripe data"
+                    Nothing ->
+                        text "Can't find Stripe data"
+        ]
 
 
 viewUserData : Window -> BackendModel -> Element msg
@@ -46,14 +53,7 @@ viewUserData window backendModel =
         [ width fill
         , spacing 12
         ]
-        [ Element.el
-            [ Element.paddingEach { left = 0, right = 0, top = 48, bottom = 0 }
-            , Element.Font.bold
-            , Element.Font.size 18
-            ]
-            (text "User Data")
-        , viewUserDictionary window backendModel.userDictionary
-        ]
+        [ viewUserDictionary window backendModel.userDictionary ]
 
 
 viewUserDictionary : Window -> Dict.Dict String User.User -> Element msg
@@ -114,8 +114,7 @@ viewStripeData backendModel =
         [ width fill
         , spacing 40
         ]
-        [ Element.el [ Element.Font.bold, Element.Font.size 18 ] (text "Stripe Data")
-        , viewOrders backendModel.orders
+        [ viewOrders backendModel.orders
         , viewPendingOrder backendModel.pendingOrder
         , viewExpiredOrders backendModel.expiredOrders
         , viewPrices backendModel.prices
