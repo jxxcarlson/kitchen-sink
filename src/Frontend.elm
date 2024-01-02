@@ -134,6 +134,7 @@ tryLoading loadingModel =
                             }
 
                         -- USER
+                        , currentUser = Nothing
                         , realname = ""
                         , username = ""
                         , email = ""
@@ -332,3 +333,12 @@ updateFromBackendLoaded msg model =
 
         AdminInspectResponse backendModel ->
             ( { model | backendModel = Just backendModel }, Cmd.none )
+
+        -- USER
+        UserSignedIn maybeUser ->
+            case maybeUser of
+                Nothing ->
+                    ( { model | signInState = SignedOut, currentUser = Nothing }, Cmd.none )
+
+                Just user ->
+                    ( { model | signInState = SignedIn, currentUser = Just user }, Cmd.none )

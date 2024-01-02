@@ -56,6 +56,7 @@ type alias LoadedModel =
     , form : PurchaseForm
 
     -- USER
+    , currentUser : Maybe User.User
     , signInState : SignInState
     , realname : String
     , username : String
@@ -134,7 +135,7 @@ type ToBackend
     | RenewPrices
       -- USER
     | SignInRequest String String
-    | SignUpRequest String String String String
+    | SignUpRequest String String String String -- realname, username, email, password
 
 
 type BackendMsg
@@ -162,6 +163,8 @@ type ToFrontend
     | GotMessage String
     | SubmitFormResponse (Result String (Id StripeSessionId))
     | AdminInspectResponse BackendModel
+      -- USER
+    | UserSignedIn (Maybe User.User)
 
 
 

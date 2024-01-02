@@ -4,7 +4,7 @@ import Time
 
 
 type alias User =
-    { id : Int
+    { id : String
     , realname : String
     , username : String
     , email : String

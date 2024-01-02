@@ -1,5 +1,6 @@
 module LocalUUID exposing
     ( Data
+    , extractUUIDAsString
     , init
     , initFrom4List
     , randomNumberUrl
@@ -33,6 +34,11 @@ randomNumberUrl n maxDigits =
 
 type alias Data =
     ( UUID.UUID, UUID.Seeds )
+
+
+extractUUIDAsString : Data -> String
+extractUUIDAsString ( uuid, _ ) =
+    UUID.toString uuid
 
 
 initFrom4List : List Int -> Maybe Data
