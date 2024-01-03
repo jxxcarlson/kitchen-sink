@@ -12,10 +12,11 @@ import Env
 import Http
 import Id
 import Json.Decode
+import Json.Decode.Pipeline
 import Json.Encode
 import Lamdera exposing (SessionId)
 import Lamdera.Wire3 as Wire3
-import LamderaRPC
+import LamderaRPC exposing (RPC(..))
 import List.Nonempty exposing (Nonempty(..))
 import Name
 import Postmark
@@ -170,6 +171,63 @@ requestPurchaseCompletedEndpoint value =
     LamderaRPC.asTask Wire3.encodeString Wire3.decodeString value "purchaseCompletedEndpoint"
 
 
+
+-- EXAMPLE
+
+
+reverse : SessionId -> BackendModel -> String -> ( Result error String, BackendModel, Cmd msg )
+reverse sessionId model input =
+    ( Ok <| String.reverse input, model, Cmd.none )
+
+
+
+{-
+
+   reverse : SessionId -> BackendModel -> String -> ( RPC String, BackendModel, Cmd msg )
+   reverse sessionId model input =
+       ( Ok <| String.reverse input, model, Cmd.none )
+-}
+-- Things that should be auto-generated in future
+
+
+requestReverse : String -> Task Http.Error String
+requestReverse value =
+    LamderaRPC.asTask Wire3.encodeString Wire3.decodeString value "reverse"
+
+
+
+-- /EXAMPLE
+-- Define the handler
+
+
+exampleJson : SessionId -> BackendModel -> Json.Encode.Value -> ( Result Http.Error Json.Encode.Value, BackendModel, Cmd BackendMsg )
+exampleJson sessionId model jsonArg =
+    let
+        decoder =
+            Json.Decode.succeed identity
+                |> Json.Decode.Pipeline.required "name" Json.Decode.string
+
+        encoder =
+            Json.Encode.string
+    in
+    case Json.Decode.decodeValue decoder jsonArg of
+        Ok name ->
+            ( Ok <| encoder <| String.reverse name
+            , model
+            , Cmd.none
+            )
+
+        Err err ->
+            ( Err <|
+                Http.BadBody <|
+                    "Failed to decode arg for [json] "
+                        ++ "exampleJson "
+                        ++ Json.Decode.errorToString err
+            , model
+            , Cmd.none
+            )
+
+
 lamdera_handleEndpoints :
     LamderaRPC.RPCArgs
     -> BackendModel
@@ -179,5 +237,16 @@ lamdera_handleEndpoints args model =
         "stripe" ->
             LamderaRPC.handleEndpointJson purchaseCompletedEndpoint args model
 
+        "reverse" ->
+            LamderaRPC.handleEndpoint reverse Wire3.decodeString Wire3.encodeString args model
+
+        "exampleJson" ->
+            LamderaRPC.handleEndpointJson exampleJson args model
+
         _ ->
             ( LamderaRPC.ResultFailure <| Http.BadBody <| "Unknown endpoint " ++ args.endpoint, model, Cmd.none )
+
+
+
+-- This works:
+-- curl -X POST -d '{ "name": "jane" }' -H 'content-type: application/json' localhost:8000/_r/exampleJson
