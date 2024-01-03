@@ -74,7 +74,7 @@ of these lists the main features of the template and their status. The
 
  Note that you can play administrator by signing in as `jxxcarlson`. When signed
  is as an administrator, the **Admin** tab appears.  Using it, you
- can display the current users, Stripe data, a key-value store, and a log of events.
+ can display the current users, Stripe data, and a key-value store.
 
  *In this initial phase, I will sometimes do destructive migrations. Consequently
  all data except that which is preloaded will be lost.*
