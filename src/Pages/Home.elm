@@ -76,7 +76,9 @@ of these lists the main features of the template and their status. The
  is as an administrator, the **Admin** tab appears.  Using it, you
  can display the current users, Stripe data, and a key-value store.  You can
  put data into and get data out of the key-value store using remote
- procedure calls (RPCs). Below are three short examples: (a) play a sound,  (b) copy text to the clipboard, and
+ procedure calls (RPCs).
+
+ Below are three short examples: (a) play a sound,  (b) copy text to the clipboard, and
  (c) display the current time and time zone.  The first two use ports, the last
  is a simple, self-contained custom element.  See the `Ports` and `View.CustomElement`
  modules for more information.
