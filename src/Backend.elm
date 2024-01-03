@@ -56,7 +56,7 @@ init =
                 ]
 
       -- EXPERIMENTAL
-      , keyValueStore = Dict.empty
+      , keyValueStore = Dict.fromList [ ( "foo", "1234" ), ( "bar", "5678" ) ]
       }
     , Cmd.batch
         [ Time.now |> Task.perform GotTime

@@ -62,7 +62,7 @@ viewPair ( key, value ) =
         [ width fill
         , spacing 12
         ]
-        [ text key
+        [ text (key ++ ":")
         , text value
         ]
 

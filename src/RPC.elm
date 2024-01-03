@@ -261,6 +261,10 @@ keyValueEncoder kv =
 
 keyValueRPC : SessionId -> BackendModel -> Json.Encode.Value -> ( Result Http.Error Json.Encode.Value, BackendModel, Cmd msg )
 keyValueRPC sessionId model jsonArg =
+    let
+        _ =
+            Debug.log "@@ sessionId" sessionId
+    in
     case Json.Decode.decodeValue keyValueDecoder jsonArg of
         Ok kv ->
             ( Ok (keyValueEncoder kv)
@@ -307,4 +311,8 @@ lamdera_handleEndpoints args model =
    curl -X POST -d '{ "name": "jane" }' -H 'content-type: application/json' localhost:8000/_r/exampleJson
 
    curl -X POST -d '{ "key": "foo", "value": "1234" }' -H 'content-type: application/json' localhost:8000/_r/keyValueRPC
+
+   curl -X POST -d '{ "key": "foo", "value": "1234" }' -H 'content-type: application/json' https://elm-kitchen-sink.lamdera.app/_r/keyValueRPC
+
+
 -}
