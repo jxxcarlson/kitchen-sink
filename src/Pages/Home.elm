@@ -1,18 +1,12 @@
 module Pages.Home exposing (view)
 
 import Element exposing (Element)
-import Element.Background
-import Element.Font
-import Html
 import Html.Attributes
 import MarkdownThemed
-import Pages.Parts
 import Theme
 import Types exposing (..)
 import View.Button
-import View.Color
 import View.CustomElement
-import View.Utility
 
 
 view : LoadedModel -> Element FrontendMsg
@@ -32,6 +26,7 @@ view model =
                     , Html.Attributes.attribute "hour" "numeric"
                     , Html.Attributes.attribute "minute" "numeric"
                     , Html.Attributes.attribute "second" "numeric"
+                    , Html.Attributes.attribute "time-zone-name" "short"
                     ]
                     []
                     |> Element.html
@@ -84,6 +79,9 @@ of these lists the main features of the template and their status. The
  *In this initial phase, I will sometimes do destructive migrations. Consequently
  all data except that which is preloaded will be lost.*
 
- Below are examples of how one uses ports to (a) play a sound and (b) copy text to the clipboard.
+ Below are three short examples: (a) play a sound,  (b) copy text to the clipboard, and
+ (c) display the current time and time zone.  The first two use ports, the last
+ is a simple, self-contained custom element.  See the `Ports` and `View.CustomElement`
+ modules for more information.
         """
         |> MarkdownThemed.renderFull

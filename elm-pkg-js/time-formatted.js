@@ -5,6 +5,8 @@ exports.init =  async function(app) {
         initTimeFormatted();
     };
 
+    // https://javascript.info/custom-elements#example-time-formatted
+
     function initTimeFormatted() {
 
         console.log("Initializing custom element full-calendar (FullCalendar)");
@@ -25,12 +27,6 @@ exports.init =  async function(app) {
                 }).format(date);
             }
 
-            // connectedCallback() {
-            //     if (!this.rendered) {
-            //         this.render();
-            //         this.rendered = true;
-            //     }
-            // }
 
             static get observedAttributes() {
                 return ['datetime', 'year', 'month', 'day', 'hour', 'minute', 'second', 'time-zone-name'];

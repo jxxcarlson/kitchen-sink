@@ -15,10 +15,6 @@ port stripe_to_js : Json.Encode.Value -> Cmd msg
 port stripe_from_js : ({ msg : String, value : Json.Decode.Value } -> msg) -> Sub msg
 
 
-
--- port supermario_copy_to_clipboard_to_js : String -> Cmd msg
-
-
 port supermario_copy_to_clipboard_to_js : Json.Decode.Value -> Cmd msg
 
 
