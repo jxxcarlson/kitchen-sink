@@ -29,6 +29,10 @@ import Task exposing (Task)
 import Types exposing (BackendModel, BackendMsg(..), ToFrontend(..))
 
 
+
+-- STRIPE
+
+
 purchaseCompletedEndpoint :
     SessionId
     -> BackendModel
@@ -173,7 +177,7 @@ requestPurchaseCompletedEndpoint value =
 
 
 
--- EXAMPLE
+-- EXAMPLE (Mario)
 
 
 reverse : SessionId -> BackendModel -> String -> ( Result error String, BackendModel, Cmd msg )
@@ -182,12 +186,6 @@ reverse sessionId model input =
 
 
 
-{-
-
-   reverse : SessionId -> BackendModel -> String -> ( RPC String, BackendModel, Cmd msg )
-   reverse sessionId model input =
-       ( Ok <| String.reverse input, model, Cmd.none )
--}
 -- Things that should be auto-generated in future
 
 
@@ -197,7 +195,6 @@ requestReverse value =
 
 
 
--- /EXAMPLE
 -- Define the handler
 
 
@@ -230,11 +227,56 @@ exampleJson sessionId model jsonArg =
 
 
 
--- Key-value store
+--  KEY-VALUE STORE
 
 
 type alias KV =
     { key : String, value : String }
+
+
+putKeyValuePair : SessionId -> BackendModel -> Json.Encode.Value -> ( Result Http.Error Json.Encode.Value, BackendModel, Cmd msg )
+putKeyValuePair sessionId model jsonArg =
+    case Json.Decode.decodeValue keyValueDecoder jsonArg of
+        Ok kv ->
+            ( Ok (keyValueEncoder kv)
+            , { model | keyValueStore = Dict.insert kv.key kv.value model.keyValueStore }
+            , Cmd.none
+            )
+
+        Err err ->
+            ( Err <|
+                Http.BadBody <|
+                    "Failed to decode arg for [json] "
+                        ++ "putKeyValuePair "
+                        ++ Json.Decode.errorToString err
+            , model
+            , Cmd.none
+            )
+
+
+getKeyValuePair : SessionId -> BackendModel -> Json.Encode.Value -> ( Result Http.Error Json.Encode.Value, BackendModel, Cmd msg )
+getKeyValuePair sessionId model jsonArg =
+    let
+        decoder =
+            Json.Decode.succeed identity
+                |> Json.Decode.Pipeline.required "key" Json.Decode.string
+    in
+    case Json.Decode.decodeValue decoder jsonArg of
+        Ok key ->
+            ( Ok (Json.Encode.string (Dict.get key model.keyValueStore |> Maybe.withDefault ("Unknown key: " ++ key)))
+            , model
+            , Cmd.none
+            )
+
+        Err err ->
+            ( Err <|
+                Http.BadBody <|
+                    "Failed to decode arg for [json] "
+                        ++ "getKeyValuePair "
+                        ++ Json.Decode.errorToString err
+            , model
+            , Cmd.none
+            )
 
 
 keyValueDecoder : Json.Decode.Decoder KV
@@ -253,34 +295,7 @@ keyValueEncoder kv =
 
 
 
--- keyValueRPC : SessionId -> BackendModel -> Json.Encode.Value -> ( Result Http.Error Json.Encode.Value, BackendModel, Cmd BackendMsg )
--- exampleJson : SessionId -> BackendModel -> Json.Encode.Value -> ( Result Http.Error Json.Encode.Value, BackendModel, Cmd BackendMsg )
--- keyValueRPC : SessionId -> BackendModel -> Json.Encode.Value -> ( Result Http.Error Json.Encode.Value, BackendModel, Cmd msg )
----
-
-
-keyValueRPC : SessionId -> BackendModel -> Json.Encode.Value -> ( Result Http.Error Json.Encode.Value, BackendModel, Cmd msg )
-keyValueRPC sessionId model jsonArg =
-    let
-        _ =
-            Debug.log "@@ sessionId" sessionId
-    in
-    case Json.Decode.decodeValue keyValueDecoder jsonArg of
-        Ok kv ->
-            ( Ok (keyValueEncoder kv)
-            , { model | keyValueStore = Dict.insert kv.key kv.value model.keyValueStore }
-            , Cmd.none
-            )
-
-        Err err ->
-            ( Err <|
-                Http.BadBody <|
-                    "Failed to decode arg for [json] "
-                        ++ "exampleJson "
-                        ++ Json.Decode.errorToString err
-            , model
-            , Cmd.none
-            )
+-- ENDPOINTS
 
 
 lamdera_handleEndpoints :
@@ -298,21 +313,25 @@ lamdera_handleEndpoints args model =
         "exampleJson" ->
             LamderaRPC.handleEndpointJson exampleJson args model
 
-        "keyValueRPC" ->
-            LamderaRPC.handleEndpointJson keyValueRPC args model
+        "putKeyValuePair" ->
+            LamderaRPC.handleEndpointJson putKeyValuePair args model
+
+        "getKeyValuePair" ->
+            LamderaRPC.handleEndpointJson getKeyValuePair args model
 
         _ ->
             ( LamderaRPC.ResultFailure <| Http.BadBody <| "Unknown endpoint " ++ args.endpoint, model, Cmd.none )
 
 
 
--- These work:
+-- CURL REQUESTS
 {-
    curl -X POST -d '{ "name": "jane" }' -H 'content-type: application/json' localhost:8000/_r/exampleJson
 
-   curl -X POST -d '{ "key": "foo", "value": "1234" }' -H 'content-type: application/json' localhost:8000/_r/keyValueRPC
+   curl -X POST -d '{ "key": "foo", "value": "1234" }' -H 'content-type: application/json' localhost:8000/_r/putKeyValuePair
 
-   curl -X POST -d '{ "key": "foo", "value": "1234" }' -H 'content-type: application/json' https://elm-kitchen-sink.lamdera.app/_r/keyValueRPC
+   curl -X POST -d '{ "key": "foo" }' -H 'content-type: application/json' localhost:8000/_r/getKeyValuePair
 
+   curl -X POST -d '{ "key": "foo", "value": "1234" }' -H 'content-type: application/json' https://elm-kitchen-sink.lamdera.app/_r/putKeyValuePair
 
 -}

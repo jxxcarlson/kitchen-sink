@@ -21,7 +21,7 @@ Some features are still in-progress, and a few are not yet started.
 - Authentication (not started)
 - UUIDs (generate on backend and provide as service)
 - Custom element (                                                                                                  started; possibly do a calendar element)
-- RPC (used in the Stripe interface)
+- RPC (Stripe interface, example of a backend service to post and get key-value pairs)
 - Markdown (used in this document and others)
 
 The template is based on a stripped-down version of
