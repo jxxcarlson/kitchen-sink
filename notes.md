@@ -14,3 +14,6 @@ An example of using a web component
 
 
 https://fullcalendar.io/docs/web-component
+
+https://github.com/rob-sokolowski/kitchen-sink/pull/1/commits/43eb62fe906ffce7f6824e5523a359bbcc176c10#diff-4ef761f9449359fc04f9944b008fe6635c42693d9545a26b0f3acc58a3ec565f
+

@@ -81,28 +81,63 @@ Element.link [] { url = Route.encode Notes, label = Element.text "Notes" }
 
 Another possibility is to add a link to `Pages.parts.header`:
 
-## Ports: sending a message to JavaScript
 
-The **Chirp** button you see on the home page plays a "chirp" sound
-when you click it. This is done by sending a message to JavaScript
-via ports.  Here are the places to look to see how this is done:
 
-- `elm-pkg-js/play-sound.js` is the JavaScript code that plays the sound.
 
-- In `elm-pkg-js-includes.js` there is mandatory code needed for ports to work in production.
 
-- In module `Ports`, one has the function `port playSound : Json.Encode.Value -> Cmd msg`
-  which sends data to Javascript world.
 
-- This function is called in `Frontend.update` when the message `Chirp` is received.
-  The handler for this message is
-  `Chirp -> ( model, Ports.playSound (Json.Encode.string "chirp.mp3") )`. Clicking
-  on the "Chirp" button sends the message `Chirp`.
+## Ports
 
-- There is a file `chirp.mp3` in the `public` directory.  This is the
-audio file that is played.
+The code for setting up communication between Elm and JavaScript
+is found in three places:
 
-Look in the `elm-pkg-js` directory and the module `Ports` for more examples.
+ - The directory `elm-pkg-js` with files. Javascript files in this directory
+ define functions that communicate with Elm.
+
+ - The module `Ports`. It houses counterparts of the functions in `elm-pkg-js`.
+
+ - The file `elm-pkg-js-includes.js`. It informs Lamdera of the existence of
+ of the files in `elm-pkg-js` and makes them available in production.
+
+
+**Example.**
+
+Consider the function
+
+
+
+ ```
+ module Ports exposing (..)
+
+ port playSound : Json.Encode.Value -> Cmd msg
+ ```
+
+It is paired with the function `app.ports.playSound` in
+ `elm-pkg-js/play-sound.js`.
+
+The **Chirp** button you see on the home page sends a message
+`Chirp` which is handled in `Frontend.update`:
+
+```elm
+Chirp -> ( model, Ports.playSound (Json.Encode.string "chirp.mp3") )
+```
+
+The command `Ports.playSound (Json.Encode.string "chirp.mp3")` communicates
+with its Javascript counterpart in  `elm-pkg-js/play-sound.js`:
+
+```javascript
+exports.init = async function init(app) {
+
+    app.ports.playSound.subscribe( function(filename) {
+        console.log("Playing sound", filename)
+        var audio = new Audio(filename);
+        audio.play();
+    })
+}
+```
+
+The result is that a "chirp" sound is played when the button is clicked.
+
 
 
 
@@ -110,18 +145,20 @@ Look in the `elm-pkg-js` directory and the module `Ports` for more examples.
 
 ## RPC example
 
+*Offer a service where key-value pairs can be stored and retrieved.*
+
 The backend model has a field `keyValueStore : Dict String String`.  The
 contents of the store are displayed in the Admin page.  New
 key-value pairs can be inserted via an RPC call to endpoint `putKeyValuePair`.
-See function `RPC.puttKeyValuePair`.  To retrieve a value, use the
+See function `RPC.putKeyValuePair`.  To retrieve a value, use the
 endpoint `getKeyValuePair`.
 
 Here is an example of how the
 pair `Speed of light: 300,000 km/sec` was added the store:
 
 ```
-   curl -X POST -d '{ "key": "c", "value": "300,000 km/sec" }' \\
-   -H 'content-type: application/json' localhost:8000/_r/puttKeyValuePair
+   curl -X POST -d '{ "key": "Speed of light", "value": "300,000 km/sec" }' \\
+   -H 'content-type: application/json' localhost:8000/_r/putKeyValuePair
 ```
 
 And here is how it is retrieved:
