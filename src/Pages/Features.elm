@@ -18,7 +18,7 @@ Some features are still in-progress, and a few are not yet started.
 - Ports (Stripe, Chirp and Copy Pi buttons on the home page)
 - Basic admin page (started, accessible if the user is the signed-in admin)
 - User module (mock-up of user sign-in/up/out stuff, see the *Sign In* tab)
-- Authentication (not started)
+- Authentication (started by rob_soko (Rob Sokolowski))
 - UUIDs (generate on backend and provide as service)
 - Custom element (                                                                                                  started; possibly do a calendar element)
 - RPC (Stripe interface, example of a backend service to post and get key-value pairs)
