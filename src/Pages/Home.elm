@@ -74,12 +74,9 @@ of these lists the main features of the template and their status. The
 
  Note that you can play administrator by signing in as `jxxcarlson`. When signed
  is as an administrator, the **Admin** tab appears.  Using it, you
- can display the current users, Stripe data, and a key-value store.
-
- *In this initial phase, I will sometimes do destructive migrations. Consequently
- all data except that which is preloaded will be lost.*
-
- Below are three short examples: (a) play a sound,  (b) copy text to the clipboard, and
+ can display the current users, Stripe data, and a key-value store.  You can
+ put data into and get data out of the key-value store using remote
+ procedure calls (RPCs). Below are three short examples: (a) play a sound,  (b) copy text to the clipboard, and
  (c) display the current time and time zone.  The first two use ports, the last
  is a simple, self-contained custom element.  See the `Ports` and `View.CustomElement`
  modules for more information.
