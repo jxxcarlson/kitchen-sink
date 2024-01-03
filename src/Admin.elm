@@ -7,8 +7,10 @@ import Element exposing (..)
 import Element.Font
 import Id exposing (Id)
 import Lamdera
+import MarkdownThemed
 import Stripe.Codec
 import Stripe.Stripe as Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
+import Theme
 import Types exposing (..)
 import User
 import View.Button
@@ -53,7 +55,36 @@ viewKeyValuePairs window backendModel =
         , spacing 12
         , height (px <| window.height - 2 * View.Geometry.headerFooterHeight)
         ]
-        (List.map viewPair (Dict.toList backendModel.keyValueStore))
+        ([ Element.column Theme.contentAttributes [ content ]
+         , Element.el [ Element.Font.bold ] (text "Key-Value Store")
+         ]
+            ++ List.map viewPair (Dict.toList backendModel.keyValueStore)
+        )
+
+
+content =
+    """
+### RPC Example
+
+Add key-value pairs to the key-value store by sending this
+POST request:
+
+```
+curl -X POST -d '{ "key": "foo", "value": "1234" }' \\
+   -H 'content-type: application/json' \\
+   https://elm-kitchen-sink.lamdera.app/_r/putKeyValuePair
+```
+
+Retrieve key-value pairs from the key-value store by sending
+the request
+
+```
+curl -X POST -d '{ "key": "foo" }' \\
+-H 'content-type: application/json' \\
+https://elm-kitchen-sink.lamdera.app/_r/getKeyValuePair
+```
+"""
+        |> MarkdownThemed.renderFull
 
 
 viewPair : ( String, String ) -> Element msg

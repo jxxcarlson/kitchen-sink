@@ -43,14 +43,20 @@ The repo is at  [github.com/jxxcarlson/kitchen-sink](https://github.com/jxxcarls
 
 See the **Features** and **Note** tabs for more information. The first
 of these lists the main features of the template and their status. The
- second gives details on thier implementation
+ second gives details on their implementation. The **Purchase** tab
+ allows you to make fake purchases using Stripe.  Your credit card
+ will not be charged — this is all done in test mode.
 
- *During the testing phase, the app comes preloaded with two users, `jxxcarlson`
- and `aristotle`, both with password `1234`.  Some Stripe data is also preloaded.
- You can add more users if you
- wish, and you can play administrator by signing in as `jxxcarlson`.  Do note
- that in this initial phase, I am doing destructive migrations. Consequently
- all data except that which is preloaded is lost.*
+ During the testing phase, the app comes preloaded with two users, `jxxcarlson`
+ and `aristotle`, both with password `1234`. Use the **Sign in** tab for these.
+ You can also sign up for your own account.
+
+ Note that you can play administrator by signing in as `jxxcarlson`. When signed
+ is as an administrator, the **Admin** tab appears.  Using it, you
+ can display the current users, Stripe data, and a key-value store.
+
+ *In this initial phase, I will sometimes do destructive migrations. Consequently
+ all data except that which is preloaded will be lost.*
 
  Below are examples of how one uses ports to (a) play a sound and (b) copy text to the clipboard.
         """
