@@ -20,7 +20,9 @@ Some features are still in-progress, and a few are not yet started.
 - User module (mock-up of user sign-in/up/out stuff, see the *Sign In* tab)
 - Authentication (started by rob_soko (Rob Sokolowski))
 - UUIDs (generate on backend and provide as service)
-- Custom element (                                                                                                  started; possibly do a calendar element)
+- Custom elements (live local time display. *I need something more
+  substantial. Suggestions, code, and help are welcome.  A calendar element would be
+  especially nice.*)
 - RPC (Stripe interface, example of a backend service to post and get key-value pairs)
 - Markdown (used in this document and others)
 
