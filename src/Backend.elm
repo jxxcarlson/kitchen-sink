@@ -54,6 +54,9 @@ init =
                     }
                   )
                 ]
+
+      -- EXPERIMENTAL
+      , keyValueStore = Dict.empty
       }
     , Cmd.batch
         [ Time.now |> Task.perform GotTime

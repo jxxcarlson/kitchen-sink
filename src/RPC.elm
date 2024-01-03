@@ -4,6 +4,7 @@ import AssocList
 import Backend
 import BackendHelper
 import Codec
+import Dict
 import Email
 import Email.Html as Html
 import Email.Html.Attributes as Attributes
@@ -228,6 +229,56 @@ exampleJson sessionId model jsonArg =
             )
 
 
+
+-- Key-value store
+
+
+type alias KV =
+    { key : String, value : String }
+
+
+keyValueDecoder : Json.Decode.Decoder KV
+keyValueDecoder =
+    Json.Decode.map2 KV
+        (Json.Decode.field "key" Json.Decode.string)
+        (Json.Decode.field "value" Json.Decode.string)
+
+
+keyValueEncoder : KV -> Json.Encode.Value
+keyValueEncoder kv =
+    Json.Encode.object
+        [ ( "key", Json.Encode.string kv.key )
+        , ( "value", Json.Encode.string kv.value )
+        ]
+
+
+
+-- keyValueRPC : SessionId -> BackendModel -> Json.Encode.Value -> ( Result Http.Error Json.Encode.Value, BackendModel, Cmd BackendMsg )
+-- exampleJson : SessionId -> BackendModel -> Json.Encode.Value -> ( Result Http.Error Json.Encode.Value, BackendModel, Cmd BackendMsg )
+-- keyValueRPC : SessionId -> BackendModel -> Json.Encode.Value -> ( Result Http.Error Json.Encode.Value, BackendModel, Cmd msg )
+---
+
+
+keyValueRPC : SessionId -> BackendModel -> Json.Encode.Value -> ( Result Http.Error Json.Encode.Value, BackendModel, Cmd msg )
+keyValueRPC sessionId model jsonArg =
+    case Json.Decode.decodeValue keyValueDecoder jsonArg of
+        Ok kv ->
+            ( Ok (keyValueEncoder kv)
+            , { model | keyValueStore = Dict.insert kv.key kv.value model.keyValueStore }
+            , Cmd.none
+            )
+
+        Err err ->
+            ( Err <|
+                Http.BadBody <|
+                    "Failed to decode arg for [json] "
+                        ++ "exampleJson "
+                        ++ Json.Decode.errorToString err
+            , model
+            , Cmd.none
+            )
+
+
 lamdera_handleEndpoints :
     LamderaRPC.RPCArgs
     -> BackendModel
@@ -243,10 +294,17 @@ lamdera_handleEndpoints args model =
         "exampleJson" ->
             LamderaRPC.handleEndpointJson exampleJson args model
 
+        "keyValueRPC" ->
+            LamderaRPC.handleEndpointJson keyValueRPC args model
+
         _ ->
             ( LamderaRPC.ResultFailure <| Http.BadBody <| "Unknown endpoint " ++ args.endpoint, model, Cmd.none )
 
 
 
--- This works:
--- curl -X POST -d '{ "name": "jane" }' -H 'content-type: application/json' localhost:8000/_r/exampleJson
+-- These work:
+{-
+   curl -X POST -d '{ "name": "jane" }' -H 'content-type: application/json' localhost:8000/_r/exampleJson
+
+   curl -X POST -d '{ "key": "foo", "value": "1234" }' -H 'content-type: application/json' localhost:8000/_r/keyValueRPC
+-}

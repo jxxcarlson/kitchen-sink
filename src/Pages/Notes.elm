@@ -20,6 +20,7 @@ to use them.
 - Admin page
 - Routing: Adding a new page
 - Ports: sending a message to JavaScript
+- RPC example
 - Stripe: Account and API
 - Stripe: Displaying Product Information to the User
 - Stripe: Submitting a Purchase
@@ -102,6 +103,26 @@ via ports.  Here are the places to look to see how this is done:
 audio file that is played.
 
 Look in the `elm-pkg-js` directory and the module `Ports` for more examples.
+
+
+
+
+
+## RPC example
+
+The backend model has a field `keyValueStore : Dict String String`.  The
+contents of this dictionary are displayed in the Admin page.  New
+key-value pairs can be via an RPC call to endpoint `keyValueRPC`.
+See function `RPC.keyValueRPC`.  Here is an example of how the
+pair `foo: 1234` was added the key-value store:
+
+```
+   curl -X POST -d '{ "key": "foo", "value": "1234" }' \\
+   -H 'content-type: application/json' localhost:8000/_r/keyValueRPC
+```
+
+This could be a useful feature in production if the security
+issues it poses are addressed.
 
 
 ## Stripe: Account and API

@@ -26,24 +26,44 @@ view model =
     Element.column []
         [ Element.row [ Element.spacing 24, Element.paddingEach { left = 0, right = 0, top = 0, bottom = 24 } ]
             [ View.Button.setAdminDisplay model.adminDisplay ADUser "Users"
+            , View.Button.setAdminDisplay model.adminDisplay ADKeyValues "Key-Value Store"
             , View.Button.setAdminDisplay model.adminDisplay ADStripe "Stripe Data"
             ]
-        , case model.adminDisplay of
-            ADUser ->
-                case model.backendModel of
-                    Just backendModel ->
+        , case model.backendModel of
+            Nothing ->
+                text "Can't find that data"
+
+            Just backendModel ->
+                case model.adminDisplay of
+                    ADUser ->
                         viewUserData model.window backendModel
 
-                    Nothing ->
-                        text "Can't find User data"
+                    ADKeyValues ->
+                        viewKeyValuePairs model.window backendModel
 
-            ADStripe ->
-                case model.backendModel of
-                    Just backendModel ->
+                    ADStripe ->
                         viewStripeData backendModel
+        ]
 
-                    Nothing ->
-                        text "Can't find Stripe data"
+
+viewKeyValuePairs : Window -> BackendModel -> Element msg
+viewKeyValuePairs window backendModel =
+    column
+        [ width fill
+        , spacing 12
+        , height (px <| window.height - 2 * View.Geometry.headerFooterHeight)
+        ]
+        (List.map viewPair (Dict.toList backendModel.keyValueStore))
+
+
+viewPair : ( String, String ) -> Element msg
+viewPair ( key, value ) =
+    row
+        [ width fill
+        , spacing 12
+        ]
+        [ text key
+        , text value
         ]
 
 

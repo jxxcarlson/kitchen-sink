@@ -76,6 +76,7 @@ type SignInState
 type AdminDisplay
     = ADStripe
     | ADUser
+    | ADKeyValues
 
 
 type alias BackendModel =
@@ -92,6 +93,9 @@ type alias BackendModel =
     , prices : AssocList.Dict (Id ProductId) Stripe.Codec.Price2
     , time : Time.Posix
     , products : Stripe.Stripe.ProductInfoDict
+
+    -- EXPERIMENTAL
+    , keyValueStore : Dict.Dict String String
     }
 
 
