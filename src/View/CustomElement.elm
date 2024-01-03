@@ -1,8 +1,13 @@
-module View.CustomElement exposing (datePicker)
+module View.CustomElement exposing (fullCalendar, timeFormatted)
 
 import Html
 
 
-datePicker : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
-datePicker =
-    Html.node "date-picker"
+fullCalendar : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+fullCalendar =
+    Html.node "full-calendar"
+
+
+timeFormatted : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+timeFormatted =
+    Html.node "time-formatted"

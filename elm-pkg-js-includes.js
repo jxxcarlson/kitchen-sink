@@ -8,7 +8,9 @@ const play_sound= require('./elm-pkg-js/play-sound.js')
 
 const copy_to_clipboard = require('./elm-pkg-js/copy-to-clipboard.js')
 
-const calendar = require('./elm-pkg-js/calendar.js')
+const calendar = require('./Freezer/calendar.js')
+
+const time_formatted = require('./elm-pkg-js/time-formatted.js')
 
 exports.init = async function init(app) {
   // @WARNING: this only runs for Lamdera production deploys!
@@ -17,6 +19,7 @@ exports.init = async function init(app) {
   stripe.init(app);
   play_sound.init(app)
   copy_to_clipboard.init(app)
+  time_formatted.init(app)
   calendar.init(app)
 
 }

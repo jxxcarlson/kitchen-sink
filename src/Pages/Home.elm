@@ -1,13 +1,16 @@
 module Pages.Home exposing (view)
 
 import Element exposing (Element)
+import Element.Background
 import Element.Font
+import Html
 import Html.Attributes
 import MarkdownThemed
 import Pages.Parts
 import Theme
 import Types exposing (..)
 import View.Button
+import View.Color
 import View.CustomElement
 import View.Utility
 
@@ -23,14 +26,37 @@ view model =
             )
             [ View.Button.playSound
             , View.Button.copyTextToClipboard "Copy Pi to Clipboard" "3.141592653589793238462643383279502884197169399375105820974944592307816406286"
+            , Element.el [ Element.paddingXY 0 0 ]
+                (View.CustomElement.timeFormatted
+                    [ Html.Attributes.attribute "id" "elem"
+                    , Html.Attributes.attribute "hour" "numeric"
+                    , Html.Attributes.attribute "minute" "numeric"
+                    , Html.Attributes.attribute "second" "numeric"
+                    ]
+                    []
+                    |> Element.html
+                )
             ]
-        , View.CustomElement.datePicker
-            [ Html.Attributes.style "width" "400px"
-            , Html.Attributes.style "height" "300px"
-            ]
-            []
-            |> Element.html
         ]
+
+
+
+-- <time-formatted id="elem" hour="numeric" minute="numeric" second="numeric"></time-formatted>
+--, Element.column
+--    [ Element.Background.color View.Color.white
+--    , Element.paddingXY 20 20
+--    , Element.paddingEach { left = 0, right = 0, top = 60, bottom = 0 }
+--    ]
+--    [ Element.row [ Element.Font.color View.Color.darkBlue, Element.Font.size 20 ]
+--        [ Element.el [ Element.paddingXY 20 20 ] (Element.text "Calendar")
+--        , View.CustomElement.fullCalendar
+--            [ Html.Attributes.style "width" "400px"
+--            , Html.Attributes.style "height" "300px"
+--            ]
+--            [ Html.text "Hello" ]
+--            |> Element.html
+--        ]
+--    ]
 
 
 content : Element msg
@@ -53,7 +79,7 @@ of these lists the main features of the template and their status. The
 
  Note that you can play administrator by signing in as `jxxcarlson`. When signed
  is as an administrator, the **Admin** tab appears.  Using it, you
- can display the current users, Stripe data, and a key-value store.
+ can display the current users, Stripe data, a key-value store, and a log of events.
 
  *In this initial phase, I will sometimes do destructive migrations. Consequently
  all data except that which is preloaded will be lost.*
