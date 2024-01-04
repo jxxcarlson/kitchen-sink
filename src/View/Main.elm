@@ -1,12 +1,11 @@
 module View.Main exposing (view)
 
-import Admin
 import Browser exposing (UrlRequest(..))
 import Element exposing (Element)
-import Element.Background
 import Element.Font
 import EmailAddress exposing (EmailAddress)
 import MarkdownThemed
+import Pages.Admin
 import Pages.Brillig
 import Pages.Features
 import Pages.Home
@@ -18,7 +17,6 @@ import Predicate
 import Route exposing (Route(..))
 import Theme
 import Types exposing (..)
-import View.Color
 import View.Style
 
 
@@ -81,7 +79,7 @@ loadedView model =
 
         AdminRoute ->
             if Predicate.isAdmin model.currentUser then
-                Pages.Parts.generic model Admin.view
+                Pages.Parts.generic model Pages.Admin.view
 
             else
                 Pages.Parts.generic model Pages.Home.view

@@ -148,6 +148,37 @@ The result is that a "chirp" sound is played when the button is clicked.
 
 ## Custom Elements
 
+Let's talk about the custom element `time-formatted` which you will find
+on the home (Kitchen sink) page. The code for this element is in
+`elm-pkg-js/time-formatted.js`.  It is paired with the Elm function
+
+```
+timeFormatted : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+timeFormatted =
+    Html.node "time-formatted"
+```
+
+The `timeFormatted` function is called in `Pages.Home` via the code
+
+```
+Element.el [ Element.paddingXY 0 0 ]
+    (View.CustomElement.timeFormatted
+        [ Html.Attributes.attribute "id" "elem"
+        , Html.Attributes.attribute "hour" "numeric"
+        , Html.Attributes.attribute "minute" "numeric"
+        , Html.Attributes.attribute "second" "numeric"
+        , Html.Attributes.attribute "time-zone-name" "short"
+        ]
+        []
+        |> Element.html
+    )
+```
+
+Note that `time-formatted.js` is also referenced in
+`elm-pkg-js-includes.js` so that it will be available in production.
+
+[Documentation](https://javascript.info/custom-elements#example-time-formatted)
+
 **References**
 
 - [Elm Guide on Custom Elements](https://guide.elm-lang.org/interop/custom_elements.html)

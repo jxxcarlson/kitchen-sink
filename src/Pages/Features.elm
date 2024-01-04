@@ -35,6 +35,79 @@ The template is based on a stripped-down version of
 Mario Rogic's [Elm Camp Website](https://github.com/elm-camp/website) code.
 For additional information, see the **Notes** tab.
 
+## sjalq's list
+
+
+### Backend Data examples
+
+We have the field `keyValueStore : Dict.Dict String String` of the backend model.
+Data is inserted and retrieved via RPC calls.  See the **RPC Example** section
+
+### Pages with routing.
+
+  All of the tabs in the header of this app are pages with routing.
+
+### A reused component on two pages to demonstrate composability
+
+??
+
+### User + rights management
+
+??
+
+### A simplified OAuth implementation
+
+**Via custom code, not the Auth modules. Wire in for Google**
+
+Rob Sokolowski (rob_soko) has started an OAuth implementation.  We will have more to
+say abou this later.
+
+### Rights gating to a page.
+
+ The Admin page is only accessible to the signed-in admin.
+ Gating is handled in `loadedView : LoadedModel -> Element FrontendMsg`
+ by the `AdminRoute` case:
+
+ ```
+ loadedView : LoadedModel -> Element FrontendMsg
+ loadedView model =
+     case model.route of
+
+     ...
+
+     AdminRoute ->
+         if Predicate.isAdmin model.currentUser then
+             Pages.Parts.generic model Pages.Admin.view
+
+         else
+             Pages.Parts.generic model Pages.Home.view
+     ...
+```
+
+### An outgoing HTTP example
+
+??
+
+### An incoming RPC example
+
+See `putKeyValuePair` and `getKeyValuePair` in section **RPC Example** in
+tab **Notes.**
+
+
+
+
+### An example of using ports
+
+See the **Copy Pi** and **Chirp** buttons on the home page and the explanation thereof
+in the **Ports** section of the **Notes** tab.
+
+
+### An example of web component (custom element)
+
+See the live time and zone display in the home (Kitchen Sink) page.
+Documentation in the **Custom Elements** section of the **Notes** tab.
+Missing: at least one more example.
+
 
 """
         |> MarkdownThemed.renderFull

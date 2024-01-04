@@ -212,9 +212,9 @@ renderer theme =
                 , Element.Font.size 14
                 , Element.Font.color (Element.rgb255 34 12 176)
                 , Element.Border.rounded 5
-                , Element.padding 10
+                , Element.paddingEach { left = 0, right = 0, top = 8, bottom = 20 }
                 , Element.width Element.fill
-                , Element.height (Element.px <| 18 * numberOfLines)
+                , Element.height (Element.px <| 16 * numberOfLines + 24)
                 , Element.htmlAttribute (Html.Attributes.class "preserve-white-space")
                 , Element.htmlAttribute (Html.Attributes.style "line-height" "1.4")
                 , Element.scrollbarX
@@ -249,16 +249,18 @@ heading theme { level, rawText, children } =
 
             2 ->
                 [ Element.Font.color theme.defaultText
-                , Element.Font.size 24
-                , Element.Font.extraBold
-                , Element.paddingEach { top = 0, right = 0, bottom = 20, left = 0 }
+                , Element.Font.size 28
+                , Element.Font.semiBold
+                , Element.paddingEach { top = 20, right = 0, bottom = 20, left = 0 }
                 ]
 
             3 ->
                 [ Element.Font.color theme.defaultText
-                , Element.Font.size 18
-                , Element.Font.medium
-                , Element.paddingEach { top = 0, right = 0, bottom = 10, left = 0 }
+                , Element.Font.size 20
+                , Element.Font.semiBold
+
+                --, Element.Font.medium
+                , Element.paddingEach { top = 10, right = 0, bottom = 10, left = 0 }
                 ]
 
             4 ->
