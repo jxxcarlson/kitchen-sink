@@ -5,6 +5,7 @@ module Stripe.View exposing
     , productList
     , ticketCardsView
     , ticketsHtmlId
+    , viewEntry
     , viewProductInfo
     )
 

@@ -13,6 +13,7 @@ import Name
 import Stripe.Codec
 import Stripe.PurchaseForm
 import Stripe.Stripe as Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
+import Stripe.View
 import Theme
 import Types exposing (..)
 import User
@@ -171,7 +172,7 @@ viewStripeData backendModel =
         [ viewOrders backendModel.orders
         , viewPendingOrder backendModel.pendingOrder
         , viewExpiredOrdersPretty backendModel.expiredOrders
-        , viewPrices backendModel.prices
+        , viewPricesPretty backendModel.prices
         ]
 
 
@@ -183,6 +184,16 @@ viewPrices prices =
         [ text "Prices"
         , Codec.encodeToString 2 (Stripe.Codec.assocListCodec Stripe.Codec.price2Codec) prices |> text
         ]
+
+
+viewPricesPretty : AssocList.Dict (Id ProductId) Stripe.Codec.Price2 -> Element msg
+viewPricesPretty prices =
+    column
+        [ width fill
+        ]
+        (Element.el [ Element.Font.bold ] (text "Prices")
+            :: List.map Stripe.View.viewEntry (prices |> AssocList.toList)
+        )
 
 
 viewOrders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.Order -> Element msg
