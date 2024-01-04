@@ -31,7 +31,7 @@ signIn model =
             , Element.el [ Element.Font.size 14 ] (Element.text "There is ABSOLUTELY NO security here.")
             , Element.el [ Element.Font.size 14 ] (Element.text "This for initial testing only.")
             , Element.el [ Element.Font.size 14 ] (Element.text "From time to time the database will be reset and all will be lost.")
-            , Element.el [ Element.Font.size 14 ] (Element.text "PS: sign in as `jxxcarlson` with password `1234` to play administrator")
+            , Element.el [ Element.Font.size 14 ] (Element.text "PS: sign in as jxxcarlson with password 1234 to play administrator")
             ]
         , View.Input.template "User Name" model.username InputUsername
         , View.Input.template "Password" model.password InputPassword

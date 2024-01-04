@@ -15,11 +15,15 @@ which has a number of useful built-in features. The notes
 below provide some information on how they work and how
 to use them.
 
+*I intend to improve and add to the notes as time permits.  If you have
+questions or suggestions, please let me know: jxxcarlson everywhere.*
+
 **Contents**
 
 - Admin page
 - Routing: Adding a new page
 - Ports: sending a message to JavaScript
+- Custom Elements
 - RPC example
 - Stripe: Account and API
 - Stripe: Displaying Product Information to the User
@@ -142,6 +146,19 @@ The result is that a "chirp" sound is played when the button is clicked.
 
 
 
+## Custom Elements
+
+**References**
+
+- [Elm Guide on Custom Elements](https://guide.elm-lang.org/interop/custom_elements.html)
+
+- [MDN Docs](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements)
+
+- [reCAPTCHA](https://bigardone.dev/blog/2018/09/09/elm-and-web-components)
+
+- [Korban, a Straightforward Guide to Custom Elements](https://korban.net/posts/elm/2018-09-17-introduction-custom-elements-shadow-dom/)
+
+- [Luke Westby's talk on Custom Elements](https://www.youtube.com/watch?v=tyFe9Pw6TVE)
 
 ## RPC example
 

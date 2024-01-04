@@ -78,9 +78,10 @@ of these lists the main features of the template and their status. The
  put data into and get data out of the key-value store using remote
  procedure calls (RPCs).
 
- Below are three short examples: (a) play a sound,  (b) copy text to the clipboard, and
- (c) display the current time and time zone.  The first two use ports, the last
- is a simple, self-contained custom element.  See the `Ports` and `View.CustomElement`
- modules for more information.
+ Below are three short examples: (a) the first button plays a sound,
+ (b) the second copies some hidden text to the clipboard, and
+and the last item is a simple, self-contained custom element.
+See the `Ports` and `View.CustomElement` modules for code
+ and for more information.
         """
         |> MarkdownThemed.renderFull

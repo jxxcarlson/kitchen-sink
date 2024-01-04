@@ -11,7 +11,12 @@ view model =
 # Features
 
 The kitchen sink app provides the features listed below.
-Some features are still in-progress, and a few are not yet started.
+Some features are still in-progress.  If there is a feature you
+think should be part of this template app, please let me know.
+I am jxxcarlsn  on slack, discourse, discord, and email (gm..l).
+
+*I am looking for good port and custom element examples, especially
+the latter.*
 
 - Page routing
 - Stripe (See *the *Purchase** tab)
