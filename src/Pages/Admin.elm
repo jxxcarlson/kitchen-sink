@@ -228,17 +228,18 @@ viewExpiredOrdersPretty expiredOrders =
             column
                 [ width fill
                 ]
-                [ text ("id: " ++ Id.toString id)
+                [ text ("name: " ++ (order.form |> Stripe.PurchaseForm.getPurchaseData |> .billingName |> Name.nameToString))
+                , text ("email: " ++ (order.form |> Stripe.PurchaseForm.getPurchaseData |> .billingEmail |> EmailAddress.toString))
+                , text ("id: " ++ Id.toString id)
                 , text ("priceId: " ++ Id.toString order.priceId)
                 , text ("sessionId: " ++ order.sessionId)
-                , text ("name: " ++ (order.form |> Stripe.PurchaseForm.getPurchaseData |> .billingName |> Name.nameToString))
-                , text ("email: " ++ (order.form |> Stripe.PurchaseForm.getPurchaseData |> .billingEmail |> EmailAddress.toString))
                 ]
     in
     column
         [ width fill
+        , Element.spacing 24
         ]
-        (text "Expired Orders" :: List.map viewOrder orders)
+        (Element.el [ Element.Font.bold ] (text "Expired Orders") :: List.map viewOrder orders)
 
 
 loadProdBackend : Cmd msg
