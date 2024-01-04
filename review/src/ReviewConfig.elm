@@ -42,8 +42,8 @@ config =
 
     --    |> Rule.ignoreErrorsForDirectories [ "tests/" ]
     , NoExposingEverything.rule
+    , NoImportingEverything.rule []
 
-    --, NoImportingEverything.rule []
     --, NoMissingTypeAnnotation.rule
     --, NoMissingTypeAnnotationInLetIn.rule
     --, NoMissingTypeExpose.rule
