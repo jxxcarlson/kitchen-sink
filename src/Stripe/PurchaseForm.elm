@@ -5,6 +5,7 @@ module Stripe.PurchaseForm exposing
     , SubmitStatus(..)
     , billingEmail
     , codec
+    , getPurchaseData
     , purchaserName
     , validateEmailAddress
     , validateForm
@@ -31,6 +32,16 @@ type alias PurchaseForm =
 type PurchaseFormValidated
     = ImageCreditPurchase PurchaseData
     | ImageLibraryPackagePurchase PurchaseData
+
+
+getPurchaseData : PurchaseFormValidated -> PurchaseData
+getPurchaseData purchaseForm =
+    case purchaseForm of
+        ImageCreditPurchase data_ ->
+            data_
+
+        ImageLibraryPackagePurchase data_ ->
+            data_
 
 
 type alias PurchaseData =

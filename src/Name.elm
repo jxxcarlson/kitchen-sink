@@ -1,10 +1,25 @@
-module Name exposing (Error(..), Name(..), anonymous, codec, errorToString, fromString, maxLength, toString)
+module Name exposing
+    ( Error(..)
+    , Name(..)
+    , anonymous
+    , codec
+    , errorToString
+    , fromString
+    , maxLength
+    , nameToString
+    , toString
+    )
 
 import Codec exposing (Codec)
 
 
 type Name
     = Name String
+
+
+nameToString : Name -> String
+nameToString (Name name) =
+    name
 
 
 type Error

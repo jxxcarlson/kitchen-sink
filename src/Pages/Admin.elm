@@ -5,10 +5,13 @@ import Codec
 import Dict
 import Element exposing (..)
 import Element.Font
+import EmailAddress
 import Id exposing (Id)
 import Lamdera
 import MarkdownThemed
+import Name
 import Stripe.Codec
+import Stripe.PurchaseForm
 import Stripe.Stripe as Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
 import Theme
 import Types exposing (..)
@@ -167,7 +170,7 @@ viewStripeData backendModel =
         ]
         [ viewOrders backendModel.orders
         , viewPendingOrder backendModel.pendingOrder
-        , viewExpiredOrders backendModel.expiredOrders
+        , viewExpiredOrdersPretty backendModel.expiredOrders
         , viewPrices backendModel.prices
         ]
 
@@ -210,6 +213,32 @@ viewExpiredOrders expiredOrders =
         [ text "Expired Orders"
         , Codec.encodeToString 2 (Stripe.Codec.assocListCodec Stripe.Codec.pendingOrderCodec) expiredOrders |> text
         ]
+
+
+viewExpiredOrdersPretty : AssocList.Dict (Id StripeSessionId) Stripe.Codec.PendingOrder -> Element msg
+viewExpiredOrdersPretty expiredOrders =
+    let
+        orders : List ( Id StripeSessionId, Stripe.Codec.PendingOrder )
+        orders =
+            expiredOrders
+                |> AssocList.toList
+
+        viewOrder : ( Id StripeSessionId, Stripe.Codec.PendingOrder ) -> Element msg
+        viewOrder ( id, order ) =
+            column
+                [ width fill
+                ]
+                [ text ("id: " ++ Id.toString id)
+                , text ("priceId: " ++ Id.toString order.priceId)
+                , text ("sessionId: " ++ order.sessionId)
+                , text ("name: " ++ (order.form |> Stripe.PurchaseForm.getPurchaseData |> .billingName |> Name.nameToString))
+                , text ("email: " ++ (order.form |> Stripe.PurchaseForm.getPurchaseData |> .billingEmail |> EmailAddress.toString))
+                ]
+    in
+    column
+        [ width fill
+        ]
+        (text "Expired Orders" :: List.map viewOrder orders)
 
 
 loadProdBackend : Cmd msg
