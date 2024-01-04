@@ -1,7 +1,7 @@
 module LamderaRPC exposing (Body(..), RPC(..), RPCArgs, RPCResult(..), argsDecoder, asTask, asTaskJson, asTaskString, bodyTypeToString, customResolver, fail, handleEndpoint, handleEndpointJson, handleEndpointString, httpErrorToString, process)
 
 import Env
-import Http exposing (..)
+import Http exposing (Error(..), Response(..))
 import Json.Decode as D
 import Lamdera exposing (SessionId)
 import Lamdera.Json as Json
