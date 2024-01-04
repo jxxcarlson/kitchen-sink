@@ -25,8 +25,8 @@ templateWithAttr attr title text onChange =
         ([ Element.Border.rounded 8 ] ++ attr)
         { text = text
         , onChange = onChange
-        , placeholder = Nothing
-        , label = Element.Input.labelAbove [ Element.Font.semiBold ] (Element.text title)
+        , placeholder = Just (Element.Input.placeholder [] (Element.text title))
+        , label = Element.Input.labelHidden ""
         }
 
 

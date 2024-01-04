@@ -3,6 +3,7 @@ module View.Button exposing
     , buyProduct
     , copyTextToClipboard
     , playSound
+    , requestWeatherData
     , setAdminDisplay
     , setSignInState
     , signIn
@@ -60,7 +61,12 @@ highlight condition =
 
 
 
--- PORTS
+-- EXAMPLES
+
+
+requestWeatherData : String -> Element.Element Types.FrontendMsg
+requestWeatherData city =
+    button (Types.RequestWeatherData city) "Get Weather"
 
 
 copyTextToClipboard : String -> String -> Element.Element Types.FrontendMsg

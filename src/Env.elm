@@ -1,4 +1,18 @@
-module Env exposing (Mode(..), adminPassword, developerEmails, developerEmails_, domain, isProduction, isProduction_, mode, postmarkApiKey, postmarkApiKey_, stripePrivateApiKey, stripePublicApiKey)
+module Env exposing
+    ( Mode(..)
+    , adminPassword
+    , developerEmails
+    , developerEmails_
+    , domain
+    , isProduction
+    , isProduction_
+    , mode
+    , postmarkApiKey
+    , postmarkApiKey_
+    , stripePrivateApiKey
+    , stripePublicApiKey
+    , weatherAPIKey
+    )
 
 import EmailAddress exposing (EmailAddress)
 import Postmark
@@ -7,6 +21,10 @@ import Postmark
 type Mode
     = Development
     | Production
+
+
+weatherAPIKey =
+    "xxx"
 
 
 domain =

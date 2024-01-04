@@ -18,6 +18,7 @@ import Time
 import Untrusted exposing (Untrusted)
 import Url exposing (Url)
 import User
+import Weather
 
 
 type FrontendModel
@@ -64,6 +65,10 @@ type alias LoadedModel =
     , route : Route
     , isOrganiser : Bool
     , message : String
+
+    -- EXAMPLES
+    , weatherData : Maybe Weather.WeatherData
+    , inputCity : String
     }
 
 
@@ -129,9 +134,11 @@ type FrontendMsg
     | SetAdminDisplay AdminDisplay
       --
     | SetViewport
-      -- PORT EXAMPLES
+      -- EXAMPLES
     | CopyTextToClipboard String
     | Chirp
+    | RequestWeatherData String
+    | InputCity String
 
 
 type ToBackend
@@ -143,6 +150,8 @@ type ToBackend
       -- USER
     | SignInRequest String String
     | SignUpRequest String String String String -- realname, username, email, password
+      -- EXAMPLES
+    | GetWeatherData String
 
 
 type BackendMsg
@@ -157,6 +166,8 @@ type BackendMsg
     | ExpiredStripeSession (Id StripeSessionId) (Result Http.Error ())
     | ConfirmationEmailSent (Id StripeSessionId) (Result Http.Error PostmarkSendResponse)
     | ErrorEmailSent (Result Http.Error PostmarkSendResponse)
+      -- EXAMPLES
+    | GotWeatherData ClientId (Result Http.Error Weather.WeatherData)
 
 
 type alias InitData2 =
@@ -172,6 +183,8 @@ type ToFrontend
     | AdminInspectResponse BackendModel
       -- USER
     | UserSignedIn (Maybe User.User)
+      -- EXAMPLE
+    | ReceivedWeatherData (Result Http.Error Weather.WeatherData)
 
 
 

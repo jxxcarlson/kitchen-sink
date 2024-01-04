@@ -85,9 +85,9 @@ say abou this later.
      ...
 ```
 
-### An outgoing HTTP example
+### An outbound HTTP example
 
-??
+See the **Weather** example on the home (Kitchen Sink) page.
 
 ### An incoming RPC example
 

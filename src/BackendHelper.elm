@@ -1,6 +1,7 @@
 module BackendHelper exposing
     ( errorEmail
     , getAtmosphericRandomNumbers
+    , getNewWeatherByCity
     , priceIdToProductId
     , purchaseSupportAddres
     , sessionIdToStripeSessionId
@@ -24,6 +25,15 @@ import Time
 import Types
 import Unsafe
 import User
+import Weather
+
+
+getNewWeatherByCity : Lamdera.ClientId -> String -> Cmd Types.BackendMsg
+getNewWeatherByCity clientId city =
+    Http.get
+        { url = "https://api.openweathermap.org/data/2.5/weather?q=" ++ city ++ "&APPID=" ++ Env.weatherAPIKey
+        , expect = Http.expectJson (Types.GotWeatherData clientId) Weather.weatherDataDecoder
+        }
 
 
 testUserDictionary : Dict.Dict String User.User

@@ -1,12 +1,15 @@
 module Pages.Home exposing (view)
 
 import Element exposing (Element)
+import Element.Font
 import Html.Attributes
 import MarkdownThemed
 import Theme
 import Types exposing (..)
 import View.Button
 import View.CustomElement
+import View.Input
+import View.Utility
 
 
 view : LoadedModel -> Element FrontendMsg
@@ -20,6 +23,22 @@ view model =
             )
             [ View.Button.playSound
             , View.Button.copyTextToClipboard "Copy Pi to Clipboard" "3.141592653589793238462643383279502884197169399375105820974944592307816406286"
+            , Element.row [ Element.spacing 8 ]
+                [ Element.el [ Element.Font.bold, Element.paddingEach { left = 24, right = 0, top = 0, bottom = 0 } ] (Element.text "Weather")
+                , View.Input.templateWithAttr
+                    [ Element.width (Element.px 140)
+                    , View.Utility.onEnter (RequestWeatherData model.inputCity)
+                    ]
+                    "City"
+                    model.inputCity
+                    InputCity
+                , case model.weatherData of
+                    Nothing ->
+                        Element.el [] (Element.text "No data")
+
+                    Just data ->
+                        Element.el [] (Element.text <| String.fromFloat (data.main.temp - 273.15 |> View.Utility.roundTo 1) ++ " C")
+                ]
             , Element.el [ Element.paddingXY 0 0 ]
                 (View.CustomElement.timeFormatted
                     [ Html.Attributes.attribute "id" "elem"
@@ -33,25 +52,6 @@ view model =
                 )
             ]
         ]
-
-
-
--- <time-formatted id="elem" hour="numeric" minute="numeric" second="numeric"></time-formatted>
---, Element.column
---    [ Element.Background.color View.Color.white
---    , Element.paddingXY 20 20
---    , Element.paddingEach { left = 0, right = 0, top = 60, bottom = 0 }
---    ]
---    [ Element.row [ Element.Font.color View.Color.darkBlue, Element.Font.size 20 ]
---        [ Element.el [ Element.paddingXY 20 20 ] (Element.text "Calendar")
---        , View.CustomElement.fullCalendar
---            [ Html.Attributes.style "width" "400px"
---            , Html.Attributes.style "height" "300px"
---            ]
---            [ Html.text "Hello" ]
---            |> Element.html
---        ]
---    ]
 
 
 content : Element msg
@@ -78,10 +78,15 @@ of these lists the main features of the template and their status. The
  put data into and get data out of the key-value store using remote
  procedure calls (RPCs).
 
- Below are three short examples: (a) the first button plays a sound,
- (b) the second copies some hidden text to the clipboard, and
-and the last item is a simple, self-contained custom element.
-See the `Ports` and `View.CustomElement` modules for code
- and for more information.
+ Below are four short examples: (a) the first button plays a sound,
+ (b) the second copies some hidden text to the clipboard, (c)
+ the third displays the current temperature in of the city 
+ that you type into the white box (press `Enter` when done).  
+ The fourth displays the current local time 
+  using a simple, self-contained custom element (web component).
+  The first two example use ports, while the second relies
+  on an outbound Http request to [openweathermap.org](https://openweathermap.org/)
+  from the backend.  See the `Ports`, `Weather`, and `View.CustomElement` modules for code
+  and for more information.
         """
         |> MarkdownThemed.renderFull

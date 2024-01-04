@@ -111,6 +111,9 @@ update msg model =
             , Cmd.none
             )
 
+        GotWeatherData clientId result ->
+            ( model, Lamdera.sendToFrontend clientId (Types.ReceivedWeatherData result) )
+
         GotTime time ->
             let
                 ( expiredOrders, remainingOrders ) =
@@ -409,3 +412,7 @@ updateFromFrontend sessionId clientId msg model =
 
             else
                 ( model, Cmd.none )
+
+        -- EXAMPLES
+        GetWeatherData city ->
+            ( model, BackendHelper.getNewWeatherByCity clientId city )

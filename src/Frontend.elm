@@ -143,6 +143,10 @@ tryLoading loadingModel =
                         , isOrganiser = loadingModel.isOrganiser
                         , backendModel = Nothing
                         , message = ""
+
+                        -- EXAMPLES
+                        , inputCity = ""
+                        , weatherData = Nothing
                         }
                     , Cmd.none
                     )
@@ -344,6 +348,13 @@ updateLoaded msg model =
         SetViewport ->
             ( model, Cmd.none )
 
+        -- EXAMPLES
+        RequestWeatherData city ->
+            ( model, Lamdera.sendToBackend (GetWeatherData city) )
+
+        InputCity str ->
+            ( { model | inputCity = str }, Cmd.none )
+
 
 scrollToTop : Cmd FrontendMsg
 scrollToTop =
@@ -423,3 +434,11 @@ updateFromBackendLoaded msg model =
                       else
                         Cmd.none
                     )
+
+        ReceivedWeatherData result ->
+            case result of
+                Ok weatherData ->
+                    ( { model | weatherData = Just weatherData }, Cmd.none )
+
+                Err _ ->
+                    ( { model | weatherData = Nothing, message = "Error getting weather data. reae" }, Cmd.none )
