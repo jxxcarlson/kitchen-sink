@@ -42,10 +42,11 @@ For additional information, see the **Notes** tab.
 
 We have the field `keyValueStore : Dict.Dict String String` of the backend model.
 Data is inserted and retrieved via RPC calls.  See the **RPC Example** section
+in the **Notes** tab.
 
 ### Pages with routing.
 
-  All of the tabs in the header of this app are pages with routing.
+  All of the tabs in the menu bar/header of this app are pages with routing.
 
 ### A reused component on two pages to demonstrate composability
 
