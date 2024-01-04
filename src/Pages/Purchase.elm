@@ -1,4 +1,4 @@
-module Pages.Purchase exposing (..)
+module Pages.Purchase exposing (view)
 
 import AssocList
 import Element

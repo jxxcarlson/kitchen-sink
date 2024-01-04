@@ -1,4 +1,4 @@
-module Common exposing (..)
+module Common exposing (radioButton, tooltip)
 
 import Element exposing (Element)
 import Element.Background
