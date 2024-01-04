@@ -208,13 +208,5 @@ errorText error =
     Element.paragraph [ Element.Font.color (Element.rgb255 150 0 0) ] [ Element.text error ]
 
 
-includesAccom productId =
-    if productId == "Product.ticket.campFire" then
-        False
-
-    else
-        True
-
-
 ticketsHtmlId =
     "tickets"
