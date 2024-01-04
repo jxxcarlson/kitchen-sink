@@ -1,8 +1,8 @@
 module BackendHelper exposing
-    ( elmCampEmailAddress
-    , errorEmail
+    ( errorEmail
     , getAtmosphericRandomNumbers
     , priceIdToProductId
+    , purchaseSupportAddres
     , sessionIdToStripeSessionId
     , testUserDictionary
     )
@@ -97,7 +97,7 @@ errorEmail errorMessage =
             Postmark.sendEmail
                 Types.ErrorEmailSent
                 Env.postmarkApiKey
-                { from = { name = "elm-camp", email = elmCampEmailAddress }
+                { from = { name = "elm-camp", email = purchaseSupportAddres }
                 , to = List.Nonempty.map (\email -> { name = "", email = email }) to
                 , subject =
                     String.Nonempty.NonemptyString 'E'
@@ -117,6 +117,6 @@ errorEmail errorMessage =
             Cmd.none
 
 
-elmCampEmailAddress : EmailAddress.EmailAddress
-elmCampEmailAddress =
+purchaseSupportAddres : EmailAddress.EmailAddress
+purchaseSupportAddres =
     Unsafe.emailAddress "team@elm.camp"
