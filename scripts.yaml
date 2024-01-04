@@ -10,4 +10,4 @@ scripts:
 
   review-x: npx elm-review  --rules NoUnused.CustomTypeConstructors
 
-  cloc: cloc --by-file --exclude-dir=Evergreen src/
+  cloc: cloc --by-file --exclude-dir=Evergreen,Pages src/

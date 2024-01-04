@@ -298,7 +298,7 @@ viewExpiredOrdersPretty expiredOrders =
                 ]
                 [ text ("name: " ++ (order.form |> Stripe.PurchaseForm.getPurchaseData |> .billingName |> Name.nameToString))
                 , text ("email: " ++ (order.form |> Stripe.PurchaseForm.getPurchaseData |> .billingEmail |> EmailAddress.toString))
-                , text ("date-time: " ++ (order |> .submitTime |> (\_ -> "TODO")))
+                , text ("date-time: " ++ (order |> .submitTime |> toUtcString))
                 , text ("id: " ++ Id.toString id)
                 , text ("priceId: " ++ Id.toString order.priceId)
                 , text ("sessionId: " ++ order.sessionId)
