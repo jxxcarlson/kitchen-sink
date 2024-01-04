@@ -6,6 +6,7 @@ import Types exposing (..)
 import View.Button
 import View.Color
 import View.Input
+import View.Utility
 
 
 view : LoadedModel -> Element FrontendMsg
@@ -34,7 +35,7 @@ signIn model =
             , Element.el [ Element.Font.size 14 ] (Element.text "PS: sign in as jxxcarlson with password 1234 to play administrator")
             ]
         , View.Input.template "User Name" model.username InputUsername
-        , View.Input.template "Password" model.password InputPassword
+        , View.Input.passwordTemplateWithAttr [ View.Utility.onEnter Types.SubmitSignIn ] "Password" model.password InputPassword
         , Element.row [ Element.spacing 18 ]
             [ View.Button.signIn
             , View.Button.setSignInState "Need an account?" SignUp
