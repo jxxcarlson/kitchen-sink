@@ -31,7 +31,7 @@ app =
 
 init : ( BackendModel, Cmd BackendMsg )
 init =
-    ( { userDictionary = BackendHelper.testUserDictionary |> Debug.log "@@USER_DICT (0, init)"
+    ( { userDictionary = BackendHelper.testUserDictionary
 
       --STRIPE
       , orders = AssocList.empty
@@ -76,10 +76,6 @@ subscriptions _ =
 
 update : BackendMsg -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 update msg model =
-    let
-        _ =
-            Debug.log "@@2.3 USER DICT" model.userDictionary
-    in
     -- Replace existing randomAtmosphericNumber with a new one if possible
     (case msg of
         GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers ->
@@ -107,7 +103,7 @@ update msg model =
                 , localUuidData = data_
                 , userDictionary =
                     if Dict.isEmpty model.userDictionary then
-                        BackendHelper.testUserDictionary |> Debug.log "@@USER_DICT (3.8, GotAtmosphericRandomNumbers)"
+                        BackendHelper.testUserDictionary
 
                     else
                         model.userDictionary
@@ -140,13 +136,6 @@ update msg model =
             )
 
         GotPrices result ->
-            let
-                _ =
-                    Debug.log "@@GotPrices" result
-
-                _ =
-                    Debug.log "@@UserDict 1.55" model.userDictionary
-            in
             case result of
                 Ok prices ->
                     ( { model
@@ -169,10 +158,6 @@ update msg model =
                     ( model, BackendHelper.errorEmail ("GotPrices failed: " ++ HttpHelpers.httpErrorToString error) )
 
         GotPrices2 clientId result ->
-            let
-                _ =
-                    Debug.log "@@GotPrices2" result
-            in
             case result of
                 Ok prices ->
                     ( { model
@@ -363,14 +348,8 @@ updateFromFrontend sessionId clientId msg model =
         -- USER
         SignInRequest username password ->
             let
-                _ =
-                    Debug.log "@@USER DICT (1, SignInRequest)" model.userDictionary
-
                 maybeUser =
-                    Dict.get username model.userDictionary |> Debug.log "@@Maybe_USER"
-
-                _ =
-                    Debug.log "@@(username, password)" ( username, password )
+                    Dict.get username model.userDictionary
             in
             if Just password == Maybe.map .password maybeUser then
                 ( model
@@ -408,7 +387,7 @@ updateFromFrontend sessionId clientId msg model =
                     in
                     ( { model
                         | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
-                        , userDictionary = Dict.insert username user model.userDictionary |> Debug.log "@@USER_DICT (2)"
+                        , userDictionary = Dict.insert username user model.userDictionary
                       }
                     , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
                     )
