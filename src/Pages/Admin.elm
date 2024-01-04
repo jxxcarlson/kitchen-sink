@@ -15,6 +15,7 @@ import Stripe.PurchaseForm
 import Stripe.Stripe as Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
 import Stripe.View
 import Theme
+import Time exposing (Month(..))
 import Types exposing (..)
 import User
 import View.Button
@@ -226,6 +227,62 @@ viewExpiredOrders expiredOrders =
         ]
 
 
+toUtcString : Time.Posix -> String
+toUtcString time =
+    String.fromInt (Time.toYear Time.utc time)
+        ++ "-"
+        ++ toMonth (Time.toMonth Time.utc time)
+        ++ "-"
+        ++ String.fromInt (Time.toDay Time.utc time)
+        ++ " "
+        ++ String.fromInt (Time.toHour Time.utc time)
+        ++ ":"
+        ++ String.fromInt (Time.toMinute Time.utc time)
+        ++ ":"
+        ++ String.fromInt (Time.toSecond Time.utc time)
+        ++ " (UTC)"
+
+
+toMonth : Time.Month -> String
+toMonth month =
+    case month of
+        Jan ->
+            "Jan"
+
+        Feb ->
+            "Feb"
+
+        Mar ->
+            "Mar"
+
+        Apr ->
+            "Apr"
+
+        May ->
+            "May"
+
+        Jun ->
+            "Jun"
+
+        Jul ->
+            "Jul"
+
+        Aug ->
+            "Aug"
+
+        Sep ->
+            "Sep"
+
+        Oct ->
+            "Oct"
+
+        Nov ->
+            "Nov"
+
+        Dec ->
+            "Dec"
+
+
 viewExpiredOrdersPretty : AssocList.Dict (Id StripeSessionId) Stripe.Codec.PendingOrder -> Element msg
 viewExpiredOrdersPretty expiredOrders =
     let
@@ -241,6 +298,7 @@ viewExpiredOrdersPretty expiredOrders =
                 ]
                 [ text ("name: " ++ (order.form |> Stripe.PurchaseForm.getPurchaseData |> .billingName |> Name.nameToString))
                 , text ("email: " ++ (order.form |> Stripe.PurchaseForm.getPurchaseData |> .billingEmail |> EmailAddress.toString))
+                , text ("date-time: " ++ (order |> .submitTime |> (\_ -> "TODO")))
                 , text ("id: " ++ Id.toString id)
                 , text ("priceId: " ++ Id.toString order.priceId)
                 , text ("sessionId: " ++ order.sessionId)
