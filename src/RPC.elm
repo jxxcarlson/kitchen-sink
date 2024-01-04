@@ -85,7 +85,7 @@ purchaseCompletedEndpoint _ model request =
                                     , Postmark.sendEmail
                                         (ConfirmationEmailSent stripeSessionId)
                                         Env.postmarkApiKey
-                                        { from = { name = "elm-camp", email = BackendHelper.elmCampEmailAddress }
+                                        { from = { name = "elm-camp", email = BackendHelper.purchaseSupportAddres }
                                         , to =
                                             Nonempty
                                                 { name = PurchaseForm.purchaserName order.form |> Name.toString
@@ -126,41 +126,34 @@ purchaseCompletedEndpoint _ model request =
 
 
 confirmationEmail : Product_ -> { subject : NonemptyString, textBody : String, htmlBody : Html.Html }
-confirmationEmail ticket =
+confirmationEmail product =
     { subject =
         String.Nonempty.append
-            ticket.name
+            product.name
             (NonemptyString ' ' " purchase confirmation")
     , textBody =
         "This is a confirmation email for your purchase of "
-            ++ ticket.name
+            ++ product.name
             ++ "\n("
-            ++ ticket.description
-            ++ ")\n\n"
-            ++ "We look forward to seeing you at the elm-camp unconference!\n\n"
-            ++ "You can review the schedule at "
-            ++ Env.domain
-            ++ "/#schedule"
-            ++ ". If you have any questions, email us at "
-            ++ EmailAddress.toString BackendHelper.elmCampEmailAddress
+            ++ product.description
+            ++ ").\n\n"
+            ++ "If you have any questions, email us at "
+            ++ EmailAddress.toString BackendHelper.purchaseSupportAddres
             ++ " (or just reply to this email)"
     , htmlBody =
         Html.div
             []
             [ Html.div []
                 [ Html.text "This is a confirmation email for your purchase of the "
-                , Html.b [] [ Html.text ticket.name ]
+                , Html.b [] [ Html.text product.name ]
                 ]
-            , Html.div [ Attributes.paddingBottom "16px" ] [ Html.text (" (" ++ ticket.description ++ ")") ]
+            , Html.div [ Attributes.paddingBottom "16px" ] [ Html.text (" (" ++ product.description ++ ")") ]
             , Html.div [ Attributes.paddingBottom "16px" ] [ Html.text "We look forward to seeing you at the elm-camp unconference!" ]
             , Html.div []
-                [ Html.a
-                    [ Attributes.href (Env.domain ++ "/#schedule") ]
-                    [ Html.text "You can review the schedule here" ]
-                , Html.text ". If you have any questions, email us at "
+                [ Html.text "If you have any questions, email us at "
                 , Html.a
-                    [ Attributes.href ("mailto:" ++ EmailAddress.toString BackendHelper.elmCampEmailAddress) ]
-                    [ Html.text (EmailAddress.toString BackendHelper.elmCampEmailAddress) ]
+                    [ Attributes.href ("mailto:" ++ EmailAddress.toString BackendHelper.purchaseSupportAddres) ]
+                    [ Html.text (EmailAddress.toString BackendHelper.purchaseSupportAddres) ]
                 , Html.text " (or just reply to this email)"
                 ]
             ]
