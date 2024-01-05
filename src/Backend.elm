@@ -2,6 +2,7 @@ module Backend exposing (app, init, subscriptions, update, updateFromFrontend)
 
 import AssocList
 import BackendHelper
+import BiDict
 import Dict
 import Duration
 import Email
@@ -33,6 +34,7 @@ app =
 init : ( BackendModel, Cmd BackendMsg )
 init =
     ( { userDictionary = BackendHelper.testUserDictionary
+      , sessions = BiDict.empty
 
       --STRIPE
       , orders = AssocList.empty
@@ -354,9 +356,13 @@ updateFromFrontend sessionId clientId msg model =
             let
                 maybeUser =
                     Dict.get username model.userDictionary
+
+                addSession : String -> BackendModel -> BackendModel
+                addSession username_ model_ =
+                    { model_ | sessions = BiDict.insert sessionId username_ model_.sessions }
             in
             if Just password == Maybe.map .password maybeUser then
-                ( model
+                ( model |> addSession username
                 , Cmd.batch
                     [ Lamdera.sendToFrontend clientId (GotMessage "Sign in successful!")
                     , Lamdera.sendToFrontend clientId (UserSignedIn maybeUser)

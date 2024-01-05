@@ -1,6 +1,7 @@
 module Types exposing (AdminDisplay(..), BackendModel, BackendMsg(..), FrontendModel(..), FrontendMsg(..), InitData2, LoadedModel, LoadingModel, SignInState(..), ToBackend(..), ToFrontend(..))
 
 import AssocList
+import BiDict
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
 import Dict
@@ -90,6 +91,7 @@ type alias BackendModel =
 
     -- USER
     , userDictionary : Dict.Dict String User.User
+    , sessions : BiDict.BiDict SessionId String
 
     --STRIPE
     , orders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.Order
