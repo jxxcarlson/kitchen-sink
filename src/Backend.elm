@@ -18,6 +18,7 @@ import Task
 import Time
 import Types exposing (..)
 import Untrusted
+import User
 
 
 app =
@@ -386,6 +387,7 @@ updateFromFrontend sessionId clientId msg model =
                             , created_at = model.time
                             , updated_at = model.time
                             , id = LocalUUID.extractUUIDAsString uuidData
+                            , role = User.UserRole
                             }
                     in
                     ( { model
