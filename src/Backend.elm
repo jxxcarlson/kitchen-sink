@@ -191,10 +191,18 @@ update msg model =
                 Err error ->
                     ( model, BackendHelper.errorEmail ("GotPrices failed: " ++ HttpHelpers.httpErrorToString error) )
 
-        OnConnected _ clientId ->
+        OnConnected sessionId clientId ->
+            let
+                maybeUsername =
+                    BiDict.get sessionId model.sessions
+
+                maybeUser =
+                    Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername
+            in
             ( model
             , Cmd.batch
                 [ BackendHelper.getAtmosphericRandomNumbers
+                , Lamdera.sendToFrontend clientId (UserSignedIn maybeUser)
                 , Lamdera.sendToFrontend
                     clientId
                     (InitData
