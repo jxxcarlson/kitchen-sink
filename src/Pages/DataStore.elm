@@ -29,8 +29,7 @@ viewKeyValuePairs window backendModel =
         , height (px <| window.height - 2 * View.Geometry.headerFooterHeight)
         ]
         ([ Element.column Theme.contentAttributes [ content ]
-
-         --, Element.el [ Element.Font.bold ] (text "Key-Value Store")
+         , Element.el [ Element.Font.bold, Element.Font.size 24 ] (text "Raw Data")
          ]
             ++ List.map viewPair (Dict.toList backendModel.keyValueStore)
         )
@@ -69,11 +68,10 @@ viewPair ( key, value ) =
 
 
 content =
-    """*This tab is for a future personal project. I will remove
-it when the kitchen sink project is done.*
+    """Retrieve key-value pairs by sending the requests of the form
 
-`-- jxxcarlson`
-
-## Raw Key-Value Store
-    """
+```
+curl -X POST -d '{ "key": "hubble1929" }' -H 'content-type: application/json' \\
+https://elm-kitchen-sink.lamdera.app/_r/getKeyValuePair
+```"""
         |> MarkdownThemed.renderFull

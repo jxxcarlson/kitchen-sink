@@ -30,7 +30,7 @@ dataEditor model backendModel =
         [ View.Input.templateWithAttr [] "key" model.inputKey InputKey
         , View.Input.multilineTemplateWithAttr
             [ Element.width (Element.px 500)
-            , Element.height (Element.px 600)
+            , Element.height (Element.px (model.window.height - 250))
             , Element.scrollbars
 
             --, View.Utility.elementAttribute "white-space" "pre"

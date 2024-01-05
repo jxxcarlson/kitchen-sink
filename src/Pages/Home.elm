@@ -64,29 +64,32 @@ The repo is at  [github.com/jxxcarlson/kitchen-sink](https://github.com/jxxcarls
 
 See the **Features** and **Note** tabs for more information. The first
 of these lists the main features of the template and their status. The
- second gives details on their implementation. The **Purchase** tab
- allows you to make fake purchases using Stripe.  Your credit card
- will not be charged — this is all done in test mode.
+second gives details on their implementation. The **Purchase** tab
+allows you to make fake purchases using Stripe.  Your credit card
+will not be charged — this is all done in test mode.
 
- During the testing phase, the app comes preloaded with two users, `jxxcarlson`
- and `aristotle`, both with password `1234`. Use the **Sign in** tab for these.
- You can also sign up for your own account.
+During the testing phase, the app comes preloaded with two users, `jxxcarlson`
+and `aristotle`, both with password `1234`. Use the **Sign in** tab for these.
+You can also sign up for your own account.
 
- Note that you can play administrator by signing in as `jxxcarlson`. When signed
- is as an administrator, the **Admin** tab appears.  Using it, you
- can display the current users, Stripe data, and a key-value store.  You can
- put data into and get data out of the key-value store using remote
- procedure calls (RPCs).
+Note that you can play administrator by signing in as `jxxcarlson`. When signed
+is as an administrator, the **Admin** tab appears.  Using it, you
+can display the current users, Stripe data, and a key-value store.  You can
+put data into and get data out of the key-value store using remote
+procedure calls (RPCs).
 
- Below are four short examples: (a) the first button plays a sound,
- (b) the second copies some hidden text to the clipboard, (c)
- the third displays the current temperature in of the city 
- that you type into the white box (press `Enter` when done).  
- The fourth displays the current local time 
-  using a simple, self-contained custom element (web component).
-  The first two example use ports, while the second relies
-  on an outbound Http request to [openweathermap.org](https://openweathermap.org/)
-  from the backend.  See the `Ports`, `Weather`, and `View.CustomElement` modules for code
-  and for more information.
+Below are four short examples: (a) the first button plays a sound,
+(b) the second copies some hidden text to the clipboard, (c)
+the third displays the current temperature in of the city
+that you type into the white box (press `Enter` when done).
+The fourth displays the current local time
+using a simple, self-contained custom element (web component).
+The first two example use ports, while the second relies
+on an outbound Http request to [openweathermap.org](https://openweathermap.org/)
+from the backend.  See the `Ports`, `Weather`, and `View.CustomElement` modules for code
+and for more information.
+
+**NOTE.** *The "Raw Data" and "Edit Data" tabs are for another project
+and will be removed when this project is complete.*
         """
         |> MarkdownThemed.renderFull
