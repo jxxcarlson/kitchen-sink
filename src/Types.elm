@@ -1,4 +1,16 @@
-module Types exposing (AdminDisplay(..), BackendModel, BackendMsg(..), FrontendModel(..), FrontendMsg(..), InitData2, LoadedModel, LoadingModel, SignInState(..), ToBackend(..), ToFrontend(..))
+module Types exposing
+    ( AdminDisplay(..)
+    , BackendModel
+    , BackendMsg(..)
+    , FrontendModel(..)
+    , FrontendMsg(..)
+    , InitData2
+    , LoadedModel
+    , LoadingModel
+    , SignInState(..)
+    , ToBackend(..)
+    , ToFrontend(..)
+    )
 
 import AssocList
 import BiDict
@@ -32,7 +44,6 @@ type alias LoadingModel =
     , now : Time.Posix
     , window : Maybe { width : Int, height : Int }
     , route : Route
-    , isOrganiser : Bool
     , initData : Maybe InitData2
     }
 
@@ -64,7 +75,6 @@ type alias LoadedModel =
 
     --
     , route : Route
-    , isOrganiser : Bool
     , message : String
 
     -- EXAMPLES

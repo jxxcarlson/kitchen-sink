@@ -6,7 +6,6 @@ import BiDict
 import Dict
 import Duration
 import Email
-import Env
 import HttpHelpers
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
@@ -384,7 +383,7 @@ updateFromFrontend sessionId clientId msg model =
                 activeSessions =
                     BiDict.getReverse username model.sessions
                         |> Set.toList
-                        |> Debug.log "@@ activeSessions (1)"
+                        |> Debug.log "@@ SignOutRequest, activeSessions"
 
                 removeSessions : List SessionId -> BackendModel -> BackendModel
                 removeSessions activeSessions_ model_ =

@@ -59,15 +59,6 @@ init url key =
     let
         route =
             Route.decode url
-
-        -- Use URL = localhost:8000/?organiser=true to see the admin view (??)
-        isOrganiser =
-            case url |> Url.Parser.parse (Url.Parser.top <?> queryBool "organiser") of
-                Just (Just isOrganiser_) ->
-                    isOrganiser_
-
-                _ ->
-                    False
     in
     ( Loading
         { key = key
@@ -75,7 +66,6 @@ init url key =
         , window = Nothing
         , initData = Nothing
         , route = route
-        , isOrganiser = isOrganiser
         }
     , Cmd.batch
         [ Browser.Dom.getViewport
@@ -140,7 +130,6 @@ tryLoading loadingModel =
 
                         --
                         , route = loadingModel.route
-                        , isOrganiser = loadingModel.isOrganiser
                         , backendModel = Nothing
                         , message = ""
 
