@@ -91,7 +91,7 @@ type alias BackendModel =
 
     -- USER
     , userDictionary : Dict.Dict String User.User
-    , sessions : BiDict.BiDict SessionId String
+    , sessions : BiDict.BiDict SessionId String -- sessionId to username
 
     --STRIPE
     , orders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.Order
@@ -151,6 +151,7 @@ type ToBackend
     | RenewPrices
       -- USER
     | SignInRequest String String
+    | SignOutRequest String
     | SignUpRequest String String String String -- realname, username, email, password
       -- EXAMPLES
     | GetWeatherData String

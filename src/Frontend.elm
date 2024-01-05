@@ -220,14 +220,19 @@ updateLoaded msg model =
             ( model, Lamdera.sendToBackend (SignInRequest model.username model.password) )
 
         SubmitSignOut ->
-            ( { model
-                | currentUser = Nothing
-                , signInState = SignedOut
-                , username = ""
-                , password = ""
-              }
-            , Cmd.none
-            )
+            case model.currentUser of
+                Just { username } ->
+                    ( { model
+                        | currentUser = Nothing
+                        , signInState = SignedOut
+                        , username = ""
+                        , password = ""
+                      }
+                    , Lamdera.sendToBackend (SignOutRequest username)
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         SubmitSignUp ->
             let

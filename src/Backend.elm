@@ -13,6 +13,7 @@ import Lamdera exposing (ClientId, SessionId)
 import LocalUUID
 import Predicate
 import Quantity
+import Set exposing (Set)
 import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
 import Task
@@ -359,7 +360,7 @@ updateFromFrontend sessionId clientId msg model =
 
                 addSession : String -> BackendModel -> BackendModel
                 addSession username_ model_ =
-                    { model_ | sessions = BiDict.insert sessionId username_ model_.sessions }
+                    { model_ | sessions = BiDict.insert sessionId username_ model_.sessions |> Debug.log "@@ addSession" }
             in
             if Just password == Maybe.map .password maybeUser then
                 ( model |> addSession username
@@ -376,6 +377,27 @@ updateFromFrontend sessionId clientId msg model =
                     , Lamdera.sendToFrontend clientId (GotMessage "Username and password do not match. ")
                     ]
                 )
+
+         SignOutRequest username ->
+            let
+                activeSessions : List SessionId
+                activeSessions =
+                    BiDict.getReverse username model.sessions
+                        |> Set.toList
+                        |> Debug.log "@@ activeSessions (1)"
+
+                removeSessions : List SessionId -> BackendModel -> BackendModel
+                removeSessions activeSessions_ model_ =
+                    List.foldl
+                        (\sessionId_ model__ ->
+                            { model__ | sessions = BiDict.remove sessionId_ model__.sessions }
+                        )
+                        model_
+                        activeSessions_
+            in
+            ( model |> removeSessions activeSessions
+            , Lamdera.sendToFrontend clientId (UserSignedIn Nothing)
+            )
 
         SignUpRequest realname username email password ->
             case model.localUuidData of
