@@ -62,6 +62,9 @@ header model route config =
                 (linkStyle route Purchase)
                 { url = Route.encode Purchase, label = Element.text "Purchase" }
             , Element.link
+                (linkStyle route DataStore)
+                { url = Route.encode DataStore, label = Element.text "Raw Data" }
+            , Element.link
                 (linkStyle route SignInRoute)
                 { url = Route.encode SignInRoute
                 , label =

@@ -7,6 +7,7 @@ import EmailAddress exposing (EmailAddress)
 import MarkdownThemed
 import Pages.Admin
 import Pages.Brillig
+import Pages.DataStore
 import Pages.Features
 import Pages.Home
 import Pages.Notes
@@ -67,6 +68,9 @@ loadedView model =
 
         Features ->
             Pages.Parts.generic model Pages.Features.view
+
+        DataStore ->
+            Pages.Parts.generic model Pages.DataStore.view
 
         Notes ->
             Pages.Parts.generic model Pages.Notes.view

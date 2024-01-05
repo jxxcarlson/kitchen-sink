@@ -10,6 +10,7 @@ import Url.Parser.Query
 
 type Route
     = HomepageRoute
+    | DataStore
     | Features
     | Notes
     | SignInRoute
@@ -26,6 +27,7 @@ decode url =
         [ Url.Parser.top |> Url.Parser.map HomepageRoute
         , Url.Parser.s "features" |> Url.Parser.map Features
         , Url.Parser.s "admin" |> Url.Parser.map AdminRoute
+        , Url.Parser.s "datastore" |> Url.Parser.map DataStore
         , Url.Parser.s "notes" |> Url.Parser.map Notes
         , Url.Parser.s "purchase" |> Url.Parser.map Purchase
         , Url.Parser.s "signin" |> Url.Parser.map SignInRoute
@@ -58,6 +60,9 @@ encode route =
             Features ->
                 [ "features" ]
 
+            DataStore ->
+                [ "datastore" ]
+
             Notes ->
                 [ "notes" ]
 
@@ -84,6 +89,9 @@ encode route =
                 []
 
             Features ->
+                []
+
+            DataStore ->
                 []
 
             Notes ->

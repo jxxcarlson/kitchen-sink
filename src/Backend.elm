@@ -59,7 +59,7 @@ init =
                 ]
 
       -- EXPERIMENTAL
-      , keyValueStore = Dict.fromList [ ( "foo", "1234" ), ( "bar", "5678" ) ]
+      , keyValueStore = Dict.fromList [ ( "foo", "1234" ), ( "bar", "5678" ), ( "hubble1929", hubble1929 ) ]
       }
     , Cmd.batch
         [ Time.now |> Task.perform GotTime
@@ -67,6 +67,38 @@ init =
         , BackendHelper.getAtmosphericRandomNumbers
         ]
     )
+
+
+hubble1929 =
+    """# Hubble's 1929 redshift-distance data
+# header: name,distance,red-shift
+# units: Mpc,km/s
+# ----------------------------------------
+S.Mag,0.032,170
+L.Mag,0.034,290
+NGC.6822,0.214,-130
+NGC.598,0.263,-70
+NGC.221,0.275,-185
+NGC.224,0.275,-220
+NGC.5457,0.45,200
+NGC.4736,0.5,290
+NGC.5194,0.5,270
+NGC.4449,0.63,200
+NGC.4214,0.8,300
+NGC.3031,0.9,-30
+NGC.3627,0.9,650
+NGC.4826,0.9,150
+NGC.5236,0.9,500
+NGC.1068,1.0,920
+NGC.5055,1.1,450
+NGC.7331,1.1,500
+NGC.4258,1.4,500
+NGC.4151,1.7,960
+NGC.4382,2.0,500
+NGC.4472,2.0,850
+NGC.4486,2.0,800
+NGC.4649,2.0,1090
+"""
 
 
 subscriptions : BackendModel -> Sub BackendMsg
