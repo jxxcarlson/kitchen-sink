@@ -367,7 +367,7 @@ updateFromFrontend sessionId clientId msg model =
 
                 addSession : String -> BackendModel -> BackendModel
                 addSession username_ model_ =
-                    { model_ | sessions = BiDict.insert sessionId username_ model_.sessions |> Debug.log "@@ addSession" }
+                    { model_ | sessions = BiDict.insert sessionId username_ model_.sessions }
             in
             if Just password == Maybe.map .password maybeUser then
                 ( model |> addSession username
@@ -391,7 +391,6 @@ updateFromFrontend sessionId clientId msg model =
                 activeSessions =
                     BiDict.getReverse username model.sessions
                         |> Set.toList
-                        |> Debug.log "@@ SignOutRequest, activeSessions"
 
                 removeSessions : List SessionId -> BackendModel -> BackendModel
                 removeSessions activeSessions_ model_ =
