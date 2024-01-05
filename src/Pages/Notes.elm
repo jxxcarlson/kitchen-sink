@@ -24,6 +24,7 @@ questions or suggestions, please let me know: jxxcarlson everywhere.*
 - Routing: Adding a new page
 - Ports: sending a message to JavaScript
 - Custom Elements
+- Outbound HTTP requests
 - RPC example
 - Stripe: Account and API
 - Stripe: Displaying Product Information to the User
@@ -190,6 +191,46 @@ Note that `time-formatted.js` is also referenced in
 - [Korban, a Straightforward Guide to Custom Elements](https://korban.net/posts/elm/2018-09-17-introduction-custom-elements-shadow-dom/)
 
 - [Luke Westby's talk on Custom Elements](https://www.youtube.com/watch?v=tyFe9Pw6TVE)
+
+## Outbound HTTP requests
+
+Recall that on the Home (Kitchen Sink) page there is an input field
+for names of cities.  If you type in a city name and hit `<return>`,
+the temperature in the named city is displayed.  This is done by
+issuing an an HTTP request to the [OpenWeatherMap API](https://openweathermap.org/).
+Supporting code for this request resides in the module `Weather`.
+
+The reason for issuing the request from the backend is that the
+API key is sensitive information.  If the request were issued
+from the frontend, the key would be visible to anyone
+running the app frontend.
+
+Here is the flow of information:
+
+1. The user types in a city name and hits `<return>`.  This
+   sends a message `RequestWeatherData model.inputCity` to the frontend update function.
+
+2. The frontend update function executes the command
+ `Lamdera.sendToBackend (GetWeatherData city)` at `RequestWeatherData`.
+
+3. The backend update function handles the message `GetWeatherData city`
+   by executing the command `BackendHelper.getNewWeatherByCity clientId city`.
+
+4. The function `Weather.getWeatherData` issues an HTTP request to `https://api.openweathermap.org`
+   with
+
+   `
+   expect = Http.expectJson (Types.GotWeatherData clientId) Weather.weatherDataDecoder
+   `
+5. The response is decoded by `Weather.weatherDataDecoder` at
+   `GotWeatherData clientId (Ok weatherData)` in the backend update function.
+   The command `Lamdera.sendToFrontend clientId (Types.ReceivedWeatherData result) )`
+   is executed.
+
+6. The frontend update function handles the message `ReceivedWeatherData result`. If
+the result is a successful one, we have in hand the weather data for the city.
+It is stored in the `weatherData` field of the frontend model. The view function
+extracts the city temperature from the weather data and displays it.
 
 ## RPC example
 
