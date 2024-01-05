@@ -378,7 +378,7 @@ updateFromFrontend sessionId clientId msg model =
                     ]
                 )
 
-         SignOutRequest username ->
+        SignOutRequest username ->
             let
                 activeSessions : List SessionId
                 activeSessions =
