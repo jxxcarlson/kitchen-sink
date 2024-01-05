@@ -4,6 +4,7 @@ module BackendHelper exposing
     , getNewWeatherByCity
     , priceIdToProductId
     , purchaseSupportAddres
+    , putKVPair
     , sessionIdToStripeSessionId
     , testUserDictionary
     )
@@ -14,6 +15,7 @@ import EmailAddress
 import Env
 import Http
 import Id
+import Json.Encode
 import Lamdera
 import List.Extra
 import List.Nonempty
@@ -26,6 +28,31 @@ import Types
 import Unsafe
 import User
 import Weather
+
+
+
+-- DATA (JC)
+
+
+putKVPair : String -> String -> Cmd Types.FrontendMsg
+putKVPair key value =
+    Http.post
+        { url = "https://elm-kitchen-sink.lamdera.app/_r/putKeyValuePair"
+        , body = Http.jsonBody <| encodeKVPair key value
+        , expect = Http.expectWhatever Types.DataUploaded
+        }
+
+
+encodeKVPair : String -> String -> Json.Encode.Value
+encodeKVPair key value =
+    Json.Encode.object
+        [ ( "key", Json.Encode.string key )
+        , ( "value", Json.Encode.string value )
+        ]
+
+
+
+-- OTHER
 
 
 getNewWeatherByCity : Lamdera.ClientId -> String -> Cmd Types.BackendMsg

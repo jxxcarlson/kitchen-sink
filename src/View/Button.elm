@@ -1,5 +1,6 @@
 module View.Button exposing
-    ( askToRenewPrices
+    ( addKeyValuePair
+    , askToRenewPrices
     , buyProduct
     , copyTextToClipboard
     , playSound
@@ -86,6 +87,15 @@ playSound =
 buyProduct : Id Stripe.ProductId -> Id Stripe.PriceId -> Stripe.Product.Product_ -> Element.Element Types.FrontendMsg
 buyProduct productId priceId product =
     button (Types.BuyProduct productId priceId product) "Buy"
+
+
+
+-- DATA (JC)
+
+
+addKeyValuePair : String -> String -> Element.Element Types.FrontendMsg
+addKeyValuePair key value =
+    button (Types.AddKeyValuePair key value) "Add Key-Value Pair"
 
 
 askToRenewPrices : Element.Element Types.FrontendMsg

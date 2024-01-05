@@ -80,6 +80,10 @@ type alias LoadedModel =
     -- EXAMPLES
     , weatherData : Maybe Weather.WeatherData
     , inputCity : String
+
+    -- DATA (JC)
+    , inputKey : String
+    , inputValue : String
     }
 
 
@@ -151,6 +155,11 @@ type FrontendMsg
     | Chirp
     | RequestWeatherData String
     | InputCity String
+      -- DATA (JC)
+    | InputKey String
+    | InputValue String
+    | AddKeyValuePair String String
+    | DataUploaded (Result Http.Error ())
 
 
 type ToBackend

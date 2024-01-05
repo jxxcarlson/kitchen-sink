@@ -36,7 +36,7 @@ header model route config =
         , Element.alignTop
         ]
         (Element.wrappedRow
-            ([ Element.spacing 32
+            ([ Element.spacing 24
              , Element.Background.color View.Color.blue
              , Element.Font.color (Element.rgb 1 1 1)
              ]
@@ -64,6 +64,9 @@ header model route config =
             , Element.link
                 (linkStyle route DataStore)
                 { url = Route.encode DataStore, label = Element.text "Raw Data" }
+            , Element.link
+                (linkStyle route EditData)
+                { url = Route.encode EditData, label = Element.text "Edit Data" }
             , Element.link
                 (linkStyle route SignInRoute)
                 { url = Route.encode SignInRoute

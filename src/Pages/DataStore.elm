@@ -1,22 +1,11 @@
 module Pages.DataStore exposing (view)
 
---
-
-import AssocList
-import Codec
 import Dict
 import Element exposing (..)
 import Element.Font
-import EmailAddress
-import Id exposing (Id)
-import Lamdera
 import MarkdownThemed
-import Name
 import Theme
-import Time exposing (Month(..))
 import Types exposing (..)
-import User
-import View.Button
 import View.Geometry
 
 

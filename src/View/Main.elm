@@ -8,6 +8,7 @@ import MarkdownThemed
 import Pages.Admin
 import Pages.Brillig
 import Pages.DataStore
+import Pages.EditData
 import Pages.Features
 import Pages.Home
 import Pages.Notes
@@ -71,6 +72,9 @@ loadedView model =
 
         DataStore ->
             Pages.Parts.generic model Pages.DataStore.view
+
+        EditData ->
+            Pages.Parts.generic model Pages.EditData.view
 
         Notes ->
             Pages.Parts.generic model Pages.Notes.view

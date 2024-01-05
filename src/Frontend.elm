@@ -3,6 +3,7 @@ module Frontend exposing (app)
 --exposing (PriceId, ProductId(..), StripeSessionId)
 
 import AssocList
+import BackendHelper
 import Browser exposing (UrlRequest(..))
 import Browser.Dom
 import Browser.Events
@@ -136,6 +137,10 @@ tryLoading loadingModel =
                         -- EXAMPLES
                         , inputCity = ""
                         , weatherData = Nothing
+
+                        -- DATA
+                        , inputKey = ""
+                        , inputValue = ""
                         }
                     , Cmd.none
                     )
@@ -348,6 +353,19 @@ updateLoaded msg model =
 
         InputCity str ->
             ( { model | inputCity = str }, Cmd.none )
+
+        -- DATA
+        InputKey str ->
+            ( { model | inputKey = str }, Cmd.none )
+
+        InputValue str ->
+            ( { model | inputValue = str }, Cmd.none )
+
+        AddKeyValuePair key value ->
+            ( model, BackendHelper.putKVPair key value )
+
+        DataUploaded result ->
+            ( model, Cmd.none )
 
 
 scrollToTop : Cmd FrontendMsg
