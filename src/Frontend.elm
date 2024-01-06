@@ -381,8 +381,8 @@ updateLoaded msg model =
                     ( { model
                         | inputValue =
                             value.value
-                                |> String.dropLeft 1
-                                |> String.dropRight 1
+                                --|> String.dropLeft 1
+                                --|> String.dropRight 1
                                 |> String.replace "\\n" "\n"
                       }
                     , Cmd.none
