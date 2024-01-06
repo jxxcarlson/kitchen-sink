@@ -371,10 +371,10 @@ updateLoaded msg model =
         GotValue result ->
             case result of
                 Ok str ->
-                    ( { model | kvValue = str }, Cmd.none )
+                    ( { model | inputValue = str }, Cmd.none )
 
                 Err _ ->
-                    ( { model | kvValue = "Error finding value" }, Cmd.none )
+                    ( { model | inputValue = "Oops!", message = "Error finding value for given key" }, Cmd.none )
 
         DataUploaded result ->
             ( model, Cmd.none )
