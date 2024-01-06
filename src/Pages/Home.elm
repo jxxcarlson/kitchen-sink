@@ -89,7 +89,7 @@ on an outbound Http request to [openweathermap.org](https://openweathermap.org/)
 from the backend.  See the `Ports`, `Weather`, and `View.CustomElement` modules for code
 and for more information.
 
-**NOTE.** *The "Raw Data" and "Edit Data" tabs are for another project
+**NOTE.** *The "View Data" and "Edit Data" tabs are for another project
 (a curated public data service for science and education) and will be removed when this project is complete.*
         """
         |> MarkdownThemed.renderFull
