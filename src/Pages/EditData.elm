@@ -35,7 +35,7 @@ dataEditor model =
                     if Predicate.isAdmin model.currentUser then
                         let
                             kvDatum =
-                                { key = model.inputKey, value = model.inputValue, curator = "", created_at = model.now, updated_at = model.now }
+                                { key = model.inputKey, value = model.inputValue, curator = user.username, created_at = model.now, updated_at = model.now }
                         in
                         View.Button.addKeyValuePair model.inputKey kvDatum
 
