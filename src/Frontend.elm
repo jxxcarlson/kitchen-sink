@@ -141,7 +141,7 @@ tryLoading loadingModel =
                         -- DATA
                         , inputKey = ""
                         , inputValue = ""
-                        , kvValue = ""
+                        , inputFilterData = ""
                         }
                     , Cmd.none
                     )
@@ -361,6 +361,9 @@ updateLoaded msg model =
 
         InputValue str ->
             ( { model | inputValue = str }, Cmd.none )
+
+        InputFilterData str ->
+            ( { model | inputFilterData = str }, Cmd.none )
 
         AddKeyValuePair key value ->
             ( model, BackendHelper.putKVPair key value )

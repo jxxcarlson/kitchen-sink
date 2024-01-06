@@ -84,7 +84,7 @@ type alias LoadedModel =
     -- DATA (JC)
     , inputKey : String
     , inputValue : String
-    , kvValue : String
+    , inputFilterData : String
     }
 
 
@@ -159,6 +159,7 @@ type FrontendMsg
       -- DATA (JC)
     | InputKey String
     | InputValue String
+    | InputFilterData String
     | AddKeyValuePair String String
     | GetValueWithKey String
     | GotValue (Result Http.Error String)

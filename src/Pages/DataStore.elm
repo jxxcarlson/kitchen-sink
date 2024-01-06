@@ -7,6 +7,7 @@ import MarkdownThemed
 import Theme
 import Types exposing (..)
 import View.Geometry
+import View.Input
 
 
 view : LoadedModel -> Element FrontendMsg
@@ -17,21 +18,25 @@ view model =
                 text "Can't find that data"
 
             Just backendModel ->
-                viewKeyValuePairs model.window backendModel
+                viewKeyValuePairs model backendModel
         ]
 
 
-viewKeyValuePairs : Window -> BackendModel -> Element msg
-viewKeyValuePairs window backendModel =
+viewKeyValuePairs : LoadedModel -> BackendModel -> Element FrontendMsg
+viewKeyValuePairs model backendModel =
     column
         [ width fill
         , spacing 12
-        , height (px <| window.height - 2 * View.Geometry.headerFooterHeight)
+        , height (px <| model.window.height - 2 * View.Geometry.headerFooterHeight)
         ]
-        ([ Element.column Theme.contentAttributes [ content ]
+        ([ -- Element.column Theme.contentAttributes [ content ]
+           Element.row [ Element.spacing 24 ]
+            [ View.Input.templateWithAttr [ Element.width (Element.px 150) ] "Filter Data" model.inputFilterData InputFilterData
+            ]
          , Element.el [ Element.Font.bold, Element.Font.size 24 ] (text "Raw Data")
          ]
-            ++ List.map viewPair (Dict.toList backendModel.keyValueStore)
+            ++ List.map viewPair
+                (Dict.toList backendModel.keyValueStore |> List.filter (\( key, value ) -> String.contains model.inputFilterData (key ++ value)))
         )
 
 
