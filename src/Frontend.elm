@@ -371,7 +371,7 @@ updateLoaded msg model =
         GotValue result ->
             case result of
                 Ok str ->
-                    ( { model | inputValue = str }, Cmd.none )
+                    ( { model | inputValue = str |> String.dropLeft 1 |> String.dropRight 1 }, Cmd.none )
 
                 Err _ ->
                     ( { model | inputValue = "Oops!", message = "Error finding value for given key" }, Cmd.none )
