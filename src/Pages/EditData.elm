@@ -4,6 +4,7 @@ import Dict
 import Element exposing (..)
 import Element.Font
 import MarkdownThemed
+import Predicate
 import Theme
 import Types exposing (..)
 import View.Button
@@ -29,7 +30,7 @@ dataEditor model backendModel =
     Element.column [ Element.spacing 12 ]
         [ View.Input.templateWithAttr [] "key" model.inputKey InputKey
         , Element.row [ Element.spacing 24 ]
-            [ View.Button.addKeyValuePair model.inputKey model.inputValue
+            [ View.Utility.showIf (Predicate.isAdmin model.currentUser) (View.Button.addKeyValuePair model.inputKey model.inputValue)
             , View.Button.getValueWithKey model.inputKey
             ]
         , View.Input.multilineTemplateWithAttr
