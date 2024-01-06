@@ -30,7 +30,7 @@ dataEditor model =
                     Element.none
 
                 Just user ->
-                    if Predicate.isAdmin model.currentUser && model.inputKey /= "" then
+                    if Predicate.isAdmin model.currentUser && model.inputKey /= "" && model.inputValue /= "" then
                         let
                             curator =
                                 case model.currentKVPair of
@@ -51,7 +51,12 @@ dataEditor model =
                             kvDatum =
                                 { key = model.inputKey, value = model.inputValue, curator = curator, created_at = created_at, updated_at = model.now }
                         in
-                        View.Button.addKeyValuePair model.inputKey kvDatum
+                        case model.currentKVPair of
+                            Nothing ->
+                                View.Button.saveKeyValuePair model.inputKey kvDatum
+
+                            Just _ ->
+                                View.Button.updateKeyValuePair model.inputKey kvDatum
 
                     else
                         View.Button.noOp "Save"

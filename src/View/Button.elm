@@ -1,6 +1,5 @@
 module View.Button exposing
-    ( addKeyValuePair
-    , askToRenewPrices
+    ( askToRenewPrices
     , buyProduct
     , copyTextToClipboard
     , getValueWithKey
@@ -8,12 +7,14 @@ module View.Button exposing
     , noOp
     , playSound
     , requestWeatherData
+    , saveKeyValuePair
     , setAdminDisplay
     , setKVViewType
     , setSignInState
     , signIn
     , signOut
     , signUp
+    , updateKeyValuePair
     )
 
 import Element
@@ -104,8 +105,13 @@ setKVViewType currentViewType newViewType label =
     highlightableButton (currentViewType == newViewType) (Types.SetKVViewType newViewType) label
 
 
-addKeyValuePair : String -> KeyValueStore.KVDatum -> Element.Element Types.FrontendMsg
-addKeyValuePair key value =
+saveKeyValuePair : String -> KeyValueStore.KVDatum -> Element.Element Types.FrontendMsg
+saveKeyValuePair key value =
+    button (Types.AddKeyValuePair key value) "Save"
+
+
+updateKeyValuePair : String -> KeyValueStore.KVDatum -> Element.Element Types.FrontendMsg
+updateKeyValuePair key value =
     button (Types.AddKeyValuePair key value) "Save"
 
 
