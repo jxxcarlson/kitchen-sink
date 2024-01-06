@@ -1,6 +1,7 @@
 module Env exposing
     ( Mode(..)
     , adminPassword
+    , dataSource
     , developerEmails
     , developerEmails_
     , domain
@@ -25,6 +26,10 @@ type Mode
 
 weatherAPIKey =
     "xxx"
+
+
+dataSource =
+    "http://localhost:8080"
 
 
 domain =
