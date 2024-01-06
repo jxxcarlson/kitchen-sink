@@ -112,7 +112,7 @@ saveKeyValuePair key value =
 
 updateKeyValuePair : String -> KeyValueStore.KVDatum -> Element.Element Types.FrontendMsg
 updateKeyValuePair key value =
-    button (Types.AddKeyValuePair key value) "Save"
+    button (Types.AddKeyValuePair key value) "Update"
 
 
 newKeyValuePair : Element.Element Types.FrontendMsg
