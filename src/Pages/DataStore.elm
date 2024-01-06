@@ -9,6 +9,7 @@ import Types exposing (..)
 import View.Button
 import View.Geometry
 import View.Input
+import View.Utility
 
 
 
@@ -107,6 +108,8 @@ viewSummary ( key, value ) =
             ]
             [ Element.el [ Element.Font.bold, Element.Font.underline ] (text key)
             , Element.el [ Element.Font.italic ] (text <| "curator: " ++ value.curator)
+            , Element.el [ Element.Font.italic ] (text <| "created: " ++ View.Utility.toUtcString value.created_at)
+            , Element.el [ Element.Font.italic ] (text <| "updated: " ++ View.Utility.toUtcString value.updated_at)
             , KeyValueStore.rowsAndColumns value.value
             , Element.el
                 [ width fill
@@ -135,6 +138,8 @@ viewPair ( key, value ) =
             ]
             [ Element.el [ Element.Font.bold, Element.Font.underline ] (text key)
             , Element.el [ Element.Font.italic ] (text <| "curator: " ++ value.curator)
+            , Element.el [ Element.Font.italic ] (text <| "created: " ++ View.Utility.toUtcString value.created_at)
+            , Element.el [ Element.Font.italic ] (text <| "updated: " ++ View.Utility.toUtcString value.updated_at)
             , KeyValueStore.rowsAndColumns value.value
             , Element.el
                 [ width fill

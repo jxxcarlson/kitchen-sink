@@ -1,4 +1,4 @@
-module Pages.Admin exposing (Window, content, loadProdBackend, toMonth, toUtcString, view, viewExpiredOrders, viewExpiredOrdersPretty, viewKeyValuePairs, viewOrders, viewPair, viewPendingOrder, viewPrices, viewPricesPretty, viewStripeData, viewUser, viewUserData, viewUserDictionary)
+module Pages.Admin exposing (Window, content, loadProdBackend, view, viewExpiredOrders, viewExpiredOrdersPretty, viewKeyValuePairs, viewOrders, viewPair, viewPendingOrder, viewPrices, viewPricesPretty, viewStripeData, viewUser, viewUserData, viewUserDictionary)
 
 import AssocList
 import Codec
@@ -21,6 +21,7 @@ import Types exposing (..)
 import User
 import View.Button
 import View.Geometry
+import View.Utility
 
 
 type alias Window =
@@ -228,62 +229,6 @@ viewExpiredOrders expiredOrders =
         ]
 
 
-toUtcString : Time.Posix -> String
-toUtcString time =
-    String.fromInt (Time.toYear Time.utc time)
-        ++ "-"
-        ++ toMonth (Time.toMonth Time.utc time)
-        ++ "-"
-        ++ String.fromInt (Time.toDay Time.utc time)
-        ++ " "
-        ++ String.fromInt (Time.toHour Time.utc time)
-        ++ ":"
-        ++ String.fromInt (Time.toMinute Time.utc time)
-        ++ ":"
-        ++ String.fromInt (Time.toSecond Time.utc time)
-        ++ " (UTC)"
-
-
-toMonth : Time.Month -> String
-toMonth month =
-    case month of
-        Jan ->
-            "Jan"
-
-        Feb ->
-            "Feb"
-
-        Mar ->
-            "Mar"
-
-        Apr ->
-            "Apr"
-
-        May ->
-            "May"
-
-        Jun ->
-            "Jun"
-
-        Jul ->
-            "Jul"
-
-        Aug ->
-            "Aug"
-
-        Sep ->
-            "Sep"
-
-        Oct ->
-            "Oct"
-
-        Nov ->
-            "Nov"
-
-        Dec ->
-            "Dec"
-
-
 viewExpiredOrdersPretty : AssocList.Dict (Id StripeSessionId) Stripe.Codec.PendingOrder -> Element msg
 viewExpiredOrdersPretty expiredOrders =
     let
@@ -299,7 +244,7 @@ viewExpiredOrdersPretty expiredOrders =
                 ]
                 [ text ("name: " ++ (order.form |> Stripe.PurchaseForm.getPurchaseData |> .billingName |> Name.nameToString))
                 , text ("email: " ++ (order.form |> Stripe.PurchaseForm.getPurchaseData |> .billingEmail |> EmailAddress.toString))
-                , text ("date-time: " ++ (order |> .submitTime |> toUtcString))
+                , text ("date-time: " ++ (order |> .submitTime |> View.Utility.toUtcString))
                 , text ("id: " ++ Id.toString id)
                 , text ("priceId: " ++ Id.toString order.priceId)
                 , text ("sessionId: " ++ order.sessionId)

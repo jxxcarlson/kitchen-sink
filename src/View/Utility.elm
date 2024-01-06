@@ -13,6 +13,7 @@ module View.Utility exposing
     , scrollToTop
     , scrollToTopForId
     , showIf
+    , toUtcString
     )
 
 import Browser.Dom as Dom
@@ -22,6 +23,7 @@ import Html.Attributes as HA
 import Html.Events
 import Json.Decode
 import Task exposing (Task)
+import Time exposing (Month(..))
 import Types exposing (FrontendMsg, LoadedModel)
 
 
@@ -175,3 +177,59 @@ cssNode fileName =
 elementAttribute : String -> String -> Element.Attribute msg
 elementAttribute key value =
     Element.htmlAttribute (HA.attribute key value)
+
+
+toUtcString : Time.Posix -> String
+toUtcString time =
+    String.fromInt (Time.toYear Time.utc time)
+        ++ "-"
+        ++ toMonth (Time.toMonth Time.utc time)
+        ++ "-"
+        ++ String.fromInt (Time.toDay Time.utc time)
+        ++ " "
+        ++ String.fromInt (Time.toHour Time.utc time)
+        ++ ":"
+        ++ String.fromInt (Time.toMinute Time.utc time)
+        ++ ":"
+        ++ String.fromInt (Time.toSecond Time.utc time)
+        ++ " (UTC)"
+
+
+toMonth : Time.Month -> String
+toMonth month =
+    case month of
+        Jan ->
+            "Jan"
+
+        Feb ->
+            "Feb"
+
+        Mar ->
+            "Mar"
+
+        Apr ->
+            "Apr"
+
+        May ->
+            "May"
+
+        Jun ->
+            "Jun"
+
+        Jul ->
+            "Jul"
+
+        Aug ->
+            "Aug"
+
+        Sep ->
+            "Sep"
+
+        Oct ->
+            "Oct"
+
+        Nov ->
+            "Nov"
+
+        Dec ->
+            "Dec"
