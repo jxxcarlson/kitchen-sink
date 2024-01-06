@@ -141,6 +141,7 @@ tryLoading loadingModel =
                         , weatherData = Nothing
 
                         -- DATA
+                        , currentKVPair = Nothing
                         , keyValueStore = Dict.empty
                         , inputKey = ""
                         , inputValue = ""
@@ -369,6 +370,9 @@ updateLoaded msg model =
         InputFilterData str ->
             ( { model | inputFilterData = str }, Cmd.none )
 
+        NewKeyValuePair ->
+            ( { model | currentKVPair = Nothing, inputKey = "??", inputValue = "" }, Cmd.none )
+
         AddKeyValuePair key value ->
             ( model, RPC.putKVPair key value )
 
@@ -379,7 +383,8 @@ updateLoaded msg model =
             case result of
                 Ok value ->
                     ( { model
-                        | inputValue =
+                        | currentKVPair = Just ( value.key, value )
+                        , inputValue =
                             value.value
                                 --|> String.dropLeft 1
                                 --|> String.dropRight 1
@@ -389,7 +394,7 @@ updateLoaded msg model =
                     )
 
                 Err _ ->
-                    ( { model | inputValue = "Oops!", message = "Error finding value for given key" }, Cmd.none )
+                    ( { model | currentKVPair = Nothing, inputValue = "Oops!", message = "Error finding value for given key" }, Cmd.none )
 
         SetKVViewType kvViewType ->
             ( { model | kvViewType = kvViewType }, Cmd.none )

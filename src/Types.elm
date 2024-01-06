@@ -83,6 +83,7 @@ type alias LoadedModel =
     , inputCity : String
 
     -- DATA (JC)
+    , currentKVPair : Maybe ( String, KeyValueStore.KVDatum )
     , keyValueStore : Dict.Dict String KeyValueStore.KVDatum
     , inputKey : String
     , inputValue : String
@@ -163,6 +164,7 @@ type FrontendMsg
     | InputKey String
     | InputValue String
     | InputFilterData String
+    | NewKeyValuePair
     | AddKeyValuePair String KeyValueStore.KVDatum
     | GetValueWithKey String
     | GotValue (Result Http.Error KeyValueStore.KVDatum)

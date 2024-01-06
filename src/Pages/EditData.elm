@@ -27,12 +27,13 @@ dataEditor model =
         [ View.Input.templateWithAttr [] "key" model.inputKey InputKey
         , Element.row [ Element.spacing 24 ]
             [ View.Button.getValueWithKey model.inputKey
+            , View.Button.newKeyValuePair
             , case model.currentUser of
                 Nothing ->
                     Element.none
 
                 Just user ->
-                    if Predicate.isAdmin model.currentUser then
+                    if Predicate.isAdmin model.currentUser && model.inputKey /= "" then
                         let
                             kvDatum =
                                 { key = model.inputKey, value = model.inputValue, curator = user.username, created_at = model.now, updated_at = model.now }
@@ -40,7 +41,7 @@ dataEditor model =
                         View.Button.addKeyValuePair model.inputKey kvDatum
 
                     else
-                        Element.none
+                        View.Button.noOp "Save"
             , KeyValueStore.rowsAndColumns model.inputValue
 
             --, Element.el [ Element.Font.italic ] (text <| "created: " ++ View.Utility.toUtcString value.created_at)

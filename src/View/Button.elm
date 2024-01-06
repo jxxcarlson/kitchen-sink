@@ -4,6 +4,8 @@ module View.Button exposing
     , buyProduct
     , copyTextToClipboard
     , getValueWithKey
+    , newKeyValuePair
+    , noOp
     , playSound
     , requestWeatherData
     , setAdminDisplay
@@ -107,9 +109,19 @@ addKeyValuePair key value =
     button (Types.AddKeyValuePair key value) "Save"
 
 
+newKeyValuePair : Element.Element Types.FrontendMsg
+newKeyValuePair =
+    button Types.NewKeyValuePair "New"
+
+
 getValueWithKey : String -> Element.Element Types.FrontendMsg
 getValueWithKey key =
     button (Types.GetValueWithKey key) "Get"
+
+
+noOp : String -> Element.Element Types.FrontendMsg
+noOp label =
+    buttonwithAttr [ Element.Background.color View.Color.medGray ] Types.NoOp label
 
 
 
@@ -128,6 +140,15 @@ askToRenewPrices =
 button msg label =
     Element.Input.button
         buttonStyle
+        { onPress = Just msg
+        , label =
+            Element.el buttonLabelStyle (Element.text label)
+        }
+
+
+buttonwithAttr attr msg label =
+    Element.Input.button
+        (buttonStyle ++ attr)
         { onPress = Just msg
         , label =
             Element.el buttonLabelStyle (Element.text label)
