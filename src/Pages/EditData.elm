@@ -28,6 +28,10 @@ dataEditor : LoadedModel -> BackendModel -> Element FrontendMsg
 dataEditor model backendModel =
     Element.column [ Element.spacing 12 ]
         [ View.Input.templateWithAttr [] "key" model.inputKey InputKey
+        , Element.row [ Element.spacing 24 ]
+            [ View.Button.addKeyValuePair model.inputKey model.inputValue
+            , View.Button.getValueWithKey model.inputKey
+            ]
         , View.Input.multilineTemplateWithAttr
             [ Element.width (Element.px 500)
             , Element.height (Element.px (model.window.height - 250))
@@ -38,10 +42,6 @@ dataEditor model backendModel =
             "value"
             model.inputValue
             InputValue
-        , Element.row [ Element.spacing 24 ]
-            [ View.Button.addKeyValuePair model.inputKey model.inputValue
-            , View.Button.getValueWithKey model.inputKey
-            ]
         ]
 
 
