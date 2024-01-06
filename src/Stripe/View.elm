@@ -3,7 +3,6 @@ module Stripe.View exposing
     , makeProduct_
     , prices
     , productList
-    , ticketCardsView
     , ticketsHtmlId
     , viewEntry
     , viewProductInfo
@@ -11,16 +10,15 @@ module Stripe.View exposing
 
 import AssocList
 import Element exposing (Element)
-import Element.Border
 import Element.Font
 import Element.Input
 import Id exposing (Id)
 import MarkdownThemed
-import Stripe.Product as Tickets exposing (Product_)
+import Stripe.Product exposing (Product_)
 import Stripe.PurchaseForm as PurchaseForm exposing (PressedSubmit(..), PurchaseForm, PurchaseFormValidated(..), SubmitStatus(..))
 import Stripe.Stripe as Stripe
 import Theme
-import Types exposing (..)
+import Types exposing (FrontendMsg(..), LoadedModel)
 import View.Button
 import View.Input
 import View.Style
@@ -41,7 +39,7 @@ viewProductInfo :
     -> Stripe.ProductInfoDict
     -> ( Id Stripe.ProductId, { priceId : Id Stripe.PriceId, price : Stripe.Price } )
     -> Element FrontendMsg
-viewProductInfo model dict ( productId, { priceId, price } ) =
+viewProductInfo _ dict ( productId, { priceId, price } ) =
     case AssocList.get productId dict of
         Nothing ->
             Element.text ("No product info found for " ++ Id.toString productId)
@@ -116,13 +114,13 @@ formView model productId priceId product_ =
                         [ Element.Font.center ]
                         [ Element.text "Purchase "
                         , case form.submitStatus of
-                            NotSubmitted pressedSubmit ->
+                            NotSubmitted _ ->
                                 Element.none
 
                             Submitting ->
                                 Element.el [ Element.moveDown 5 ] Theme.spinnerWhite
 
-                            SubmitBackendError err ->
+                            SubmitBackendError _ ->
                                 Element.none
                         ]
                 }
@@ -150,7 +148,7 @@ formView model productId priceId product_ =
             , Element.el [] (Element.text <| "Your have selected the " ++ product_.name ++ ".")
             ]
         , case form.submitStatus of
-            NotSubmitted pressedSubmit ->
+            NotSubmitted _ ->
                 Element.none
 
             Submitting ->
@@ -168,35 +166,6 @@ formView model productId priceId product_ =
 Your order will be processed by XXX.
 """ |> MarkdownThemed.renderFull
         ]
-
-
-ticketCardsView : LoadedModel -> Element FrontendMsg
-ticketCardsView model =
-    if model.window.width < 950 then
-        List.map
-            (\( productId, ticket ) ->
-                case AssocList.get productId model.prices of
-                    Just price ->
-                        Tickets.viewMobile (PressedSelectTicket productId price.priceId) price.price ticket
-
-                    Nothing ->
-                        Element.text "No ticket prices found"
-            )
-            (AssocList.toList Tickets.dict)
-            |> Element.column [ Element.spacing 16 ]
-
-    else
-        List.map
-            (\( productId, ticket ) ->
-                case AssocList.get productId model.prices of
-                    Just price ->
-                        Tickets.viewDesktop (PressedSelectTicket productId price.priceId) price.price ticket
-
-                    Nothing ->
-                        Element.text "No ticket prices found"
-            )
-            (AssocList.toList Tickets.dict)
-            |> Element.row (Element.spacing 16 :: Theme.contentAttributes)
 
 
 

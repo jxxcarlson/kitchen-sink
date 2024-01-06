@@ -5,7 +5,7 @@ import Element.Font
 import Html.Attributes
 import MarkdownThemed
 import Theme
-import Types exposing (..)
+import Types exposing (FrontendMsg(..), LoadedModel)
 import View.Button
 import View.CustomElement
 import View.Input

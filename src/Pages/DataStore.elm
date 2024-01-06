@@ -1,23 +1,15 @@
 module Pages.DataStore exposing (view)
 
 import Dict
-import Element exposing (..)
+import Element exposing (Element, column, fill, height, px, spacing, text, width)
 import Element.Font
 import KeyValueStore
 import MarkdownThemed
-import Types exposing (..)
+import Types exposing (FrontendMsg(..), LoadedModel)
 import View.Button
 import View.Geometry
 import View.Input
 import View.Utility
-
-
-
---view : LoadedModel -> Element FrontendMsg
---view model =
---    Element.column []
---        [ viewKeyValuePairs model
---        ]
 
 
 view : LoadedModel -> Element FrontendMsg

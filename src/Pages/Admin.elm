@@ -3,21 +3,19 @@ module Pages.Admin exposing (Window, content, loadProdBackend, view, viewExpired
 import AssocList
 import Codec
 import Dict
-import Element exposing (..)
+import Element exposing (Element, column, fill, height, px, row, scrollbarY, spacing, text, width)
 import Element.Font
 import EmailAddress
 import Id exposing (Id)
 import KeyValueStore
-import Lamdera
 import MarkdownThemed
 import Name
 import Stripe.Codec
 import Stripe.PurchaseForm
-import Stripe.Stripe as Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
+import Stripe.Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
 import Stripe.View
 import Theme
-import Time exposing (Month(..))
-import Types exposing (..)
+import Types exposing (AdminDisplay(..), BackendModel, FrontendMsg(..), LoadedModel)
 import User
 import View.Button
 import View.Geometry

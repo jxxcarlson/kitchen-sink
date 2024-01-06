@@ -17,7 +17,7 @@ import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
 import Task
 import Time
-import Types exposing (..)
+import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
 import Untrusted
 import User
 

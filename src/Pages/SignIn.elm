@@ -2,7 +2,7 @@ module Pages.SignIn exposing (signIn, signUp, signedIn, topPadding, view)
 
 import Element exposing (Element)
 import Element.Font
-import Types exposing (..)
+import Types exposing (FrontendMsg(..), LoadedModel, SignInState(..))
 import View.Button
 import View.Color
 import View.Input

@@ -2,11 +2,11 @@ module Pages.Notes exposing (view)
 
 import Element exposing (Element)
 import MarkdownThemed
-import Types exposing (..)
+import Types exposing (LoadedModel)
 
 
 view : LoadedModel -> Element msg
-view model =
+view _ =
     """
 #  Notes
 

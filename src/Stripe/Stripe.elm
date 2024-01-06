@@ -22,10 +22,10 @@ import AssocList
 import EmailAddress exposing (EmailAddress)
 import Env
 import Http
-import HttpHelpers exposing (..)
+import HttpHelpers exposing (expectJson_, jsonResolver)
 import Id exposing (Id)
 import Json.Decode as D
-import Json.Decode.Pipeline exposing (..)
+import Json.Decode.Pipeline exposing (optional, required)
 import Json.Encode as E
 import Money
 import Ports exposing (stripe_to_js)
@@ -288,11 +288,6 @@ type OrderStatus
 
 type StripePaymentId
     = StripePaymentId String
-
-
-type Product
-    = Watchamacallit Price
-    | Thingamabob Price
 
 
 type alias CityCode =

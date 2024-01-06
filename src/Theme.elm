@@ -1,6 +1,19 @@
-module Theme exposing (colorWithAlpha, colors, contentAttributes, css, fontFace, glow, panel, priceText, rowToColumnWhen, spinnerWhite, submitButtonAttributes, toggleButton, toggleButtonAttributes, viewIf)
+module Theme exposing
+    ( colorWithAlpha
+    , colors
+    , contentAttributes
+    , css
+    , fontFace
+    , glow
+    , panel
+    , priceText
+    , rowToColumnWhen
+    , spinnerWhite
+    , submitButtonAttributes
+    , toggleButtonAttributes
+    )
 
-import Element exposing (..)
+import Element as Element exposing (Element, el, height, htmlAttribute, none, px, width)
 import Element.Background
 import Element.Border
 import Element.Font
@@ -9,8 +22,7 @@ import Html exposing (Html)
 import Html.Attributes
 import MarkdownThemed
 import Money
-import Route exposing (Route(..))
-import Stripe.Stripe as Stripe exposing (Price)
+import Stripe.Stripe exposing (Price)
 
 
 contentAttributes : List (Element.Attribute msg)
@@ -76,14 +88,6 @@ fontFace weight name fontFamilyName =
 }"""
 
 
-viewIf condition view =
-    if condition then
-        view
-
-    else
-        Element.none
-
-
 priceText : Price -> String
 priceText { currency, amount } =
     Money.toNativeSymbol currency ++ String.fromInt (amount // 100)
@@ -121,14 +125,6 @@ submitButtonAttributes =
     , Element.Font.semiBold
     , Element.Font.color (Element.rgb 1 1 1)
     ]
-
-
-toggleButton label isActive onPress =
-    Element.Input.button
-        (toggleButtonAttributes isActive)
-        { onPress = onPress
-        , label = Element.el [ Element.centerX ] (Element.text label)
-        }
 
 
 toggleButtonAttributes : Bool -> List (Element.Attribute msg)

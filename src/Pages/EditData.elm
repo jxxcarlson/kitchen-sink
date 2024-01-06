@@ -1,17 +1,12 @@
 module Pages.EditData exposing (view)
 
-import Dict
-import Element exposing (..)
-import Element.Font
+import Element exposing (Element)
 import KeyValueStore
 import MarkdownThemed
 import Predicate
-import Theme
-import Types exposing (..)
+import Types exposing (FrontendMsg(..), LoadedModel)
 import View.Button
-import View.Geometry
 import View.Input
-import View.Utility
 
 
 view : LoadedModel -> Element FrontendMsg
@@ -45,7 +40,7 @@ dataEditor model =
                                     Nothing ->
                                         model.now
 
-                                    Just ( key, value ) ->
+                                    Just ( _, value ) ->
                                         value.created_at
 
                             kvDatum =

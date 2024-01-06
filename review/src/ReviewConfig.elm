@@ -39,8 +39,7 @@ config =
       --, NoConfusingPrefixOperator.rule
       NoDebug.Log.rule
     , NoDebug.TodoOrToString.rule
-
-    --    |> Rule.ignoreErrorsForDirectories [ "tests/" ]
+        |> Rule.ignoreErrorsForDirectories [ "tests/" ]
     , NoExposingEverything.rule
     , NoImportingEverything.rule []
 

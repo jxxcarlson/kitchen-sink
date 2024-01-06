@@ -18,12 +18,8 @@ import Pages.SignIn
 import Predicate
 import Route exposing (Route(..))
 import Theme
-import Types exposing (..)
+import Types exposing (FrontendModel(..), FrontendMsg(..), LoadedModel)
 import View.Style
-
-
-
---E.layoutWith { options = [ E.focusStyle View.Utility.noFocus ] }
 
 
 noFocus : Element.FocusStyle
