@@ -7,6 +7,7 @@ import Element exposing (..)
 import Element.Font
 import EmailAddress
 import Id exposing (Id)
+import KeyValueStore
 import Lamdera
 import MarkdownThemed
 import Name
@@ -92,14 +93,14 @@ https://elm-kitchen-sink.lamdera.app/_r/getKeyValuePair
         |> MarkdownThemed.renderFull
 
 
-viewPair : ( String, String ) -> Element msg
+viewPair : ( String, KeyValueStore.KVDatum ) -> Element msg
 viewPair ( key, value ) =
     row
         [ width fill
         , spacing 12
         ]
         [ text (key ++ ":")
-        , text value
+        , text value.value
         ]
 
 

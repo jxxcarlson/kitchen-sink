@@ -83,7 +83,7 @@ type alias LoadedModel =
     , inputCity : String
 
     -- DATA (JC)
-    , keyValueStore : Dict.Dict String String
+    , keyValueStore : Dict.Dict String KeyValueStore.KVDatum
     , inputKey : String
     , inputValue : String
     , inputFilterData : String
@@ -120,7 +120,7 @@ type alias BackendModel =
     , products : Stripe.Stripe.ProductInfoDict
 
     -- EXPERIMENTAL
-    , keyValueStore : Dict.Dict String String
+    , keyValueStore : Dict.Dict String KeyValueStore.KVDatum
     }
 
 
@@ -163,9 +163,9 @@ type FrontendMsg
     | InputKey String
     | InputValue String
     | InputFilterData String
-    | AddKeyValuePair String String
+    | AddKeyValuePair String KeyValueStore.KVDatum
     | GetValueWithKey String
-    | GotValue (Result Http.Error String)
+    | GotValue (Result Http.Error KeyValueStore.KVDatum)
     | DataUploaded (Result Http.Error ())
     | SetKVViewType KeyValueStore.KVViewType
 
@@ -216,7 +216,7 @@ type ToFrontend
       -- EXAMPLE
     | ReceivedWeatherData (Result Http.Error Weather.WeatherData)
       -- DATA (JC)
-    | GotKeyValueStore (Dict.Dict String String)
+    | GotKeyValueStore (Dict.Dict String KeyValueStore.KVDatum)
 
 
 

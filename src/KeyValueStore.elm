@@ -1,13 +1,53 @@
-module KeyValueStore exposing (KVViewType(..), rowsAndColumns)
+module KeyValueStore exposing
+    ( KVDatum
+    , KVViewType(..)
+    , defaultKVDatum
+    , encodeKey
+    , rowsAndColumns
+    )
 
 import Element exposing (Element, text)
 import Element.Font
+import Env
+import Http
+import Json.Encode
+import Time
+
+
+type alias KVDatum =
+    { key : String
+    , value : String
+    , curator : String
+    , created_at : Time.Posix
+    , updated_at : Time.Posix
+    }
+
+
+defaultKVDatum : KVDatum
+defaultKVDatum =
+    { key = "Unknown"
+    , value = "Unknown"
+    , curator = "Unknown"
+    , created_at = Time.millisToPosix 0
+    , updated_at = Time.millisToPosix 0
+    }
 
 
 type KVViewType
     = KVRaw
     | KVVSummary
     | KVVKey
+
+
+
+-- DATA (JC)
+
+
+encodeKey : String -> Json.Encode.Value
+encodeKey key =
+    Json.Encode.object
+        [ ( "key", Json.Encode.string key )
+        ]
 
 
 rowsAndColumns : String -> Element msg

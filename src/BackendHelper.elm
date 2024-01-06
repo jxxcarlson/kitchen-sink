@@ -2,10 +2,8 @@ module BackendHelper exposing
     ( errorEmail
     , getAtmosphericRandomNumbers
     , getNewWeatherByCity
-    , getValueWithKey
     , priceIdToProductId
     , purchaseSupportAddres
-    , putKVPair
     , sessionIdToStripeSessionId
     , testUserDictionary
     )
@@ -16,7 +14,6 @@ import EmailAddress
 import Env
 import Http
 import Id
-import Json.Encode
 import Lamdera
 import List.Extra
 import List.Nonempty
@@ -29,43 +26,6 @@ import Types
 import Unsafe
 import User
 import Weather
-
-
-
--- DATA (JC)
-
-
-putKVPair : String -> String -> Cmd Types.FrontendMsg
-putKVPair key value =
-    Http.post
-        { url = Env.dataSource Env.mode ++ "/_r/putKeyValuePair"
-        , body = Http.jsonBody <| encodeKVPair key value
-        , expect = Http.expectWhatever Types.DataUploaded
-        }
-
-
-getValueWithKey : String -> Cmd Types.FrontendMsg
-getValueWithKey key =
-    Http.post
-        { url = Env.dataSource Env.mode ++ "/_r/getKeyValuePair"
-        , body = Http.jsonBody <| encodeKey key
-        , expect = Http.expectString Types.GotValue
-        }
-
-
-encodeKVPair : String -> String -> Json.Encode.Value
-encodeKVPair key value =
-    Json.Encode.object
-        [ ( "key", Json.Encode.string key )
-        , ( "value", Json.Encode.string value )
-        ]
-
-
-encodeKey : String -> Json.Encode.Value
-encodeKey key =
-    Json.Encode.object
-        [ ( "key", Json.Encode.string key )
-        ]
 
 
 

@@ -1,4 +1,10 @@
-module RPC exposing (lamdera_handleEndpoints, requestPurchaseCompletedEndpoint)
+module RPC exposing
+    ( getValueWithKey
+    , kvDatumEncoder
+    , lamdera_handleEndpoints
+    , putKVPair
+    , requestPurchaseCompletedEndpoint
+    )
 
 import AssocList
 import Backend
@@ -15,6 +21,7 @@ import Id
 import Json.Decode
 import Json.Decode.Pipeline
 import Json.Encode
+import KeyValueStore
 import Lamdera exposing (SessionId)
 import Lamdera.Wire3 as Wire3
 import LamderaRPC exposing (RPC(..))
@@ -26,6 +33,7 @@ import Stripe.Product as Tickets exposing (Product_)
 import Stripe.PurchaseForm as PurchaseForm
 import Stripe.Stripe as Stripe exposing (Webhook(..))
 import Task exposing (Task)
+import Time
 import Types exposing (BackendModel, BackendMsg(..), ToFrontend(..))
 
 
@@ -220,19 +228,41 @@ exampleJson sessionId model jsonArg =
 
 
 
---  KEY-VALUE STORE
+--  DATA
 
 
 type alias KV =
-    { key : String, value : String }
+    { key : String, value : KeyValueStore.KVDatum }
+
+
+
+-- DATA
+
+
+putKVPair : String -> KeyValueStore.KVDatum -> Cmd Types.FrontendMsg
+putKVPair key value =
+    Http.post
+        { url = Env.dataSource Env.mode ++ "/_r/putKeyValuePair"
+        , body = Http.jsonBody <| kvDatumEncoder value
+        , expect = Http.expectWhatever Types.DataUploaded
+        }
+
+
+getValueWithKey : String -> Cmd Types.FrontendMsg
+getValueWithKey key =
+    Http.post
+        { url = Env.dataSource Env.mode ++ "/_r/getKeyValuePair"
+        , body = Http.jsonBody <| KeyValueStore.encodeKey key
+        , expect = Http.expectJson (Types.GotValue kvDatumDecoder)
+        }
 
 
 putKeyValuePair : SessionId -> BackendModel -> Json.Encode.Value -> ( Result Http.Error Json.Encode.Value, BackendModel, Cmd msg )
 putKeyValuePair sessionId model jsonArg =
-    case Json.Decode.decodeValue keyValueDecoder jsonArg of
+    case Json.Decode.decodeValue kvDatumDecoder jsonArg of
         Ok kv ->
-            ( Ok (keyValueEncoder kv)
-            , { model | keyValueStore = Dict.insert kv.key kv.value model.keyValueStore }
+            ( Ok (kvDatumEncoder kv)
+            , { model | keyValueStore = Dict.insert kv.key kv model.keyValueStore }
             , Cmd.none
             )
 
@@ -250,13 +280,14 @@ putKeyValuePair sessionId model jsonArg =
 getKeyValuePair : SessionId -> BackendModel -> Json.Encode.Value -> ( Result Http.Error Json.Encode.Value, BackendModel, Cmd msg )
 getKeyValuePair sessionId model jsonArg =
     let
+        decoder : Json.Decode.Decoder String
         decoder =
             Json.Decode.succeed identity
                 |> Json.Decode.Pipeline.required "key" Json.Decode.string
     in
     case Json.Decode.decodeValue decoder jsonArg of
         Ok key ->
-            ( Ok (Json.Encode.string (Dict.get key model.keyValueStore |> Maybe.withDefault ("Unknown key: " ++ key)))
+            ( Ok (kvDatumEncoder (Dict.get key model.keyValueStore |> Maybe.withDefault KeyValueStore.defaultKVDatum))
             , model
             , Cmd.none
             )
@@ -276,18 +307,50 @@ keyValueDecoder : Json.Decode.Decoder KV
 keyValueDecoder =
     Json.Decode.map2 KV
         (Json.Decode.field "key" Json.Decode.string)
+        (Json.Decode.field "value" kvDatumDecoder)
+
+
+kvDatumDecoder : Json.Decode.Decoder KeyValueStore.KVDatum
+kvDatumDecoder =
+    --type alias KVDatum =
+    --    { key : String
+    --    , value : String
+    --    , curator : String
+    --    , created_at : Time.Posix
+    --    , updated_at : Time.Posix
+    --    }
+    Json.Decode.map5 KeyValueStore.KVDatum
+        (Json.Decode.field "key" Json.Decode.string)
         (Json.Decode.field "value" Json.Decode.string)
+        (Json.Decode.field "curator" Json.Decode.string)
+        (Json.Decode.field "created_at" posixDecoder)
+        (Json.Decode.field "updated_at" posixDecoder)
 
 
-keyValueEncoder : KV -> Json.Encode.Value
-keyValueEncoder kv =
+posixDecoder : Json.Decode.Decoder Time.Posix
+posixDecoder =
+    Json.Decode.int |> Json.Decode.map Time.millisToPosix
+
+
+kvDatumEncoder : KeyValueStore.KVDatum -> Json.Encode.Value
+kvDatumEncoder kvDatum =
     Json.Encode.object
-        [ ( "key", Json.Encode.string kv.key )
-        , ( "value", Json.Encode.string kv.value )
+        [ ( "key", Json.Encode.string kvDatum.key )
+        , ( "value", Json.Encode.string kvDatum.value )
+        , ( "curator", Json.Encode.string kvDatum.curator )
+        , ( "created_at", Json.Encode.int (Time.posixToMillis kvDatum.created_at) )
+        , ( "updated_at", Json.Encode.int (Time.posixToMillis kvDatum.updated_at) )
         ]
 
 
 
+--
+--keyValueEncoder : KV -> Json.Encode.Value
+--keyValueEncoder kv =
+--    Json.Encode.object
+--        [ ( "key", Json.Encode.string kv.key )
+--        , ( "value", Json.Encode.string kv.value )
+--        ]
 -- ENDPOINTS
 
 

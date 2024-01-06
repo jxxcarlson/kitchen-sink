@@ -59,7 +59,12 @@ init =
                 ]
 
       -- EXPERIMENTAL
-      , keyValueStore = Dict.fromList [ ( "foo", "1234" ), ( "bar", "5678" ), ( "hubble1929", hubble1929 ) ]
+      , keyValueStore =
+            Dict.fromList
+                [ ( "foo", { key = "foo", value = "1234", curator = "jxxcarson", created_at = Time.millisToPosix 0, updated_at = Time.millisToPosix 0 } )
+                , ( "bar", { key = "bar", value = "5778", curator = "jxxcarson", created_at = Time.millisToPosix 0, updated_at = Time.millisToPosix 0 } )
+                , ( "hubble1929", { key = "hubble1929", value = hubble1929, curator = "jxxcarson", created_at = Time.millisToPosix 0, updated_at = Time.millisToPosix 0 } )
+                ]
       }
     , Cmd.batch
         [ Time.now |> Task.perform GotTime

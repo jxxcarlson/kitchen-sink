@@ -16,6 +16,7 @@ import KeyValueStore
 import Lamdera
 import Ports
 import Predicate
+import RPC
 import Route exposing (Route(..))
 import Stripe.Product as Tickets exposing (Product_)
 import Stripe.PurchaseForm as PurchaseForm exposing (PressedSubmit(..), PurchaseForm, PurchaseFormValidated(..), SubmitStatus(..))
@@ -369,17 +370,17 @@ updateLoaded msg model =
             ( { model | inputFilterData = str }, Cmd.none )
 
         AddKeyValuePair key value ->
-            ( model, BackendHelper.putKVPair key value )
+            ( model, RPC.putKVPair key value )
 
         GetValueWithKey key ->
-            ( model, BackendHelper.getValueWithKey key )
+            ( model, RPC.getValueWithKey key )
 
         GotValue result ->
             case result of
-                Ok str ->
+                Ok value ->
                     ( { model
                         | inputValue =
-                            str
+                            value.value
                                 |> String.dropLeft 1
                                 |> String.dropRight 1
                                 |> String.replace "\\n" "\n"

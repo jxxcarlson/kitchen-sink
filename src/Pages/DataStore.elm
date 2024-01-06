@@ -22,10 +22,10 @@ import View.Input
 view : LoadedModel -> Element FrontendMsg
 view model =
     let
-        data : List ( String, String )
+        data : List ( String, KeyValueStore.KVDatum )
         data =
             Dict.toList model.keyValueStore
-                |> List.filter (\( key, value ) -> String.contains model.inputFilterData (key ++ value))
+                |> List.filter (\( key, value ) -> String.contains model.inputFilterData (key ++ value.value))
                 |> List.sortBy (\( key, _ ) -> key)
     in
     column
@@ -67,15 +67,15 @@ type alias Window =
     }
 
 
-viewKey : ( String, String ) -> Element msg
+viewKey : ( String, KeyValueStore.KVDatum ) -> Element msg
 viewKey ( key, value ) =
-    if String.contains "\n" value then
+    if String.contains "\n" value.value then
         Element.column
             [ width fill
             , spacing 4
             ]
             [ Element.el [ Element.Font.bold, Element.Font.underline ] (text key)
-            , KeyValueStore.rowsAndColumns value
+            , KeyValueStore.rowsAndColumns value.value
             ]
 
     else
@@ -87,7 +87,7 @@ viewKey ( key, value ) =
             ]
 
 
-viewSummary : ( String, String ) -> Element msg
+viewSummary : ( String, KeyValueStore.KVDatum ) -> Element msg
 viewSummary ( key, value ) =
     let
         getSummary : String -> String
@@ -100,19 +100,19 @@ viewSummary ( key, value ) =
                 |> List.reverse
                 |> String.join "\n"
     in
-    if String.contains "\n" value then
+    if String.contains "\n" value.value then
         Element.column
             [ width fill
             , spacing 4
             ]
             [ Element.el [ Element.Font.bold, Element.Font.underline ] (text key)
-            , KeyValueStore.rowsAndColumns value
+            , KeyValueStore.rowsAndColumns value.value
             , Element.el
                 [ width fill
                 , spacing 12
                 , height fill
                 ]
-                (text (getSummary value))
+                (text (getSummary value.value))
             ]
 
     else
@@ -121,25 +121,25 @@ viewSummary ( key, value ) =
             , spacing 12
             ]
             [ Element.el [ Element.Font.bold ] (text key)
-            , text value
+            , text value.value
             ]
 
 
-viewPair : ( String, String ) -> Element msg
+viewPair : ( String, KeyValueStore.KVDatum ) -> Element msg
 viewPair ( key, value ) =
-    if String.contains "\n" value then
+    if String.contains "\n" value.value then
         Element.column
             [ width fill
             , spacing 4
             ]
             [ Element.el [ Element.Font.bold, Element.Font.underline ] (text key)
-            , KeyValueStore.rowsAndColumns value
+            , KeyValueStore.rowsAndColumns value.value
             , Element.el
                 [ width fill
                 , spacing 12
                 , height fill
                 ]
-                (text value)
+                (text value.value)
             ]
 
     else
@@ -148,7 +148,7 @@ viewPair ( key, value ) =
             , spacing 12
             ]
             [ Element.el [ Element.Font.bold ] (text key)
-            , text value
+            , text value.value
             ]
 
 
