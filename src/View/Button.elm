@@ -104,12 +104,12 @@ setKVViewType currentViewType newViewType label =
 
 addKeyValuePair : String -> KeyValueStore.KVDatum -> Element.Element Types.FrontendMsg
 addKeyValuePair key value =
-    button (Types.AddKeyValuePair key value) "Save Key-Value Pair"
+    button (Types.AddKeyValuePair key value) "Save"
 
 
 getValueWithKey : String -> Element.Element Types.FrontendMsg
 getValueWithKey key =
-    button (Types.GetValueWithKey key) "Get Value with Key"
+    button (Types.GetValueWithKey key) "Get"
 
 
 

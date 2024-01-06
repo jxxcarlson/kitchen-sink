@@ -42,6 +42,9 @@ dataEditor model =
                     else
                         Element.none
             , KeyValueStore.rowsAndColumns model.inputValue
+
+            --, Element.el [ Element.Font.italic ] (text <| "created: " ++ View.Utility.toUtcString value.created_at)
+            --, Element.el [ Element.Font.italic ] (text <| "updated: " ++ View.Utility.toUtcString value.updated_at)
             ]
         , View.Input.multilineTemplateWithAttr
             [ Element.width (Element.px 550)
