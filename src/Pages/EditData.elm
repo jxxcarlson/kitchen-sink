@@ -26,8 +26,10 @@ dataEditor model =
     Element.column [ Element.spacing 12 ]
         [ View.Input.templateWithAttr [] "key" model.inputKey InputKey
         , Element.row [ Element.spacing 24 ]
-            [ View.Utility.showIf (Predicate.isAdmin model.currentUser) (View.Button.addKeyValuePair model.inputKey model.inputValue)
-            , View.Button.getValueWithKey model.inputKey
+            [ View.Button.getValueWithKey model.inputKey
+            , View.Utility.showIf
+                (Predicate.isAdmin model.currentUser)
+                (View.Button.addKeyValuePair model.inputKey model.inputValue)
             , KeyValueStore.rowsAndColumns model.inputValue
             ]
         , View.Input.multilineTemplateWithAttr
