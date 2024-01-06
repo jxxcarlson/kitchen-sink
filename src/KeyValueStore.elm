@@ -8,8 +8,6 @@ module KeyValueStore exposing
 
 import Element exposing (Element, text)
 import Element.Font
-import Env
-import Http
 import Json.Encode
 import Time
 

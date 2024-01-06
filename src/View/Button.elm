@@ -102,7 +102,7 @@ setKVViewType currentViewType newViewType label =
     highlightableButton (currentViewType == newViewType) (Types.SetKVViewType newViewType) label
 
 
-addKeyValuePair : String -> String -> Element.Element Types.FrontendMsg
+addKeyValuePair : String -> KeyValueStore.KVDatum -> Element.Element Types.FrontendMsg
 addKeyValuePair key value =
     button (Types.AddKeyValuePair key value) "Save Key-Value Pair"
 

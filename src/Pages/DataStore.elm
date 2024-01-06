@@ -106,6 +106,7 @@ viewSummary ( key, value ) =
             , spacing 4
             ]
             [ Element.el [ Element.Font.bold, Element.Font.underline ] (text key)
+            , Element.el [ Element.Font.italic ] (text <| "curator: " ++ value.curator)
             , KeyValueStore.rowsAndColumns value.value
             , Element.el
                 [ width fill
@@ -133,6 +134,7 @@ viewPair ( key, value ) =
             , spacing 4
             ]
             [ Element.el [ Element.Font.bold, Element.Font.underline ] (text key)
+            , Element.el [ Element.Font.italic ] (text <| "curator: " ++ value.curator)
             , KeyValueStore.rowsAndColumns value.value
             , Element.el
                 [ width fill

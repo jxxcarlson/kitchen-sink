@@ -61,9 +61,9 @@ init =
       -- EXPERIMENTAL
       , keyValueStore =
             Dict.fromList
-                [ ( "foo", { key = "foo", value = "1234", curator = "jxxcarson", created_at = Time.millisToPosix 0, updated_at = Time.millisToPosix 0 } )
-                , ( "bar", { key = "bar", value = "5778", curator = "jxxcarson", created_at = Time.millisToPosix 0, updated_at = Time.millisToPosix 0 } )
-                , ( "hubble1929", { key = "hubble1929", value = hubble1929, curator = "jxxcarson", created_at = Time.millisToPosix 0, updated_at = Time.millisToPosix 0 } )
+                [ ( "foo", { key = "foo", value = "1234", curator = "jxxcarson", created_at = Time.millisToPosix 1704555131, updated_at = Time.millisToPosix 1704555131 } )
+                , ( "bar", { key = "bar", value = "5778", curator = "jxxcarson", created_at = Time.millisToPosix 1704555131, updated_at = Time.millisToPosix 1704555131 } )
+                , ( "hubble1929", { key = "hubble1929", value = hubble1929, curator = "jxxcarson", created_at = Time.millisToPosix 1704555131, updated_at = Time.millisToPosix 1704555131 } )
                 ]
       }
     , Cmd.batch
