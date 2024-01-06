@@ -1,4 +1,9 @@
-module Pages.Parts exposing (footer, generic, header)
+module Pages.Parts exposing
+    ( footer
+    , generic
+    , genericNoScrollBar
+    , header
+    )
 
 import Element exposing (Element)
 import Element.Background
@@ -8,6 +13,23 @@ import Route exposing (Route(..))
 import Theme
 import Types
 import View.Color
+
+
+genericNoScrollBar : Types.LoadedModel -> (Types.LoadedModel -> Element msg) -> Element msg
+genericNoScrollBar model view =
+    Element.column
+        [ Element.width Element.fill, Element.height Element.fill, Element.clip ]
+        [ header model model.route { window = model.window, isCompact = True }
+        , Element.column
+            (Element.padding 20
+                :: Element.height (Element.px <| model.window.height - 95)
+                :: Element.width (Element.px <| 500)
+                :: Theme.contentAttributes
+            )
+            [ view model
+            ]
+        , footer model.route model
+        ]
 
 
 generic : Types.LoadedModel -> (Types.LoadedModel -> Element msg) -> Element msg

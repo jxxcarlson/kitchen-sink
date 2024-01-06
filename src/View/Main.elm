@@ -71,7 +71,7 @@ loadedView model =
             Pages.Parts.generic model Pages.Features.view
 
         DataStore ->
-            Pages.Parts.generic model Pages.DataStore.view
+            Pages.Parts.genericNoScrollBar model Pages.DataStore.view
 
         EditData ->
             Pages.Parts.generic model Pages.EditData.view
