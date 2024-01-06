@@ -16,17 +16,12 @@ import View.Utility
 view : LoadedModel -> Element FrontendMsg
 view model =
     Element.column []
-        [ case model.backendModel of
-            Nothing ->
-                text "Can't find that data"
-
-            Just backendModel ->
-                dataEditor model backendModel
+        [ dataEditor model
         ]
 
 
-dataEditor : LoadedModel -> BackendModel -> Element FrontendMsg
-dataEditor model backendModel =
+dataEditor : LoadedModel -> Element FrontendMsg
+dataEditor model =
     Element.column [ Element.spacing 12 ]
         [ View.Input.templateWithAttr [] "key" model.inputKey InputKey
         , Element.row [ Element.spacing 24 ]

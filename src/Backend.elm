@@ -235,6 +235,7 @@ update msg model =
             , Cmd.batch
                 [ BackendHelper.getAtmosphericRandomNumbers
                 , Lamdera.sendToFrontend clientId (UserSignedIn maybeUser)
+                , Lamdera.sendToFrontend clientId (GotKeyValueStore model.keyValueStore)
                 , Lamdera.sendToFrontend
                     clientId
                     (InitData

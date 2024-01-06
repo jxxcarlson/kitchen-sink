@@ -140,6 +140,7 @@ tryLoading loadingModel =
                         , weatherData = Nothing
 
                         -- DATA
+                        , keyValueStore = Dict.empty
                         , inputKey = ""
                         , inputValue = ""
                         , inputFilterData = ""
@@ -482,3 +483,7 @@ updateFromBackendLoaded msg model =
 
                 Err _ ->
                     ( { model | weatherData = Nothing, message = "Error getting weather data. reae" }, Cmd.none )
+
+        -- DATA
+        GotKeyValueStore keyValueStore ->
+            ( { model | keyValueStore = keyValueStore }, Cmd.none )

@@ -83,6 +83,7 @@ type alias LoadedModel =
     , inputCity : String
 
     -- DATA (JC)
+    , keyValueStore : Dict.Dict String String
     , inputKey : String
     , inputValue : String
     , inputFilterData : String
@@ -214,6 +215,8 @@ type ToFrontend
     | UserSignedIn (Maybe User.User)
       -- EXAMPLE
     | ReceivedWeatherData (Result Http.Error Weather.WeatherData)
+      -- DATA (JC)
+    | GotKeyValueStore (Dict.Dict String String)
 
 
 

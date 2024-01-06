@@ -14,21 +14,16 @@ import View.Input
 view : LoadedModel -> Element FrontendMsg
 view model =
     Element.column []
-        [ case model.backendModel of
-            Nothing ->
-                text "Can't find that data"
-
-            Just backendModel ->
-                viewKeyValuePairs model backendModel
+        [ viewKeyValuePairs model
         ]
 
 
-viewKeyValuePairs : LoadedModel -> BackendModel -> Element FrontendMsg
-viewKeyValuePairs model backendModel =
+viewKeyValuePairs : LoadedModel -> Element FrontendMsg
+viewKeyValuePairs model =
     let
         data : List ( String, String )
         data =
-            Dict.toList backendModel.keyValueStore
+            Dict.toList model.keyValueStore
                 |> List.filter (\( key, value ) -> String.contains model.inputFilterData (key ++ value))
                 |> List.sortBy (\( key, _ ) -> key)
     in
