@@ -85,7 +85,7 @@ header model route config =
                 { url = Route.encode Purchase, label = Element.text "Purchase" }
             , Element.link
                 (linkStyle route DataStore)
-                { url = Route.encode DataStore, label = Element.text "Raw Data" }
+                { url = Route.encode DataStore, label = Element.text "View Data" }
             , Element.link
                 (linkStyle route EditData)
                 { url = Route.encode EditData, label = Element.text "Edit Data" }
