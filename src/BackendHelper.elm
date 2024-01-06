@@ -47,7 +47,7 @@ putKVPair key value =
 getValueWithKey : String -> Cmd Types.FrontendMsg
 getValueWithKey key =
     Http.post
-        { url = Env.dataSource Env.mode ++ "/_r/getValueWithKey"
+        { url = Env.dataSource Env.mode ++ "/_r/getKeyValuePair"
         , body = Http.jsonBody <| encodeKey key
         , expect = Http.expectString Types.GotValue
         }
