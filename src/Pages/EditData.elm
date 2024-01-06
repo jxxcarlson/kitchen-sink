@@ -33,7 +33,7 @@ dataEditor model =
             , KeyValueStore.rowsAndColumns model.inputValue
             ]
         , View.Input.multilineTemplateWithAttr
-            [ Element.width (Element.px 500)
+            [ Element.width (Element.px 520)
             , Element.height (Element.px (model.window.height - 250))
             , Element.scrollbars
             ]
