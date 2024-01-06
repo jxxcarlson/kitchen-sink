@@ -16,7 +16,7 @@ rowsAndColumns value =
         dataLines =
             value
                 |> String.lines
-                |> List.filter (\line -> String.left 1 line /= "#")
+                |> List.filter (\line -> String.left 1 line /= "#" && String.trim line /= "")
 
         rows =
             dataLines
