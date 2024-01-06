@@ -1,6 +1,7 @@
 module View.Color exposing
     ( black
     , blue
+    , buttonHighlight
     , darkBlue
     , darkGray
     , darkGreen
@@ -102,6 +103,11 @@ medBlue =
 lightBlue : E.Color
 lightBlue =
     E.rgb255 120 120 200
+
+
+buttonHighlight : E.Color
+buttonHighlight =
+    E.rgb255 100 80 255
 
 
 paleBlue : E.Color

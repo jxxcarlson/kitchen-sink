@@ -16,6 +16,7 @@ module View.Button exposing
 import Element
 import Element.Background
 import Element.Border as Border
+import Element.Events
 import Element.Font
 import Element.Input
 import Id exposing (Id)
@@ -142,6 +143,9 @@ buttonStyle =
     , Border.rounded 8
     , Element.Background.color View.Color.blue
     , Element.Font.color View.Color.white
+    , Element.mouseDown
+        [ Element.Background.color View.Color.buttonHighlight
+        ]
     ]
 
 
