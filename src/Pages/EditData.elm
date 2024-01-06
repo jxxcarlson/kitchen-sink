@@ -23,25 +23,37 @@ view model =
 
 dataEditor : LoadedModel -> Element FrontendMsg
 dataEditor model =
-    Element.column [ Element.spacing 12 ]
-        [ View.Input.templateWithAttr [] "key" model.inputKey InputKey
-        , Element.row [ Element.spacing 24 ]
-            [ View.Button.getValueWithKey model.inputKey
-            , View.Button.newKeyValuePair
-            , case model.currentUser of
+    let
+        saveButton =
+            case model.currentUser of
                 Nothing ->
                     Element.none
 
                 Just user ->
                     if Predicate.isAdmin model.currentUser && model.inputKey /= "" then
                         let
+                            curator =
+                                case model.currentKVPair of
+                                    Nothing ->
+                                        user.username
+
+                                    Just kvp ->
+                                        (Tuple.second kvp).curator
+
                             kvDatum =
-                                { key = model.inputKey, value = model.inputValue, curator = user.username, created_at = model.now, updated_at = model.now }
+                                { key = model.inputKey, value = model.inputValue, curator = curator, created_at = model.now, updated_at = model.now }
                         in
                         View.Button.addKeyValuePair model.inputKey kvDatum
 
                     else
                         View.Button.noOp "Save"
+    in
+    Element.column [ Element.spacing 12 ]
+        [ View.Input.templateWithAttr [] "key" model.inputKey InputKey
+        , Element.row [ Element.spacing 24 ]
+            [ View.Button.getValueWithKey model.inputKey
+            , View.Button.newKeyValuePair
+            , saveButton
             , KeyValueStore.rowsAndColumns model.inputValue
 
             --, Element.el [ Element.Font.italic ] (text <| "created: " ++ View.Utility.toUtcString value.created_at)
