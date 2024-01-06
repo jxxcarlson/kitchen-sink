@@ -491,3 +491,7 @@ updateFromFrontend sessionId clientId msg model =
         -- EXAMPLES
         GetWeatherData city ->
             ( model, BackendHelper.getNewWeatherByCity clientId city )
+
+        -- DATA
+        GetKeyValueStore ->
+            ( model, Lamdera.sendToFrontend clientId (GotKeyValueStore model.keyValueStore) )

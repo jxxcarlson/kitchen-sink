@@ -399,8 +399,8 @@ updateLoaded msg model =
         SetKVViewType kvViewType ->
             ( { model | kvViewType = kvViewType }, Cmd.none )
 
-        DataUploaded result ->
-            ( model, Cmd.none )
+        DataUploaded _ ->
+            ( model, Lamdera.sendToBackend Types.GetKeyValueStore )
 
 
 scrollToTop : Cmd FrontendMsg

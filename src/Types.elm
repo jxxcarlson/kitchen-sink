@@ -184,6 +184,8 @@ type ToBackend
     | SignUpRequest String String String String -- realname, username, email, password
       -- EXAMPLES
     | GetWeatherData String
+      -- DATA (JC)
+    | GetKeyValueStore
 
 
 type BackendMsg
