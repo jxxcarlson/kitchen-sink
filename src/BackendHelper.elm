@@ -38,7 +38,7 @@ import Weather
 putKVPair : String -> String -> Cmd Types.FrontendMsg
 putKVPair key value =
     Http.post
-        { url = Env.dataSource ++ "/_r/putKeyValuePair"
+        { url = Env.dataSource Env.mode ++ "/_r/putKeyValuePair"
         , body = Http.jsonBody <| encodeKVPair key value
         , expect = Http.expectWhatever Types.DataUploaded
         }
@@ -47,7 +47,7 @@ putKVPair key value =
 getValueWithKey : String -> Cmd Types.FrontendMsg
 getValueWithKey key =
     Http.post
-        { url = Env.dataSource ++ "/_r/getValueWithKey"
+        { url = Env.dataSource Env.mode ++ "/_r/getValueWithKey"
         , body = Http.jsonBody <| Json.Encode.string key
         , expect = Http.expectString Types.GotValue
         }

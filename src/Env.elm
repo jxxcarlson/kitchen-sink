@@ -28,8 +28,14 @@ weatherAPIKey =
     "xxx"
 
 
-dataSource =
-    "http://localhost:8080"
+dataSource : Mode -> String
+dataSource mode_ =
+    case mode_ of
+        Development ->
+            "http://localhost:8080"
+
+        Production ->
+            "https://elm-kitchen-sink.lamdera.app"
 
 
 domain =
