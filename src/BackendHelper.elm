@@ -48,7 +48,7 @@ getValueWithKey : String -> Cmd Types.FrontendMsg
 getValueWithKey key =
     Http.post
         { url = Env.dataSource Env.mode ++ "/_r/getValueWithKey"
-        , body = Http.jsonBody <| Json.Encode.string key
+        , body = Http.jsonBody <| encodeKey key
         , expect = Http.expectString Types.GotValue
         }
 
@@ -58,6 +58,13 @@ encodeKVPair key value =
     Json.Encode.object
         [ ( "key", Json.Encode.string key )
         , ( "value", Json.Encode.string value )
+        ]
+
+
+encodeKey : String -> Json.Encode.Value
+encodeKey key =
+    Json.Encode.object
+        [ ( "key", Json.Encode.string key )
         ]
 
 
