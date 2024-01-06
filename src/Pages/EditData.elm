@@ -38,7 +38,10 @@ dataEditor model backendModel =
             "value"
             model.inputValue
             InputValue
-        , View.Button.addKeyValuePair model.inputKey model.inputValue
+        , Element.row [ Element.spacing 24 ]
+            [ View.Button.addKeyValuePair model.inputKey model.inputValue
+            , View.Button.getValueWithKey model.inputKey
+            ]
         ]
 
 

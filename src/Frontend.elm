@@ -141,6 +141,7 @@ tryLoading loadingModel =
                         -- DATA
                         , inputKey = ""
                         , inputValue = ""
+                        , kvValue = ""
                         }
                     , Cmd.none
                     )
@@ -363,6 +364,17 @@ updateLoaded msg model =
 
         AddKeyValuePair key value ->
             ( model, BackendHelper.putKVPair key value )
+
+        GetValueWithKey key ->
+            ( model, BackendHelper.getValueWithKey key )
+
+        GotValue result ->
+            case result of
+                Ok str ->
+                    ( { model | kvValue = str }, Cmd.none )
+
+                Err _ ->
+                    ( { model | kvValue = "Error finding value" }, Cmd.none )
 
         DataUploaded result ->
             ( model, Cmd.none )

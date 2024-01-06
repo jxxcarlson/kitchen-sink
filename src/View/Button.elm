@@ -3,6 +3,7 @@ module View.Button exposing
     , askToRenewPrices
     , buyProduct
     , copyTextToClipboard
+    , getValueWithKey
     , playSound
     , requestWeatherData
     , setAdminDisplay
@@ -96,6 +97,15 @@ buyProduct productId priceId product =
 addKeyValuePair : String -> String -> Element.Element Types.FrontendMsg
 addKeyValuePair key value =
     button (Types.AddKeyValuePair key value) "Add Key-Value Pair"
+
+
+getValueWithKey : String -> Element.Element Types.FrontendMsg
+getValueWithKey key =
+    button (Types.GetValueWithKey key) "Get Value with Key"
+
+
+
+--- STRIPE
 
 
 askToRenewPrices : Element.Element Types.FrontendMsg

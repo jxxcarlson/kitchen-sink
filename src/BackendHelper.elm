@@ -2,6 +2,7 @@ module BackendHelper exposing
     ( errorEmail
     , getAtmosphericRandomNumbers
     , getNewWeatherByCity
+    , getValueWithKey
     , priceIdToProductId
     , purchaseSupportAddres
     , putKVPair
@@ -40,6 +41,15 @@ putKVPair key value =
         { url = "https://elm-kitchen-sink.lamdera.app/_r/putKeyValuePair"
         , body = Http.jsonBody <| encodeKVPair key value
         , expect = Http.expectWhatever Types.DataUploaded
+        }
+
+
+getValueWithKey : String -> Cmd Types.FrontendMsg
+getValueWithKey key =
+    Http.post
+        { url = "https://elm-kitchen-sink.lamdera.app/_r/getValueWithKey"
+        , body = Http.jsonBody <| Json.Encode.string key
+        , expect = Http.expectString Types.GotValue
         }
 
 
