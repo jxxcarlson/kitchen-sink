@@ -475,11 +475,12 @@ updateFromFrontend sessionId clientId msg model =
                     ( model, Cmd.none )
 
         AdminInspect maybeUser ->
-            if Predicate.isAdmin maybeUser then
-                ( model, Lamdera.sendToFrontend clientId (AdminInspectResponse model) )
-
-            else
-                ( model, Cmd.none )
+            --if Predicate.isAdmin maybeUser then
+            --    ( model, Lamdera.sendToFrontend clientId (AdminInspectResponse model) )
+            --
+            --else
+            --    ( model, Cmd.none )
+            ( model, Lamdera.sendToFrontend clientId (AdminInspectResponse model) )
 
         -- EXAMPLES
         GetWeatherData city ->
