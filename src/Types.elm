@@ -19,6 +19,7 @@ import Browser.Navigation exposing (Key)
 import Dict
 import Http
 import Id exposing (Id)
+import KeyValueStore
 import Lamdera exposing (ClientId, SessionId)
 import LocalUUID
 import Postmark exposing (PostmarkSendResponse)
@@ -85,6 +86,7 @@ type alias LoadedModel =
     , inputKey : String
     , inputValue : String
     , inputFilterData : String
+    , kvViewType : KeyValueStore.KVViewType
     }
 
 
@@ -164,6 +166,7 @@ type FrontendMsg
     | GetValueWithKey String
     | GotValue (Result Http.Error String)
     | DataUploaded (Result Http.Error ())
+    | SetKVViewType KeyValueStore.KVViewType
 
 
 type ToBackend

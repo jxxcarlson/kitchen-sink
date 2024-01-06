@@ -12,6 +12,7 @@ import Dict
 import Env
 import Json.Decode
 import Json.Encode
+import KeyValueStore
 import Lamdera
 import Ports
 import Predicate
@@ -142,6 +143,7 @@ tryLoading loadingModel =
                         , inputKey = ""
                         , inputValue = ""
                         , inputFilterData = ""
+                        , kvViewType = KeyValueStore.KVVSummary
                         }
                     , Cmd.none
                     )
@@ -386,6 +388,9 @@ updateLoaded msg model =
 
                 Err _ ->
                     ( { model | inputValue = "Oops!", message = "Error finding value for given key" }, Cmd.none )
+
+        SetKVViewType kvViewType ->
+            ( { model | kvViewType = kvViewType }, Cmd.none )
 
         DataUploaded result ->
             ( model, Cmd.none )

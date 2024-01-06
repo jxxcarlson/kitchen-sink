@@ -7,6 +7,7 @@ module View.Button exposing
     , playSound
     , requestWeatherData
     , setAdminDisplay
+    , setKVViewType
     , setSignInState
     , signIn
     , signOut
@@ -20,6 +21,7 @@ import Element.Events
 import Element.Font
 import Element.Input
 import Id exposing (Id)
+import KeyValueStore
 import Stripe.Product
 import Stripe.Stripe as Stripe
 import Types
@@ -93,6 +95,11 @@ buyProduct productId priceId product =
 
 
 -- DATA (JC)
+
+
+setKVViewType : KeyValueStore.KVViewType -> KeyValueStore.KVViewType -> String -> Element.Element Types.FrontendMsg
+setKVViewType currentViewType newViewType label =
+    highlightableButton (currentViewType == newViewType) (Types.SetKVViewType newViewType) label
 
 
 addKeyValuePair : String -> String -> Element.Element Types.FrontendMsg
