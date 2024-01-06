@@ -40,8 +40,16 @@ dataEditor model =
                                     Just kvp ->
                                         (Tuple.second kvp).curator
 
+                            created_at =
+                                case model.currentKVPair of
+                                    Nothing ->
+                                        model.now
+
+                                    Just ( key, value ) ->
+                                        value.created_at
+
                             kvDatum =
-                                { key = model.inputKey, value = model.inputValue, curator = curator, created_at = model.now, updated_at = model.now }
+                                { key = model.inputKey, value = model.inputValue, curator = curator, created_at = created_at, updated_at = model.now }
                         in
                         View.Button.addKeyValuePair model.inputKey kvDatum
 
