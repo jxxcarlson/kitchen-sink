@@ -3,6 +3,7 @@ module Pages.EditData exposing (view)
 import Dict
 import Element exposing (..)
 import Element.Font
+import KeyValueStore
 import MarkdownThemed
 import Predicate
 import Theme
@@ -27,6 +28,7 @@ dataEditor model =
         , Element.row [ Element.spacing 24 ]
             [ View.Utility.showIf (Predicate.isAdmin model.currentUser) (View.Button.addKeyValuePair model.inputKey model.inputValue)
             , View.Button.getValueWithKey model.inputKey
+            , KeyValueStore.rowsAndColumns model.inputValue
             ]
         , View.Input.multilineTemplateWithAttr
             [ Element.width (Element.px 500)

@@ -11,15 +11,16 @@ import View.Geometry
 import View.Input
 
 
+
+--view : LoadedModel -> Element FrontendMsg
+--view model =
+--    Element.column []
+--        [ viewKeyValuePairs model
+--        ]
+
+
 view : LoadedModel -> Element FrontendMsg
 view model =
-    Element.column []
-        [ viewKeyValuePairs model
-        ]
-
-
-viewKeyValuePairs : LoadedModel -> Element FrontendMsg
-viewKeyValuePairs model =
     let
         data : List ( String, String )
         data =
@@ -74,6 +75,7 @@ viewKey ( key, value ) =
             , spacing 4
             ]
             [ Element.el [ Element.Font.bold, Element.Font.underline ] (text key)
+            , KeyValueStore.rowsAndColumns value
             ]
 
     else
@@ -104,6 +106,7 @@ viewSummary ( key, value ) =
             , spacing 4
             ]
             [ Element.el [ Element.Font.bold, Element.Font.underline ] (text key)
+            , KeyValueStore.rowsAndColumns value
             , Element.el
                 [ width fill
                 , spacing 12
@@ -130,6 +133,7 @@ viewPair ( key, value ) =
             , spacing 4
             ]
             [ Element.el [ Element.Font.bold, Element.Font.underline ] (text key)
+            , KeyValueStore.rowsAndColumns value
             , Element.el
                 [ width fill
                 , spacing 12
