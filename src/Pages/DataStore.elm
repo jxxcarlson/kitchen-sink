@@ -42,6 +42,7 @@ view model =
             [ View.Button.setKVViewType model.kvViewType KeyValueStore.KVRaw "Raw Data"
             , View.Button.setKVViewType model.kvViewType KeyValueStore.KVVSummary "Summary"
             , View.Button.setKVViewType model.kvViewType KeyValueStore.KVVKey "Key"
+            , View.Button.cycleVerbosity model.kvVerbosity
             ]
         , Element.column
             [ Element.scrollbars
@@ -51,10 +52,10 @@ view model =
             ]
             (case model.kvViewType of
                 KeyValueStore.KVRaw ->
-                    List.map viewPair data
+                    List.map (viewPair model.kvVerbosity) data
 
                 KeyValueStore.KVVSummary ->
-                    List.map viewSummary data
+                    List.map (viewSummary model.kvVerbosity) data
 
                 KeyValueStore.KVVKey ->
                     List.map viewKey data
@@ -88,8 +89,8 @@ viewKey ( key, value ) =
             ]
 
 
-viewSummary : ( String, KeyValueStore.KVDatum ) -> Element msg
-viewSummary ( key, value ) =
+viewSummary : KeyValueStore.KVVerbosity -> ( String, KeyValueStore.KVDatum ) -> Element msg
+viewSummary verbosity ( key, value ) =
     let
         getSummary : String -> String
         getSummary str =
@@ -107,9 +108,9 @@ viewSummary ( key, value ) =
             , spacing 4
             ]
             [ Element.el [ Element.Font.bold, Element.Font.underline ] (text key)
-            , Element.el [ Element.Font.italic ] (text <| "curator: " ++ value.curator)
-            , Element.el [ Element.Font.italic ] (text <| "created: " ++ View.Utility.toUtcString value.created_at)
-            , Element.el [ Element.Font.italic ] (text <| "updated: " ++ View.Utility.toUtcString value.updated_at)
+            , View.Utility.showIf (verbosity == KeyValueStore.KVVerbose) <| Element.el [ Element.Font.italic ] (text <| "curator: " ++ value.curator)
+            , View.Utility.showIf (verbosity == KeyValueStore.KVVerbose) <| Element.el [ Element.Font.italic ] (text <| "created: " ++ View.Utility.toUtcString value.created_at)
+            , View.Utility.showIf (verbosity == KeyValueStore.KVVerbose) <| Element.el [ Element.Font.italic ] (text <| "updated: " ++ View.Utility.toUtcString value.updated_at)
             , KeyValueStore.rowsAndColumns value.value
             , Element.el
                 [ width fill
@@ -129,17 +130,17 @@ viewSummary ( key, value ) =
             ]
 
 
-viewPair : ( String, KeyValueStore.KVDatum ) -> Element msg
-viewPair ( key, value ) =
+viewPair : KeyValueStore.KVVerbosity -> ( String, KeyValueStore.KVDatum ) -> Element msg
+viewPair verbosity ( key, value ) =
     if String.contains "\n" value.value then
         Element.column
             [ width fill
             , spacing 4
             ]
             [ Element.el [ Element.Font.bold, Element.Font.underline ] (text key)
-            , Element.el [ Element.Font.italic ] (text <| "curator: " ++ value.curator)
-            , Element.el [ Element.Font.italic ] (text <| "created: " ++ View.Utility.toUtcString value.created_at)
-            , Element.el [ Element.Font.italic ] (text <| "updated: " ++ View.Utility.toUtcString value.updated_at)
+            , View.Utility.showIf (verbosity == KeyValueStore.KVVerbose) <| Element.el [ Element.Font.italic ] (text <| "curator: " ++ value.curator)
+            , View.Utility.showIf (verbosity == KeyValueStore.KVVerbose) <| Element.el [ Element.Font.italic ] (text <| "created: " ++ View.Utility.toUtcString value.created_at)
+            , View.Utility.showIf (verbosity == KeyValueStore.KVVerbose) <| Element.el [ Element.Font.italic ] (text <| "updated: " ++ View.Utility.toUtcString value.updated_at)
             , KeyValueStore.rowsAndColumns value.value
             , Element.el
                 [ width fill

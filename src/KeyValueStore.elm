@@ -1,5 +1,6 @@
 module KeyValueStore exposing
     ( KVDatum
+    , KVVerbosity(..)
     , KVViewType(..)
     , defaultKVDatum
     , encodeKey
@@ -35,6 +36,11 @@ type KVViewType
     = KVRaw
     | KVVSummary
     | KVVKey
+
+
+type KVVerbosity
+    = KVVerbose
+    | KVQuiet
 
 
 

@@ -2,6 +2,7 @@ module View.Button exposing
     ( askToRenewPrices
     , buyProduct
     , copyTextToClipboard
+    , cycleVerbosity
     , getValueWithKey
     , newKeyValuePair
     , noOp
@@ -98,6 +99,28 @@ buyProduct productId priceId product =
 
 
 -- DATA (JC)
+
+
+cycleVerbosity : KeyValueStore.KVVerbosity -> Element.Element Types.FrontendMsg
+cycleVerbosity currentVerbosity =
+    let
+        newVerbosity =
+            case currentVerbosity of
+                KeyValueStore.KVQuiet ->
+                    KeyValueStore.KVVerbose
+
+                KeyValueStore.KVVerbose ->
+                    KeyValueStore.KVQuiet
+
+        label =
+            case currentVerbosity of
+                KeyValueStore.KVQuiet ->
+                    "Quiet"
+
+                KeyValueStore.KVVerbose ->
+                    "Verbose"
+    in
+    button (Types.CycleVerbosity newVerbosity) label
 
 
 setKVViewType : KeyValueStore.KVViewType -> KeyValueStore.KVViewType -> String -> Element.Element Types.FrontendMsg

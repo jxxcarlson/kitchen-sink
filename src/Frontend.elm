@@ -147,6 +147,7 @@ tryLoading loadingModel =
                         , inputValue = ""
                         , inputFilterData = ""
                         , kvViewType = KeyValueStore.KVVSummary
+                        , kvVerbosity = KeyValueStore.KVQuiet
                         }
                     , Cmd.none
                     )
@@ -398,6 +399,9 @@ updateLoaded msg model =
 
         SetKVViewType kvViewType ->
             ( { model | kvViewType = kvViewType }, Cmd.none )
+
+        CycleVerbosity newVerbosity ->
+            ( { model | kvVerbosity = newVerbosity }, Cmd.none )
 
         DataUploaded _ ->
             ( model, Lamdera.sendToBackend Types.GetKeyValueStore )

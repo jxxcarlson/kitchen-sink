@@ -89,6 +89,7 @@ type alias LoadedModel =
     , inputValue : String
     , inputFilterData : String
     , kvViewType : KeyValueStore.KVViewType
+    , kvVerbosity : KeyValueStore.KVVerbosity
     }
 
 
@@ -170,6 +171,7 @@ type FrontendMsg
     | GotValue (Result Http.Error KeyValueStore.KVDatum)
     | DataUploaded (Result Http.Error ())
     | SetKVViewType KeyValueStore.KVViewType
+    | CycleVerbosity KeyValueStore.KVVerbosity
 
 
 type ToBackend
