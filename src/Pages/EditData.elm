@@ -36,8 +36,6 @@ dataEditor model backendModel =
             [ Element.width (Element.px 500)
             , Element.height (Element.px (model.window.height - 250))
             , Element.scrollbars
-
-            --, View.Utility.elementAttribute "white-space" "pre"
             ]
             "value"
             model.inputValue
