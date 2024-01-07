@@ -1,4 +1,4 @@
-module View.CustomElement exposing (fullCalendar, timeFormatted)
+module View.CustomElement exposing (timeFormatted)
 
 import Html
 

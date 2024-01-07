@@ -1,4 +1,4 @@
-module Pages.Admin exposing (Window, content, loadProdBackend, view, viewExpiredOrders, viewExpiredOrdersPretty, viewKeyValuePairs, viewOrders, viewPair, viewPendingOrder, viewPrices, viewPricesPretty, viewStripeData, viewUser, viewUserData, viewUserDictionary)
+module Pages.Admin exposing (Window, view)
 
 import AssocList
 import Codec

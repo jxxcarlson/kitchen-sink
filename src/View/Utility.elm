@@ -1,17 +1,6 @@
 module View.Utility exposing
-    ( count
-    , decrementModN
-    , elementAttribute
-    , focusOnElement
-    , format2decimals
-    , formatMoney
-    , incrementModN
-    , jumpToTop
-    , noFocus
-    , onEnter
+    ( onEnter
     , roundTo
-    , scrollToTop
-    , scrollToTopForId
     , showIf
     , toUtcString
     )

@@ -6,8 +6,6 @@ module Postmark exposing
     , PostmarkTemplateSend
     , apiKey
     , sendEmail
-    , sendEmailTask
-    , sendTemplateEmail
     )
 
 import Email.Html

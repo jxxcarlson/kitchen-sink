@@ -1,4 +1,4 @@
-module Pages.SignIn exposing (signIn, signUp, signedIn, topPadding, view)
+module Pages.SignIn exposing (view)
 
 import Element exposing (Element)
 import Element.Font

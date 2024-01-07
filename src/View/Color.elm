@@ -2,21 +2,8 @@ module View.Color exposing
     ( black
     , blue
     , buttonHighlight
-    , darkBlue
     , darkGray
-    , darkGreen
-    , darkRed
-    , iconColor
-    , lightBlue
-    , lightGray
-    , medBlue
     , medGray
-    , messageGreen
-    , offWhite
-    , orange
-    , paleBlue
-    , red
-    , veryDarkBlue
     , white
     , yellow
     )

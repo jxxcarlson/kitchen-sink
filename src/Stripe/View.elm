@@ -5,7 +5,6 @@ module Stripe.View exposing
     , productList
     , ticketsHtmlId
     , viewEntry
-    , viewProductInfo
     )
 
 import AssocList

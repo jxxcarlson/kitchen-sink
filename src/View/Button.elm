@@ -7,7 +7,6 @@ module View.Button exposing
     , newKeyValuePair
     , noOp
     , playSound
-    , requestWeatherData
     , saveKeyValuePair
     , setAdminDisplay
     , setKVViewType

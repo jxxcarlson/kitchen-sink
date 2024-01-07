@@ -1,7 +1,6 @@
 module LocalUUID exposing
     ( Data
     , extractUUIDAsString
-    , init
     , initFrom4List
     , randomNumberUrl
     , step

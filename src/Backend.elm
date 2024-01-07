@@ -1,4 +1,4 @@
-module Backend exposing (app, init, subscriptions, update, updateFromFrontend)
+module Backend exposing (app)
 
 import AssocList
 import BackendHelper

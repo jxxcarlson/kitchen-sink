@@ -1,6 +1,5 @@
 module Email.Html exposing
-    ( a, b, br, div, font, h1, h2, h3, h4, h5, h6, hr, img, label, li, node, ol, p, span, strong, table, td, text, th, tr, u, ul, Attribute, Html
-    , inlineGifImg, inlineJpgImg, inlinePngImg
+    ( a, b, div, text, Attribute, Html
     , toHtml
     )
 
@@ -17,12 +16,10 @@ Open an issue on github if something is missing or incorrectly included.
 
 # Html tags
 
-@docs a, b, br, div, font, h1, h2, h3, h4, h5, h6, hr, img, label, li, node, ol, p, span, strong, table, td, text, th, tr, u, ul, Attribute, Html
+@docs a, b, div, text, Attribute, Html
 
 
 # Inline images
-
-@docs inlineGifImg, inlineJpgImg, inlinePngImg
 
 
 # Convert

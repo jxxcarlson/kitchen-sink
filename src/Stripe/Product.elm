@@ -1,8 +1,6 @@
 module Stripe.Product exposing
     ( Product_
     , dict
-    , viewDesktop
-    , viewMobile
     )
 
 import AssocList

@@ -1,19 +1,13 @@
 module Theme exposing
-    ( colorWithAlpha
-    , colors
-    , contentAttributes
+    ( contentAttributes
     , css
-    , fontFace
-    , glow
     , panel
     , priceText
-    , rowToColumnWhen
     , spinnerWhite
     , submitButtonAttributes
-    , toggleButtonAttributes
     )
 
-import Element as Element exposing (Element, el, height, htmlAttribute, none, px, width)
+import Element exposing (Element, el, height, htmlAttribute, none, px, width)
 import Element.Background
 import Element.Border
 import Element.Font

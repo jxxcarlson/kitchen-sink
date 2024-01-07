@@ -1,12 +1,9 @@
 module Env exposing
     ( Mode(..)
-    , adminPassword
     , dataSource
     , developerEmails
-    , developerEmails_
     , domain
     , isProduction
-    , isProduction_
     , mode
     , postmarkApiKey
     , postmarkApiKey_

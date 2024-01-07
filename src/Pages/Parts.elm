@@ -1,8 +1,6 @@
 module Pages.Parts exposing
-    ( footer
-    , generic
+    ( generic
     , genericNoScrollBar
-    , header
     )
 
 import Element exposing (Element)

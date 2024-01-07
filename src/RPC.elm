@@ -1,6 +1,5 @@
 module RPC exposing
     ( getValueWithKey
-    , kvDatumEncoder
     , lamdera_handleEndpoints
     , putKVPair
     , requestPurchaseCompletedEndpoint

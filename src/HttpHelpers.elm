@@ -1,4 +1,4 @@
-module HttpHelpers exposing (customError, customErrorEffect, expectJson_, httpErrorToString, httpErrorToStringEffect, jsonResolver, jsonResolverEffect, parseError)
+module HttpHelpers exposing (expectJson_, httpErrorToString, jsonResolver)
 
 import Http
 import Json.Decode as D
