@@ -13,6 +13,7 @@ module Types exposing
     )
 
 import AssocList
+import Auth.Common
 import BiDict
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
@@ -182,6 +183,8 @@ type ToBackend
     | SignUpRequest String String String String -- realname, username, email, password
       -- EXAMPLES
     | GetWeatherData String
+      -- Auth
+    | Auth_ToBackend Auth.Common.ToBackend
 
 
 type BackendMsg
@@ -198,6 +201,8 @@ type BackendMsg
     | ErrorEmailSent (Result Http.Error PostmarkSendResponse)
       -- EXAMPLES
     | GotWeatherData ClientId (Result Http.Error Weather.WeatherData)
+      -- Auth
+    | Auth_BackendMsg Auth.Common.BackendMsg
 
 
 type alias InitData2 =
@@ -217,6 +222,8 @@ type ToFrontend
     | ReceivedWeatherData (Result Http.Error Weather.WeatherData)
       -- DATA (JC)
     | GotKeyValueStore (Dict.Dict String String)
+      -- Auth
+    | Auth_ToFrontend Auth.Common.ToFrontend
 
 
 

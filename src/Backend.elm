@@ -113,6 +113,9 @@ update : BackendMsg -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 update msg model =
     -- Replace existing randomAtmosphericNumber with a new one if possible
     (case msg of
+        Auth_BackendMsg msg_ ->
+            ( model, Cmd.none )
+
         GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers ->
             let
                 ( numbers, data_ ) =
@@ -352,6 +355,9 @@ update msg model =
 updateFromFrontend : SessionId -> ClientId -> ToBackend -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 updateFromFrontend sessionId clientId msg model =
     case msg of
+        Auth_ToBackend msg_ ->
+            ( model, Cmd.none )
+
         -- STRIPE
         RenewPrices ->
             ( model, Stripe.getPrices (GotPrices2 clientId) )

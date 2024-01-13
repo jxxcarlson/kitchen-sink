@@ -420,6 +420,9 @@ updateFromBackend msg model =
 updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
 updateFromBackendLoaded msg model =
     case msg of
+        Auth_ToFrontend msg_ ->
+            ( model, Cmd.none )
+
         InitData { prices, productInfo } ->
             ( { model | prices = prices, productInfoDict = productInfo }, Cmd.none )
 
