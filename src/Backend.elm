@@ -62,6 +62,9 @@ init =
 
       -- EXPERIMENTAL
       , keyValueStore = Dict.fromList [ ( "foo", "1234" ), ( "bar", "5678" ), ( "hubble1929", hubble1929 ) ]
+
+      -- Auth
+      , pendingAuths = Dict.empty
       }
     , Cmd.batch
         [ Time.now |> Task.perform GotTime
@@ -358,7 +361,7 @@ updateFromFrontend : SessionId -> ClientId -> ToBackend -> BackendModel -> ( Bac
 updateFromFrontend sessionId clientId msg model =
     case msg of
         Auth_ToBackend authMsg ->
-            Auth.Flow.backendUpdate (AuthImplementation.backendConfig model) authMsg
+            Auth.Flow.updateFromFrontend (AuthImplementation.backendConfig model) clientId sessionId authMsg model
 
         -- STRIPE
         RenewPrices ->

@@ -17,7 +17,7 @@ import Auth.Common
 import BiDict
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
-import Dict
+import Dict exposing (Dict)
 import Http
 import Id exposing (Id)
 import KeyValueStore
@@ -89,6 +89,10 @@ type alias LoadedModel =
     , inputValue : String
     , inputFilterData : String
     , kvViewType : KeyValueStore.KVViewType
+
+    -- Auth
+    , authFlow : Auth.Common.Flow
+    , authRedirectBaseUrl : Url
     }
 
 
@@ -122,6 +126,9 @@ type alias BackendModel =
 
     -- EXPERIMENTAL
     , keyValueStore : Dict.Dict String String
+
+    -- Auth
+    , pendingAuths : Dict SessionId Auth.Common.PendingAuth
     }
 
 

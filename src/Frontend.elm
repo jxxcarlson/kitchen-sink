@@ -3,6 +3,7 @@ module Frontend exposing (app)
 --exposing (PriceId, ProductId(..), StripeSessionId)
 
 import AssocList
+import Auth.Common
 import BackendHelper
 import Browser exposing (UrlRequest(..))
 import Browser.Dom
@@ -25,7 +26,7 @@ import Task
 import Time
 import Types exposing (..)
 import Untrusted
-import Url
+import Url exposing (Url)
 import Url.Parser exposing ((</>), (<?>))
 import Url.Parser.Query as Query
 import View.Main
@@ -97,6 +98,18 @@ update msg model =
             updateLoaded msg loaded |> Tuple.mapFirst Loaded
 
 
+dummyAuthUrl : Url
+dummyAuthUrl =
+    -- TODO: real value based on env var?
+    { protocol = Url.Https
+    , host = "https://localhost"
+    , port_ = Just 8080
+    , path = "/path"
+    , query = Nothing
+    , fragment = Nothing
+    }
+
+
 tryLoading : LoadingModel -> ( FrontendModel, Cmd FrontendMsg )
 tryLoading loadingModel =
     Maybe.map2
@@ -145,6 +158,10 @@ tryLoading loadingModel =
                         , inputValue = ""
                         , inputFilterData = ""
                         , kvViewType = KeyValueStore.KVVSummary
+
+                        -- Auth
+                        , authFlow = Auth.Common.Idle
+                        , authRedirectBaseUrl = dummyAuthUrl
                         }
                     , Cmd.none
                     )

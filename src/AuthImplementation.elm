@@ -32,6 +32,8 @@ googleOAuthClientSecret =
 
 config : Auth.Common.Config FrontendMsg ToBackend BackendMsg ToFrontend LoadedModel BackendModel
 config =
+    -- TODO: I believe I have to refactor to accept the custom type FrontendModel and not the LoadedModel record
+    --       in order to properly handle loading case???
     { toBackend = Auth_ToBackend
     , toFrontend = Auth_ToFrontend
     , backendMsg = Auth_BackendMsg
@@ -44,7 +46,8 @@ config =
         --, Auth.Method.OAuthGithub.configuration Config.githubOAuthClientId Config.githubOAuthClientSecret
         ]
     , renewSession = renewSession
-    , logout = logout
+
+    --, logout = logout
     }
 
 
