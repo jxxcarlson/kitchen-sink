@@ -32,7 +32,7 @@ import Stripe.Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessi
 import Time
 import Untrusted exposing (Untrusted)
 import Url exposing (Url)
-import User
+import User exposing (Session, User, UserId)
 import Weather
 
 
@@ -113,9 +113,9 @@ type alias BackendModel =
     , localUuidData : Maybe LocalUUID.Data
 
     -- USER
-    , userDictionary : Dict.Dict String User.User
-    , sessions : BiDict.BiDict SessionId String -- sessionId to username
+    , userDictionary : Dict UserId User
 
+    --, sessions : BiDict.BiDict SessionId String -- sessionId to username
     --STRIPE
     , orders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.Order
     , pendingOrder : AssocList.Dict (Id StripeSessionId) Stripe.Codec.PendingOrder
@@ -128,6 +128,7 @@ type alias BackendModel =
     , keyValueStore : Dict.Dict String String
 
     -- Auth
+    , sessions : Dict SessionId Session
     , pendingAuths : Dict SessionId Auth.Common.PendingAuth
     }
 
@@ -231,6 +232,7 @@ type ToFrontend
     | GotKeyValueStore (Dict.Dict String String)
       -- Auth
     | Auth_ToFrontend Auth.Common.ToFrontend
+    | Auth_ActiveSession User
 
 
 

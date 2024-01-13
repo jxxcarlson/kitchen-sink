@@ -437,6 +437,10 @@ updateFromBackend msg model =
 updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
 updateFromBackendLoaded msg model =
     case msg of
+        -- TODO: Is it correct to assume a loaded model???
+        Auth_ActiveSession user ->
+            ( model, Cmd.none )
+
         Auth_ToFrontend msg_ ->
             ( model, Cmd.none )
 

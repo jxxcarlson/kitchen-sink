@@ -18,6 +18,7 @@ import Types
         , ToBackend(..)
         , ToFrontend(..)
         )
+import User exposing (User)
 
 
 googleOAuthClientId : String
@@ -79,11 +80,6 @@ handleAuthSuccess backendModel sessionId clientId userInfo authToken now =
 logout : String -> String -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 logout sessionId clientId model =
     ( model, Cmd.none )
-
-
-renewSession : String -> String -> BackendModel -> ( BackendModel, Cmd BackendMsg )
-renewSession sessionId clientId backendModel =
-    ( backendModel, Cmd.none )
 
 
 
@@ -158,20 +154,27 @@ renewSession sessionId clientId backendModel =
 --        )
 --
 --
---renewSession : String -> String -> BackendModel -> ( BackendModel, Cmd BackendMsg )
---renewSession sessionId clientId model =
---    model
---        |> getSessionUser sessionId
---        |> Maybe.map (\user -> ( model, Lamdera.sendToFrontend clientId (ActiveSession (Api.User.toUser user)) ))
---        |> Maybe.withDefault ( model, Cmd.none )
+
+
+renewSession : String -> String -> BackendModel -> ( BackendModel, Cmd BackendMsg )
+renewSession sessionId clientId model =
+    model
+        |> getSessionUser sessionId
+        |> Maybe.map (\user -> ( model, Lamdera.sendToFrontend clientId (Auth_ActiveSession user) ))
+        |> Maybe.withDefault ( model, Cmd.none )
+
+
+
 --
 --
 --logout sessionId clientId model =
 --    ( { model | sessions = model.sessions |> Dict.remove sessionId }, Cmd.none )
 --
 --
---getSessionUser : Lamdera.SessionId -> BackendModel -> Maybe UserFull
---getSessionUser sid model =
---    model.sessions
---        |> Dict.get sid
---        |> Maybe.andThen (\session -> model.users |> Dict.get session.userId)
+
+
+getSessionUser : Lamdera.SessionId -> BackendModel -> Maybe User
+getSessionUser sid model =
+    model.sessions
+        |> Dict.get sid
+        |> Maybe.andThen (\session -> model.userDictionary |> Dict.get session.userId)

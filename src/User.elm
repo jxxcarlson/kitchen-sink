@@ -1,10 +1,18 @@
-module User exposing (Role(..), User)
+module User exposing (Role(..), Session, User, UserId)
 
 import Time
 
 
+type alias UserId =
+    String
+
+
+type alias Session =
+    { userId : UserId, expires : Time.Posix }
+
+
 type alias User =
-    { id : String
+    { id : UserId
     , realname : String
     , username : String
     , email : String
