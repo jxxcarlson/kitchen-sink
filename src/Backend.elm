@@ -1,6 +1,8 @@
 module Backend exposing (app, init, subscriptions, update, updateFromFrontend)
 
 import AssocList
+import Auth.Flow
+import AuthImplementation
 import BackendHelper
 import BiDict
 import Dict
@@ -355,8 +357,8 @@ update msg model =
 updateFromFrontend : SessionId -> ClientId -> ToBackend -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 updateFromFrontend sessionId clientId msg model =
     case msg of
-        Auth_ToBackend msg_ ->
-            ( model, Cmd.none )
+        Auth_ToBackend authMsg ->
+            Auth.Flow.backendUpdate (AuthImplementation.backendConfig model) authMsg
 
         -- STRIPE
         RenewPrices ->
