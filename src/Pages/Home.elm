@@ -5,6 +5,7 @@ import Element.Font
 import Html.Attributes
 import MarkdownThemed
 import Theme
+import Time
 import Types exposing (FrontendMsg(..), LoadedModel)
 import View.Button
 import View.CustomElement
@@ -51,7 +52,7 @@ view model =
                     |> Element.html
                 )
             ]
-        , View.CustomElement.viewDate model.language
+        , View.CustomElement.viewDateFromTime model.language Time.utc model.now
         , Element.el [ Element.paddingEach { left = 0, right = 0, top = 48, bottom = 0 } ] (Element.column Theme.contentAttributes [ content2 ])
         ]
 
@@ -89,16 +90,18 @@ can display the current users, Stripe data, and a key-value store.  You can
 put data into and get data out of the key-value store using remote
 procedure calls (RPCs).
 
-Below are four short examples: (a) the first button plays a sound,
-(b) the second copies some hidden text to the clipboard, (c)
+Below are five short examples: (1) the first button plays a sound,
+(2) the second copies some hidden text to the clipboard, (3)
 the third displays the current temperature in of the city
 that you type into the white box (press `Enter` when done),
-while (d) the fourth displays the current local time.
+while (4) the fourth displays the current local time, (5)
+the fifth displays the current date in an internationalize format.
 
-Examples (a) and (b) use ports, (c)  relies
+Examples (1) and (2) use ports, (3)  relies
 on an outbound Http request to [openweathermap.org](https://openweathermap.org/)
-from the backend, while (d) is implemented as a custom element (web component).
+from the backend, while (4) and (5) are implemented as a custom element (web component).
 See the `Ports`, `Weather`, and `View.CustomElement` modules for code
-and for more information.
+and for more information. For (5), see also the
+[guide.elm-lang.org](https://guide.elm-lang.org/interop/custom_elements).
         """
         |> MarkdownThemed.renderFull

@@ -12,7 +12,7 @@ exports.init =  async function(app) {
     //   localizeDate('en-GB', 12, 5) == "Friday, 1 June 2012"
     //   localizeDate('en-US', 12, 5) == "Friday, June 1, 2012"
     //
-    function localizeDate(lang, year, month) {
+    function localizeDate(lang, year, month, day) {
         const dateTimeFormat = new Intl.DateTimeFormat(lang, {
             weekday: 'long',
             year: 'numeric',
@@ -20,7 +20,7 @@ exports.init =  async function(app) {
             day: 'numeric'
         });
 
-        return dateTimeFormat.format(new Date(year, month));
+        return dateTimeFormat.format(new Date(year, month, day));
     }
 
     // Define a Custom Element that uses this function. Here we make it
@@ -48,7 +48,7 @@ exports.init =  async function(app) {
             }
 
             static get observedAttributes() {
-                return ['lang', 'year', 'month'];
+                return ['lang', 'year', 'month', 'day'];
             }
 
             // Our function to set the textContent based on attributes.
@@ -56,7 +56,8 @@ exports.init =  async function(app) {
                 const lang = this.getAttribute('lang');
                 const year = this.getAttribute('year');
                 const month = this.getAttribute('month');
-                this.textContent = localizeDate(lang, year, month);
+                const day  = this.getAttribute('day');
+                this.textContent = localizeDate(lang, year, month, day);
             }
         }
     );
