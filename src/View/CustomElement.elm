@@ -26,7 +26,7 @@ timeFormatted =
 viewDateFromTime : String -> Time.Zone -> Time.Posix -> Element Types.FrontendMsg
 viewDateFromTime language zone time =
     div []
-        [ p [] [ viewDate_ language (Time.toYear zone time) (monthFromTime zone time) (Time.toDay zone time) ]
+        [ p [ style "height" "20px", style "width" "140px" ] [ viewDate_ language (Time.toYear zone time) (monthFromTime zone time) (Time.toDay zone time) ]
         , select
             [ on "change" (Json.Decode.map Types.LanguageChanged valueDecoder)
             ]
