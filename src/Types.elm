@@ -24,6 +24,7 @@ import Lamdera exposing (ClientId, SessionId)
 import LocalUUID
 import Postmark exposing (PostmarkSendResponse)
 import Route exposing (Route)
+import Session
 import Stripe.Codec
 import Stripe.Product
 import Stripe.PurchaseForm exposing (PurchaseForm, PurchaseFormValidated)
@@ -111,7 +112,8 @@ type alias BackendModel =
 
     -- USER
     , userDictionary : Dict.Dict String User.User
-    , sessions : BiDict.BiDict SessionId String -- sessionId to username
+    , sessions : Session.Sessions
+    , sessionInfo : Session.SessionInfo
 
     --STRIPE
     , orders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.Order
@@ -192,12 +194,11 @@ type ToBackend
 
 type BackendMsg
     = GotTime Time.Posix
-      --
+    | OnConnected SessionId ClientId
     | GotAtmosphericRandomNumbers (Result Http.Error String)
       -- STRIPE
     | GotPrices (Result Http.Error (List PriceData))
     | GotPrices2 ClientId (Result Http.Error (List PriceData))
-    | OnConnected SessionId ClientId
     | CreatedCheckoutSession SessionId ClientId (Id PriceId) PurchaseFormValidated (Result Http.Error ( Id StripeSessionId, Time.Posix ))
     | ExpiredStripeSession (Id StripeSessionId) (Result Http.Error ())
     | ConfirmationEmailSent (Id StripeSessionId) (Result Http.Error PostmarkSendResponse)

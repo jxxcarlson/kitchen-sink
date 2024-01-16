@@ -1,6 +1,7 @@
 module Backend exposing (app)
 
 import AssocList
+import Backend.Session
 import BackendHelper
 import BiDict
 import Dict
@@ -10,9 +11,7 @@ import HttpHelpers
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
 import LocalUUID
-import Predicate
 import Quantity
-import Set exposing (Set)
 import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
 import Task
@@ -35,6 +34,7 @@ init : ( BackendModel, Cmd BackendMsg )
 init =
     ( { userDictionary = BackendHelper.testUserDictionary
       , sessions = BiDict.empty
+      , sessionInfo = Dict.empty
 
       --STRIPE
       , orders = AssocList.empty
@@ -229,17 +229,10 @@ update msg model =
                     ( model, BackendHelper.errorEmail ("GotPrices failed: " ++ HttpHelpers.httpErrorToString error) )
 
         OnConnected sessionId clientId ->
-            let
-                maybeUsername =
-                    BiDict.get sessionId model.sessions
-
-                maybeUser =
-                    Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername
-            in
             ( model
             , Cmd.batch
                 [ BackendHelper.getAtmosphericRandomNumbers
-                , Lamdera.sendToFrontend clientId (UserSignedIn maybeUser)
+                , Backend.Session.reconnect model sessionId clientId
                 , Lamdera.sendToFrontend clientId (GotKeyValueStore model.keyValueStore)
                 , Lamdera.sendToFrontend
                     clientId
@@ -400,15 +393,12 @@ updateFromFrontend sessionId clientId msg model =
         -- USER
         SignInRequest username password ->
             let
+                maybeUser : Maybe User.User
                 maybeUser =
                     Dict.get username model.userDictionary
-
-                addSession : String -> BackendModel -> BackendModel
-                addSession username_ model_ =
-                    { model_ | sessions = BiDict.insert sessionId username_ model_.sessions }
             in
             if Just password == Maybe.map .password maybeUser then
-                ( model |> addSession username
+                ( model |> Backend.Session.updateSession sessionId username
                 , Cmd.batch
                     [ Lamdera.sendToFrontend clientId (GotMessage "Sign in successful!")
                     , Lamdera.sendToFrontend clientId (UserSignedIn maybeUser)
@@ -424,22 +414,7 @@ updateFromFrontend sessionId clientId msg model =
                 )
 
         SignOutRequest username ->
-            let
-                activeSessions : List SessionId
-                activeSessions =
-                    BiDict.getReverse username model.sessions
-                        |> Set.toList
-
-                removeSessions : List SessionId -> BackendModel -> BackendModel
-                removeSessions activeSessions_ model_ =
-                    List.foldl
-                        (\sessionId_ model__ ->
-                            { model__ | sessions = BiDict.remove sessionId_ model__.sessions }
-                        )
-                        model_
-                        activeSessions_
-            in
-            ( model |> removeSessions activeSessions
+            ( model |> Backend.Session.removeSessions username
             , Lamdera.sendToFrontend clientId (UserSignedIn Nothing)
             )
 
