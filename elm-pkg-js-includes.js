@@ -21,5 +21,6 @@ exports.init = async function init(app) {
   copy_to_clipboard.init(app)
   time_formatted.init(app)
   calendar.init(app)
+  international_date.init(app)
 
 }

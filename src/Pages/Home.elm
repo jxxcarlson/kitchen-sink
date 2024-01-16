@@ -51,7 +51,18 @@ view model =
                     |> Element.html
                 )
             ]
+        , View.CustomElement.viewDate model.language
+        , Element.el [ Element.paddingEach { left = 0, right = 0, top = 48, bottom = 0 } ] (Element.column Theme.contentAttributes [ content2 ])
         ]
+
+
+content2 : Element msg
+content2 =
+    """
+**NOTE.** *The "View Data" and "Edit Data" tabs are for another project
+(a curated public data service for science and education) and will be removed when this project is complete.*
+    """
+        |> MarkdownThemed.renderFull
 
 
 content : Element msg
@@ -81,15 +92,13 @@ procedure calls (RPCs).
 Below are four short examples: (a) the first button plays a sound,
 (b) the second copies some hidden text to the clipboard, (c)
 the third displays the current temperature in of the city
-that you type into the white box (press `Enter` when done).
-The fourth displays the current local time
-using a simple, self-contained custom element (web component).
-The first two example use ports, while the second relies
-on an outbound Http request to [openweathermap.org](https://openweathermap.org/)
-from the backend.  See the `Ports`, `Weather`, and `View.CustomElement` modules for code
-and for more information.
+that you type into the white box (press `Enter` when done),
+while (d) the fourth displays the current local time.
 
-**NOTE.** *The "View Data" and "Edit Data" tabs are for another project
-(a curated public data service for science and education) and will be removed when this project is complete.*
+Examples (a) and (b) use ports, (c)  relies
+on an outbound Http request to [openweathermap.org](https://openweathermap.org/)
+from the backend, while (d) is implemented as a custom element (web component).
+See the `Ports`, `Weather`, and `View.CustomElement` modules for code
+and for more information.
         """
         |> MarkdownThemed.renderFull

@@ -80,6 +80,7 @@ type alias LoadedModel =
     , message : String
 
     -- EXAMPLES
+    , language : String -- Internationalization of date custom element
     , weatherData : Maybe Weather.WeatherData
     , inputCity : String
 
@@ -159,6 +160,7 @@ type FrontendMsg
       --
     | SetViewport
       -- EXAMPLES
+    | LanguageChanged String -- for internationalization of date
     | CopyTextToClipboard String
     | Chirp
     | RequestWeatherData String

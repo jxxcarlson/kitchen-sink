@@ -151,6 +151,7 @@ tryLoading loadingModel =
                         , message = ""
 
                         -- EXAMPLES
+                        , language = "en-US"
                         , inputCity = ""
                         , weatherData = Nothing
 
@@ -207,6 +208,12 @@ updateLoaded msg model =
         -- ADMIN
         SetAdminDisplay adminDisplay ->
             ( { model | adminDisplay = adminDisplay }, Cmd.none )
+
+        -- CUSTOM ELEMENT EXAMPLES
+        LanguageChanged language ->
+            ( { model | language = language }
+            , Cmd.none
+            )
 
         -- PORTS EXAMPLES
         CopyTextToClipboard text ->

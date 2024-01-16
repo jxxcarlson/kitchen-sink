@@ -9,9 +9,10 @@ exports.init =  async function(app) {
         console.log("calendarJs loading");
         document.head.appendChild(calendarJs);
         console.log("I have appended calendarJs to document.head");
+        // load JS packages from CDN
         loadCalendarCoreJs();
         loadDayGridJs()
-
+        // set up the custom element
         initCalendar();
     };
 
