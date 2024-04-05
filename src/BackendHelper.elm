@@ -111,7 +111,7 @@ errorEmail errorMessage =
     case List.Nonempty.fromList Env.developerEmails of
         Just to ->
             Postmark.sendEmail
-                Types.ErrorEmailSent
+                Types.AuthenticationConfirmationEmailSent
                 Env.postmarkApiKey
                 { from = { name = "elm-camp", email = purchaseSupportAddres }
                 , to = List.Nonempty.map (\email -> { name = "", email = email }) to
