@@ -13,6 +13,7 @@ type Route
     | DataStore
     | EditData
     | Features
+    | TermsOfServiceRoute
     | Notes
     | SignInRoute
     | Brillig
@@ -62,6 +63,9 @@ encode route =
             Features ->
                 [ "features" ]
 
+            TermsOfServiceRoute ->
+                [ "terms" ]
+
             DataStore ->
                 [ "datastore" ]
 
@@ -94,6 +98,9 @@ encode route =
                 []
 
             Features ->
+                []
+
+            TermsOfServiceRoute ->
                 []
 
             DataStore ->

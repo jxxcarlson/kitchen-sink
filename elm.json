@@ -2,7 +2,7 @@
     "type": "application",
     "source-directories": [
         "src",
-        "elm-email"
+        "vendor/elm-email"
     ],
     "elm-version": "0.19.1",
     "dependencies": {
@@ -10,7 +10,7 @@
             "Chadtech/elm-money": "7.0.0",
             "Janiczek/elm-bidict": "3.1.0",
             "MartinSStewart/elm-nonempty-string": "2.0.0",
-            "NoRedInk/elm-json-decode-pipeline": "1.0.1",
+                "NoRedInk/elm-json-decode-pipeline": "1.0.1",
             "TSFoster/elm-uuid": "4.2.0",
             "bburdette/toop": "1.2.0",
             "danfishgold/base64-bytes": "1.1.0",

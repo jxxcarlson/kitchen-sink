@@ -1,6 +1,7 @@
 module Pages.Parts exposing
     ( generic
     , genericNoScrollBar
+    , linkStyle
     )
 
 import Element exposing (Element)
@@ -104,6 +105,7 @@ header model route config =
         )
 
 
+linkStyle : Route -> Route -> List (Element.Attribute msg)
 linkStyle currentRoute route =
     if currentRoute == route then
         [ Element.Font.underline, Element.Font.color View.Color.yellow ]

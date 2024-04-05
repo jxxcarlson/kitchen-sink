@@ -1,22 +1,24 @@
 module Types exposing
     ( AdminDisplay(..)
+    , BackendDataStatus(..)
     , BackendModel
     , BackendMsg(..)
+    , EmailAddress
     , FrontendModel(..)
     , FrontendMsg(..)
     , InitData2
     , LoadedModel
     , LoadingModel
+    , LoginData(..)
     , SignInState(..)
     , ToBackend(..)
     , ToFrontend(..)
     )
 
 import AssocList
-import BiDict
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
-import Dict
+import Dict exposing (Dict)
 import Http
 import Id exposing (Id)
 import KeyValueStore
@@ -34,6 +36,10 @@ import Untrusted exposing (Untrusted)
 import Url exposing (Url)
 import User
 import Weather
+
+
+type alias IntDict a =
+    Dict Int a
 
 
 type FrontendModel
@@ -137,6 +143,7 @@ type FrontendMsg
     | GotWindowSize Int Int
     | PressedShowTooltip
     | MouseDown
+      -- TOKEN
       -- STRIPE
     | BuyProduct (Id ProductId) (Id PriceId) Stripe.Product.Product_
     | PressedSelectTicket (Id ProductId) (Id PriceId)
@@ -182,6 +189,11 @@ type ToBackend
     = SubmitFormRequest (Id PriceId) (Untrusted PurchaseFormValidated)
     | CancelPurchaseRequest
     | AdminInspect (Maybe User.User)
+      -- TOKEN
+    | CheckLoginRequest
+    | LoginWithTokenRequest Int
+    | GetLoginTokenRequest EmailAddress
+    | LogOutRequest
       -- STRIPE
     | RenewPrices
       -- USER
@@ -198,6 +210,8 @@ type BackendMsg
     = GotTime Time.Posix
     | OnConnected SessionId ClientId
     | GotAtmosphericRandomNumbers (Result Http.Error String)
+      -- TOKEN
+    | SentLoginEmail Time.Posix EmailAddress (Result Postmark.SendEmailError ())
       -- STRIPE
     | GotPrices (Result Http.Error (List PriceData))
     | GotPrices2 ClientId (Result Http.Error (List PriceData))
@@ -220,6 +234,11 @@ type ToFrontend
     | GotMessage String
     | SubmitFormResponse (Result String (Id StripeSessionId))
     | AdminInspectResponse BackendModel
+      -- TOKEN
+    | CheckLoginResponse (Result BackendDataStatus LoginData)
+    | LoginWithTokenResponse (Result Int LoginData)
+    | GetLoginTokenRateLimited
+    | LoggedOutSession
       -- USER
     | UserSignedIn (Maybe User.User)
       -- EXAMPLE
@@ -230,3 +249,16 @@ type ToFrontend
 
 
 -- STRIPE
+-- TOKEN
+
+
+type BackendDataStatus
+    = BackendDataStatus LoginData
+
+
+type LoginData
+    = OhDear String
+
+
+type alias EmailAddress =
+    String

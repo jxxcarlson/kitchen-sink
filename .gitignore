@@ -4,3 +4,5 @@ elm-stuff
 openEditor.bat
 cloc.txt
 
+data/*
+token-code/
