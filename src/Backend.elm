@@ -4,20 +4,31 @@ import AssocList
 import Backend.Session
 import BackendHelper
 import BiDict
+import Config
 import Dict
 import Duration
 import Email
+import Email.Html
+import Email.Html.Attributes
+import EmailAddress exposing (EmailAddress)
+import Hex
 import HttpHelpers
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
+import List.Extra
+import List.Nonempty
 import LocalUUID
 import LoginForm
+import Postmark
 import Quantity
+import Sha256
+import String.Nonempty exposing (NonemptyString)
 import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
 import Task
 import Time
 import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
+import Unsafe
 import Untrusted
 import User
 
@@ -36,6 +47,9 @@ init =
     ( { userDictionary = BackendHelper.testUserDictionary
       , sessions = BiDict.empty
       , sessionInfo = Dict.empty
+
+      -- TOKEN
+      , secretCounter = 0
 
       --STRIPE
       , orders = AssocList.empty
@@ -491,10 +505,9 @@ updateFromFrontendWithTime time sessionId clientId msg model =
     case msg of
         CheckLoginRequest ->
             ( model
-            , if IdDict.isEmpty model.users then
-                Command.batch
-                    [ airtableDataInit isProduction
-                    , CheckLoginResponse (Err LoadingBackendData) |> Effect.Lamdera.sendToFrontend clientId
+            , if Dict.isEmpty model.userDictionary then
+                Cmd.batch
+                    [ CheckLoginResponse (Err LoadingBackendData) |> Lamdera.sendToFrontend clientId
                     ]
 
               else
@@ -503,10 +516,10 @@ updateFromFrontendWithTime time sessionId clientId msg model =
                         getLoginData userId user model
                             |> Ok
                             |> CheckLoginResponse
-                            |> Effect.Lamdera.sendToFrontend clientId
+                            |> Lamdera.sendToFrontend clientId
 
                     Nothing ->
-                        CheckLoginResponse (Err LoadedBackendData) |> Effect.Lamdera.sendToFrontend clientId
+                        CheckLoginResponse (Err LoadedBackendData) |> Lamdera.sendToFrontend clientId
             )
 
         LoginWithTokenRequest loginCode ->
@@ -517,7 +530,7 @@ updateFromFrontendWithTime time sessionId clientId msg model =
                 ( model2, result ) =
                     getLoginCode time model
             in
-            case ( List.Extra.find (\( _, user ) -> user.email == email) (IdDict.toList model.users), result ) of
+            case ( List.Extra.find (\( _, user ) -> user.email == email) (Dict.toList model.userDictionary), result ) of
                 ( Just ( userId, user ), Ok loginCode ) ->
                     if shouldRateLimit time user then
                         let
@@ -525,7 +538,7 @@ updateFromFrontendWithTime time sessionId clientId msg model =
                                 addLog time (Log.LoginsRateLimited userId) model
                         in
                         ( model3
-                        , Command.batch [ cmd, Effect.Lamdera.sendToFrontend clientId GetLoginTokenRateLimited ]
+                        , Cmd.batch [ cmd, Lamdera.sendToFrontend clientId GetLoginTokenRateLimited ]
                         )
 
                     else
@@ -536,16 +549,16 @@ updateFromFrontendWithTime time sessionId clientId msg model =
                                     { creationTime = time, emailAddress = email, loginAttempts = 0, loginCode = loginCode }
                                     model2.pendingLogins
                             , users =
-                                IdDict.insert
+                                Dict.insert
                                     userId
                                     { user | recentLoginEmails = time :: List.take 100 user.recentLoginEmails }
-                                    model.users
+                                    model.userDictionary
                           }
                         , sendLoginEmail (SentLoginEmail time email) email loginCode
                         )
 
                 ( Nothing, Ok _ ) ->
-                    ( model, Command.none )
+                    ( model, Cmd.none )
 
                 ( _, Err () ) ->
                     addLog time (Log.FailedToCreateLoginCode model.secretCounter) model
@@ -560,7 +573,7 @@ sendLoginEmail :
     (Result Postmark.SendEmailError () -> backendMsg)
     -> EmailAddress
     -> Int
-    -> Command BackendOnly toFrontend backendMsg
+    -> Cmd backendMsg
 sendLoginEmail msg emailAddress loginCode =
     let
         _ =
@@ -575,7 +588,7 @@ sendLoginEmail msg emailAddress loginCode =
             ("Here is your code " ++ String.fromInt loginCode ++ "\n\nPlease type it in the Ambue login page you were previously on.\n\nIf you weren't expecting this email you can safely ignore it.")
     , messageStream = "outbound"
     }
-        |> Postmark.sendEmail msg Env.postmarkServerToken
+        |> Postmark.sendEmail msg Config.postmarkServerToken
 
 
 loginEmailContent : Int -> Email.Html.Html
@@ -626,7 +639,7 @@ loginWithToken :
     -> ClientId
     -> Int
     -> BackendModel
-    -> ( BackendModel, Command BackendOnly ToFrontend BackendMsg )
+    -> ( BackendModel, Cmd BackendMsg )
 loginWithToken time sessionId clientId loginCode model =
     case AssocList.get sessionId model.pendingLogins of
         Just pendingLogin ->
@@ -636,7 +649,7 @@ loginWithToken time sessionId clientId loginCode model =
             then
                 if loginCode == pendingLogin.loginCode then
                     case
-                        IdDict.toList model.users
+                        Dict.toList model.userDictionary
                             |> List.Extra.find (\( _, user ) -> user.email == pendingLogin.emailAddress)
                     of
                         Just ( userId, user ) ->
@@ -647,14 +660,14 @@ loginWithToken time sessionId clientId loginCode model =
                             , getLoginData userId user model
                                 |> Ok
                                 |> LoginWithTokenResponse
-                                |> Effect.Lamdera.sendToFrontends sessionId
+                                |> Lamdera.sendToFrontends sessionId
                             )
 
                         Nothing ->
                             ( model
                             , Err loginCode
                                 |> LoginWithTokenResponse
-                                |> Effect.Lamdera.sendToFrontend clientId
+                                |> Lamdera.sendToFrontend clientId
                             )
 
                 else
@@ -665,26 +678,26 @@ loginWithToken time sessionId clientId loginCode model =
                                 { pendingLogin | loginAttempts = pendingLogin.loginAttempts + 1 }
                                 model.pendingLogins
                       }
-                    , Err loginCode |> LoginWithTokenResponse |> Effect.Lamdera.sendToFrontend clientId
+                    , Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId
                     )
 
             else
-                ( model, Err loginCode |> LoginWithTokenResponse |> Effect.Lamdera.sendToFrontend clientId )
+                ( model, Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId )
 
         Nothing ->
-            ( model, Err loginCode |> LoginWithTokenResponse |> Effect.Lamdera.sendToFrontend clientId )
+            ( model, Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId )
 
 
 getUserFromSessionId : SessionId -> BackendModel -> Maybe ( Id UserRowId, BackendUser )
 getUserFromSessionId sessionId model =
     AssocList.get sessionId model.sessions
-        |> Maybe.andThen (\userId -> IdDict.get userId model.users |> Maybe.map (Tuple.pair userId))
+        |> Maybe.andThen (\userId -> Dict.get userId model.userDictionary |> Maybe.map (Tuple.pair userId))
 
 
 getUniqueId : Time.Posix -> { a | secretCounter : Int } -> ( { a | secretCounter : Int }, Id b )
 getUniqueId time model =
     ( { model | secretCounter = model.secretCounter + 1 }
-    , Env.secretKey
+    , Config.secretKey
         ++ ":"
         ++ String.fromInt model.secretCounter
         ++ ":"

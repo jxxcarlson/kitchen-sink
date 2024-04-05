@@ -12,16 +12,19 @@ module Postmark exposing
     , sendEmailsTask
     )
 
-import Effect.Command exposing (BackendOnly, Command)
-import Effect.Http as Http
-import Effect.Task as Task exposing (Task)
+-- import Effect.Command exposing (BackendOnly, Command)
+-- import Effect.Http as Http
+-- import Effect.Task as Task exposing (Task)
+
 import Email.Html
 import EmailAddress exposing (EmailAddress)
+import Http
 import Internal
 import Json.Decode as D
 import Json.Encode as E
 import List.Nonempty exposing (Nonempty(..))
 import String.Nonempty exposing (NonemptyString)
+import Task exposing (Task)
 
 
 endpoint : String
@@ -80,7 +83,7 @@ type SendEmailsError
     | BadUrl_ String
 
 
-sendEmailTask : ApiKey -> PostmarkSend -> Task BackendOnly SendEmailError ()
+sendEmailTask : ApiKey -> PostmarkSend -> Task SendEmailError ()
 sendEmailTask (ApiKey token) d =
     Http.task
         { method = "POST"
@@ -105,7 +108,7 @@ encodeEmail d =
 
 {-| Send multiple emails in a single API request. See more here <https://postmarkapp.com/developer/user-guide/send-email-with-api/batch-emails>
 -}
-sendEmailsTask : ApiKey -> Nonempty PostmarkSend -> Task BackendOnly SendEmailsError ()
+sendEmailsTask : ApiKey -> Nonempty PostmarkSend -> Task SendEmailsError ()
 sendEmailsTask (ApiKey token) d =
     Http.task
         { method = "POST"
@@ -117,12 +120,12 @@ sendEmailsTask (ApiKey token) d =
         }
 
 
-sendEmail : (Result SendEmailError () -> msg) -> ApiKey -> PostmarkSend -> Command BackendOnly toMsg msg
+sendEmail : (Result SendEmailError () -> msg) -> ApiKey -> PostmarkSend -> Cmd msg
 sendEmail msg token d =
     sendEmailTask token d |> Task.attempt msg
 
 
-sendEmails : (Result SendEmailsError () -> msg) -> ApiKey -> Nonempty PostmarkSend -> Command BackendOnly toMsg msg
+sendEmails : (Result SendEmailsError () -> msg) -> ApiKey -> Nonempty PostmarkSend -> Cmd msg
 sendEmails msg token d =
     sendEmailsTask token d |> Task.attempt msg
 
@@ -268,7 +271,7 @@ bodyToJsonValues body =
             ]
 
 
-jsonResolver : Http.Resolver BackendOnly SendEmailError ()
+jsonResolver : Http.Resolver SendEmailError ()
 jsonResolver =
     let
         decodeBody metadata body =
@@ -317,7 +320,7 @@ decodeNonempty decoder =
             )
 
 
-jsonResolver2 : Http.Resolver BackendOnly SendEmailsError ()
+jsonResolver2 : Http.Resolver SendEmailsError ()
 jsonResolver2 =
     let
         decoder : D.Decoder (Nonempty PostmarkSendResponse)

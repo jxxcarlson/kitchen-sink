@@ -117,6 +117,9 @@ type alias BackendModel =
     { randomAtmosphericNumbers : Maybe (List Int)
     , localUuidData : Maybe LocalUUID.Data
 
+    -- TOKEN
+    , secretCounter : Int
+
     -- USER
     , userDictionary : Dict.Dict String User.User
     , sessions : Session.Sessions

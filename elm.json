@@ -10,9 +10,10 @@
             "Chadtech/elm-money": "7.0.0",
             "Janiczek/elm-bidict": "3.1.0",
             "MartinSStewart/elm-nonempty-string": "2.0.0",
-                "NoRedInk/elm-json-decode-pipeline": "1.0.1",
+            "NoRedInk/elm-json-decode-pipeline": "1.0.1",
             "TSFoster/elm-uuid": "4.2.0",
             "bburdette/toop": "1.2.0",
+            "billstclair/elm-sha256": "1.0.9",
             "danfishgold/base64-bytes": "1.1.0",
             "dillonkearns/elm-markdown": "7.0.1",
             "elm/browser": "1.0.2",
@@ -32,7 +33,8 @@
             "mdgriffith/elm-ui": "1.1.8",
             "mgold/elm-nonempty-list": "4.2.0",
             "miniBill/elm-codec": "2.0.0",
-            "pzp1997/assoc-list": "1.0.0"
+            "pzp1997/assoc-list": "1.0.0",
+            "rtfeldman/elm-hex": "1.0.0"
         },
         "indirect": {
             "TSFoster/elm-bytes-extra": "1.3.0",
@@ -43,7 +45,6 @@
             "elm/virtual-dom": "1.0.3",
             "elm-community/dict-extra": "2.4.0",
             "erlandsona/assoc-set": "1.1.2",
-            "rtfeldman/elm-hex": "1.0.0",
             "skyqrose/assoc-list-extra": "1.0.0"
         }
     },
