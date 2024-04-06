@@ -19,6 +19,7 @@ import List.Extra
 import List.Nonempty
 import LocalUUID
 import LoginForm
+import LoginWithToken
 import Postmark
 import Quantity
 import Sha256
@@ -52,6 +53,7 @@ init =
       , secretCounter = 0
       , sessionDict = AssocList.empty
       , pendingLogins = AssocList.empty
+      , log = []
 
       --STRIPE
       , orders = AssocList.empty
@@ -543,7 +545,7 @@ updateFromFrontendWithTime time sessionId clientId msg model =
                     if shouldRateLimit time user then
                         let
                             ( model3, cmd ) =
-                                addLog time (Log.LoginsRateLimited userId) model
+                                BackendHelper.addLog time (LoginWithToken.LoginsRateLimited userId) model
                         in
                         ( model3
                         , Cmd.batch [ cmd, Lamdera.sendToFrontend clientId GetLoginTokenRateLimited ]
@@ -569,7 +571,7 @@ updateFromFrontendWithTime time sessionId clientId msg model =
                     ( model, Cmd.none )
 
                 ( _, Err () ) ->
-                    addLog time (Log.FailedToCreateLoginCode model.secretCounter) model
+                    BackendHelper.addLog time (LoginWithToken.FailedToCreateLoginCode model.secretCounter) model
 
 
 noReplyEmailAddress : EmailAddress
