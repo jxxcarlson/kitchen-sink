@@ -3,7 +3,6 @@ module Types exposing
     , BackendDataStatus(..)
     , BackendModel
     , BackendMsg(..)
-    , EmailAddress
     , FrontendModel(..)
     , FrontendMsg(..)
     , InitData2
