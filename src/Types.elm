@@ -9,7 +9,7 @@ module Types exposing
     , InitData2
     , LoadedModel
     , LoadingModel
-    , LoginData(..)
+    , LoginData
     , SignInState(..)
     , ToBackend(..)
     , ToFrontend(..)
@@ -19,6 +19,7 @@ import AssocList
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
+import EmailAddress exposing (EmailAddress)
 import Http
 import Id exposing (Id)
 import KeyValueStore
@@ -123,7 +124,7 @@ type alias BackendModel =
     , pendingLogins :
         AssocList.Dict
             SessionId
-            { loginAttempts : List Int
+            { loginAttempts : Int
             , emailAddress : EmailAddress
             , creationTime : Time.Posix
             , loginCode : Int
@@ -218,6 +219,19 @@ type ToBackend
     | GetKeyValueStore
 
 
+
+-- YADAYADA:
+--required = Email.PostmarkSendResponse
+--
+--found =  Postmark.PostmarkSendResponse
+--
+-- Missing fields: { submittedAt : String, messageId : String }
+-- Mismatched fields:
+--   Field to:
+--   Required: String
+-- Found: List EmailAddress
+
+
 type BackendMsg
     = GotTime Time.Posix
     | OnConnected SessionId ClientId
@@ -270,9 +284,5 @@ type BackendDataStatus
     = BackendDataStatus LoginData
 
 
-type LoginData
-    = OhDear String
-
-
-type alias EmailAddress =
-    String
+type alias LoginData =
+    { favoriteColor : String, favoriteNumber : Int }
