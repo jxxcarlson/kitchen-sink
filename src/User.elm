@@ -1,4 +1,4 @@
-module User exposing (Role(..), User)
+module User exposing (Id, Role(..), User)
 
 import Time
 
@@ -12,9 +12,14 @@ type alias User =
     , created_at : Time.Posix
     , updated_at : Time.Posix
     , role : Role
+    , recentLoginEmails : Time.Posix
     }
 
 
 type Role
     = AdminRole
     | UserRole
+
+
+type alias Id =
+    String

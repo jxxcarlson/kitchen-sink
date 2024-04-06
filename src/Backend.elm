@@ -50,6 +50,8 @@ init =
 
       -- TOKEN
       , secretCounter = 0
+      , sessionDict = AssocList.empty
+      , pendingLogins = AssocList.empty
 
       --STRIPE
       , orders = AssocList.empty
@@ -507,7 +509,7 @@ updateFromFrontendWithTime time sessionId clientId msg model =
             ( model
             , if Dict.isEmpty model.userDictionary then
                 Cmd.batch
-                    [ CheckLoginResponse (Err LoadingBackendData) |> Lamdera.sendToFrontend clientId
+                    [ CheckLoginResponse (Result Types.BackendDataStatus Types.LoginData) |> Lamdera.sendToFrontend clientId
                     ]
 
               else
@@ -654,13 +656,13 @@ loginWithToken time sessionId clientId loginCode model =
                     of
                         Just ( userId, user ) ->
                             ( { model
-                                | sessions = AssocList.insert sessionId userId model.sessions
+                                | sessionDict = AssocList.insert sessionId userId model.sessionDict
                                 , pendingLogins = AssocList.remove sessionId model.pendingLogins
                               }
                             , getLoginData userId user model
                                 |> Ok
                                 |> LoginWithTokenResponse
-                                |> Lamdera.sendToFrontends sessionId
+                                |> Lamdera.sendToFrontend sessionId
                             )
 
                         Nothing ->
@@ -688,9 +690,9 @@ loginWithToken time sessionId clientId loginCode model =
             ( model, Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId )
 
 
-getUserFromSessionId : SessionId -> BackendModel -> Maybe ( Id UserRowId, BackendUser )
+getUserFromSessionId : SessionId -> BackendModel -> Maybe ( User.Id, User.User )
 getUserFromSessionId sessionId model =
-    AssocList.get sessionId model.sessions
+    AssocList.get sessionId model.sessionDict
         |> Maybe.andThen (\userId -> Dict.get userId model.userDictionary |> Maybe.map (Tuple.pair userId))
 
 

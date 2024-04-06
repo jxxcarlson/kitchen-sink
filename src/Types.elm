@@ -119,6 +119,15 @@ type alias BackendModel =
 
     -- TOKEN
     , secretCounter : Int
+    , sessionDict : AssocList.Dict SessionId String
+    , pendingLogins :
+        AssocList.Dict
+            SessionId
+            { loginAttempts : List Int
+            , emailAddress : EmailAddress
+            , creationTime : Time.Posix
+            , loginCode : Int
+            }
 
     -- USER
     , userDictionary : Dict.Dict String User.User
@@ -214,6 +223,7 @@ type BackendMsg
     | OnConnected SessionId ClientId
     | GotAtmosphericRandomNumbers (Result Http.Error String)
       -- TOKEN
+    | BackendGotTime SessionId ClientId ToBackend Time.Posix
     | SentLoginEmail Time.Posix EmailAddress (Result Postmark.SendEmailError ())
     | AuthenticationConfirmationEmailSent (Result Postmark.SendEmailError ())
       -- STRIPE
