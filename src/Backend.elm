@@ -449,24 +449,30 @@ updateFromFrontend sessionId clientId msg model =
 
                 -- TODO, need to signal & handle error
                 Just uuidData ->
-                    let
-                        user =
-                            { realname = realname
-                            , username = username
-                            , email = email
-                            , password = password
-                            , created_at = model.time
-                            , updated_at = model.time
-                            , id = LocalUUID.extractUUIDAsString uuidData
-                            , role = User.UserRole
-                            }
-                    in
-                    ( { model
-                        | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
-                        , userDictionary = Dict.insert username user model.userDictionary
-                      }
-                    , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
-                    )
+                    case EmailAddress.fromString email of
+                        Nothing ->
+                            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
+
+                        Just validEmail ->
+                            let
+                                user =
+                                    { realname = realname
+                                    , username = username
+                                    , email = validEmail
+                                    , password = password
+                                    , created_at = model.time
+                                    , updated_at = model.time
+                                    , id = LocalUUID.extractUUIDAsString uuidData
+                                    , role = User.UserRole
+                                    , recentLoginEmails = []
+                                    }
+                            in
+                            ( { model
+                                | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
+                                , userDictionary = Dict.insert username user model.userDictionary
+                              }
+                            , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
+                            )
 
         -- STRIPE
         CancelPurchaseRequest ->
@@ -509,7 +515,7 @@ updateFromFrontendWithTime time sessionId clientId msg model =
             ( model
             , if Dict.isEmpty model.userDictionary then
                 Cmd.batch
-                    [ CheckLoginResponse (Result Types.BackendDataStatus Types.LoginData) |> Lamdera.sendToFrontend clientId
+                    [ msg |> Lamdera.sendToFrontend clientId
                     ]
 
               else
