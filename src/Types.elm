@@ -24,6 +24,7 @@ import Id exposing (Id)
 import KeyValueStore
 import Lamdera exposing (ClientId, SessionId)
 import LocalUUID
+import LoginWithToken
 import Postmark exposing (PostmarkSendResponse)
 import Route exposing (Route)
 import Session
@@ -128,7 +129,9 @@ type alias BackendModel =
             , creationTime : Time.Posix
             , loginCode : Int
             }
+    , log : LoginWithToken.Log
 
+    -- logs here
     -- USER
     , userDictionary : Dict.Dict String User.User
     , sessions : Session.Sessions
