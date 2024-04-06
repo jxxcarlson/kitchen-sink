@@ -1,5 +1,6 @@
 module BackendHelper exposing
-    ( errorEmail
+    ( addLog
+    , errorEmail
     , getAtmosphericRandomNumbers
     , getNewWeatherByCity
     , priceIdToProductId
@@ -18,6 +19,7 @@ import Lamdera
 import List.Extra
 import List.Nonempty
 import LocalUUID
+import LoginWithToken
 import Postmark
 import String.Nonempty
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
@@ -26,6 +28,15 @@ import Types
 import Unsafe
 import User
 import Weather
+
+
+
+-- TOKEN
+
+
+addLog : Time.Posix -> LoginWithToken.LogItem -> Types.BackendModel -> ( Types.BackendModel, Cmd msg )
+addLog time logItem model =
+    ( { model | log = model.log ++ [ ( time, logItem ) ] }, Cmd.none )
 
 
 
