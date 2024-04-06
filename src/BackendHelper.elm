@@ -46,23 +46,25 @@ testUserDictionary =
         [ ( "jxxcarlson"
           , { realname = "Jim Carlson"
             , username = "jxxcarlson"
-            , email = "jxxcarlson@gmail.com"
+            , email = EmailAddress.EmailAddress { domain = "gmail", localPart = "jxxcarlson", tags = [], tld = [ "com" ] }
             , password = "1234"
             , id = "661b76d8-eee8-42fb-a28d-cf8ada73f869"
             , created_at = Time.millisToPosix 1704237963000
             , updated_at = Time.millisToPosix 1704237963000
             , role = User.AdminRole
+            , recentLoginEmails = []
             }
           )
         , ( "aristotle"
           , { realname = "Aristotle"
             , username = "aristotle"
-            , email = "aritotle@gmail.com"
+            , email = EmailAddress.EmailAddress { domain = "gmail", localPart = "aristotle", tags = [], tld = [ "com" ] }
             , password = "1234"
             , id = "38952d62-9772-4e5d-a927-b8e41b6ef2ed"
             , created_at = Time.millisToPosix 1704237963000
             , updated_at = Time.millisToPosix 1704237963000
             , role = User.UserRole
+            , recentLoginEmails = []
             }
           )
         ]
