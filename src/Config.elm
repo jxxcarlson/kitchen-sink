@@ -1,5 +1,6 @@
 module Config exposing
-    ( contactEmail
+    ( ApiKey
+    , contactEmail
     , postmarkApiKey
     , postmarkServerToken
     , secretKey
@@ -13,6 +14,11 @@ contactEmail =
     "foo@bar.com"
 
 
+type alias ApiKey =
+    String
+
+
+postmarkApiKey : ApiKey
 postmarkApiKey =
     case Env.mode of
         Env.Development ->
@@ -22,6 +28,7 @@ postmarkApiKey =
             "prod"
 
 
+postmarkServerToken : ApiKey
 postmarkServerToken =
     case Env.mode of
         Env.Development ->

@@ -2,10 +2,12 @@ module BackendHelper exposing
     ( addLog
     , errorEmail
     , getAtmosphericRandomNumbers
+    , getLoginData
     , getNewWeatherByCity
     , priceIdToProductId
     , purchaseSupportAddres
     , sessionIdToStripeSessionId
+    , shouldRateLimit
     , testUserDictionary
     )
 
@@ -34,6 +36,15 @@ import Weather
 -- TOKEN
 
 
+getLoginData : User.Id -> User.User -> Types.BackendModel -> Result Types.BackendDataStatus User.LoginData
+getLoginData userId user_ model =
+    User.loginDataOfUser user_ |> Ok
+
+
+
+-- Ok { userId = userId }
+
+
 addLog : Time.Posix -> LoginWithToken.LogItem -> Types.BackendModel -> ( Types.BackendModel, Cmd msg )
 addLog time logItem model =
     ( { model | log = model.log ++ [ ( time, logItem ) ] }, Cmd.none )
@@ -58,7 +69,6 @@ testUserDictionary =
           , { realname = "Jim Carlson"
             , username = "jxxcarlson"
             , email = EmailAddress.EmailAddress { domain = "gmail", localPart = "jxxcarlson", tags = [], tld = [ "com" ] }
-            , password = "1234"
             , id = "661b76d8-eee8-42fb-a28d-cf8ada73f869"
             , created_at = Time.millisToPosix 1704237963000
             , updated_at = Time.millisToPosix 1704237963000
@@ -70,7 +80,6 @@ testUserDictionary =
           , { realname = "Aristotle"
             , username = "aristotle"
             , email = EmailAddress.EmailAddress { domain = "gmail", localPart = "aristotle", tags = [], tld = [ "com" ] }
-            , password = "1234"
             , id = "38952d62-9772-4e5d-a927-b8e41b6ef2ed"
             , created_at = Time.millisToPosix 1704237963000
             , updated_at = Time.millisToPosix 1704237963000
@@ -149,3 +158,7 @@ errorEmail errorMessage =
 purchaseSupportAddres : EmailAddress.EmailAddress
 purchaseSupportAddres =
     Unsafe.emailAddress "team@elm.camp"
+
+
+shouldRateLimit time user =
+    False

@@ -4,7 +4,7 @@ import AssocList
 import Backend.Session
 import BackendHelper
 import BiDict
-import Config
+import Config exposing (ApiKey)
 import Dict
 import Duration
 import Email
@@ -511,6 +511,14 @@ updateFromFrontendWithTime :
     -> ToBackend
     -> BackendModel
     -> ( BackendModel, Cmd BackendMsg )
+
+
+
+--Type mismatch.
+--Required: Result BackendDataStatus (Result BackendDataStatus LoginData) → ToFrontend
+--Found: Result BackendDataStatus LoginData → ToFrontend
+
+
 updateFromFrontendWithTime time sessionId clientId msg model =
     case msg of
         CheckLoginRequest ->
@@ -523,13 +531,13 @@ updateFromFrontendWithTime time sessionId clientId msg model =
               else
                 case getUserFromSessionId sessionId model of
                     Just ( userId, user ) ->
-                        getLoginData userId user model
+                        BackendHelper.getLoginData userId user model
                             |> Ok
                             |> CheckLoginResponse
                             |> Lamdera.sendToFrontend clientId
 
                     Nothing ->
-                        CheckLoginResponse (Err LoadedBackendData) |> Lamdera.sendToFrontend clientId
+                        CheckLoginResponse (Err Types.LoadedBackendData) |> Lamdera.sendToFrontend clientId
             )
 
         LoginWithTokenRequest loginCode ->
@@ -542,7 +550,7 @@ updateFromFrontendWithTime time sessionId clientId msg model =
             in
             case ( List.Extra.find (\( _, user ) -> user.email == email) (Dict.toList model.userDictionary), result ) of
                 ( Just ( userId, user ), Ok loginCode ) ->
-                    if shouldRateLimit time user then
+                    if BackendHelper.shouldRateLimit time user then
                         let
                             ( model3, cmd ) =
                                 BackendHelper.addLog time (LoginWithToken.LoginsRateLimited userId) model
@@ -595,7 +603,7 @@ sendLoginEmail msg emailAddress loginCode =
     , body =
         Postmark.BodyBoth
             (loginEmailContent loginCode)
-            ("Here is your code " ++ String.fromInt loginCode ++ "\n\nPlease type it in the Ambue login page you were previously on.\n\nIf you weren't expecting this email you can safely ignore it.")
+            ("Here is your code " ++ String.fromInt loginCode ++ "\n\nPlease type it in the XXX login page you were previously on.\n\nIf you weren't expecting this email you can safely ignore it.")
     , messageStream = "outbound"
     }
         |> Postmark.sendEmail msg Config.postmarkServerToken
@@ -640,7 +648,7 @@ loginEmailContent loginCode =
 
 loginEmailSubject : NonemptyString
 loginEmailSubject =
-    NonemptyString 'A' "mbue login code"
+    String.Nonempty.NonemptyString 'A' "mbue login code"
 
 
 loginWithToken :
@@ -667,7 +675,7 @@ loginWithToken time sessionId clientId loginCode model =
                                 | sessionDict = AssocList.insert sessionId userId model.sessionDict
                                 , pendingLogins = AssocList.remove sessionId model.pendingLogins
                               }
-                            , getLoginData userId user model
+                            , BackendHelper.getLoginData userId user model
                                 |> Ok
                                 |> LoginWithTokenResponse
                                 |> Lamdera.sendToFrontend sessionId

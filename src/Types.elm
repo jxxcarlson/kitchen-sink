@@ -8,7 +8,6 @@ module Types exposing
     , InitData2
     , LoadedModel
     , LoadingModel
-    , LoginData
     , SignInState(..)
     , ToBackend(..)
     , ToFrontend(..)
@@ -265,8 +264,8 @@ type ToFrontend
     | SubmitFormResponse (Result String (Id StripeSessionId))
     | AdminInspectResponse BackendModel
       -- TOKEN
-    | CheckLoginResponse (Result BackendDataStatus LoginData)
-    | LoginWithTokenResponse (Result Int LoginData)
+    | CheckLoginResponse (Result BackendDataStatus User.LoginData)
+    | LoginWithTokenResponse (Result Int User.LoginData)
     | GetLoginTokenRateLimited
     | LoggedOutSession
       -- USER
@@ -283,8 +282,6 @@ type ToFrontend
 
 
 type BackendDataStatus
-    = BackendDataStatus LoginData
-
-
-type alias LoginData =
-    { favoriteColor : String, favoriteNumber : Int }
+    = Fubar
+    | Sunny
+    | LoadedBackendData
