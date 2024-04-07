@@ -145,7 +145,7 @@ viewUser =
             ]
             [ text ("realname: " ++ user.realname)
             , text ("username: " ++ user.username)
-            , text ("email: " ++ user.email)
+            , text ("email: " ++ EmailAddress.toString user.email)
             , text ("id: " ++ user.id)
             ]
 

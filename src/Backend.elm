@@ -4,7 +4,7 @@ import AssocList
 import Backend.Session
 import BackendHelper
 import BiDict
-import Config exposing (ApiKey)
+import Config
 import Dict
 import Duration
 import Email
@@ -511,14 +511,13 @@ updateFromFrontendWithTime time sessionId clientId msg model =
             ( model
             , if Dict.isEmpty model.userDictionary then
                 Cmd.batch
-                    [ msg |> Lamdera.sendToFrontend clientId
+                    [ Err Types.Sunny |> CheckLoginResponse |> Lamdera.sendToFrontend clientId
                     ]
 
               else
                 case getUserFromSessionId sessionId model of
                     Just ( userId, user ) ->
                         BackendHelper.getLoginData userId user model
-                            |> Ok
                             |> CheckLoginResponse
                             |> Lamdera.sendToFrontend clientId
 
@@ -552,7 +551,7 @@ updateFromFrontendWithTime time sessionId clientId msg model =
                                     sessionId
                                     { creationTime = time, emailAddress = email, loginAttempts = 0, loginCode = loginCode }
                                     model2.pendingLogins
-                            , users =
+                            , userDictionary =
                                 Dict.insert
                                     userId
                                     { user | recentLoginEmails = time :: List.take 100 user.recentLoginEmails }
@@ -651,7 +650,7 @@ loginWithToken time sessionId clientId loginCode model =
                 (pendingLogin.loginAttempts < LoginForm.maxLoginAttempts)
                     && (Duration.from pendingLogin.creationTime time |> Quantity.lessThan Duration.hour)
             then
-                if loginCode == pendingLogin.loginCode then
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             x                if loginCode == pendingLogin.loginCode then
                     case
                         Dict.toList model.userDictionary
                             |> List.Extra.find (\( _, user ) -> user.email == pendingLogin.emailAddress)
