@@ -417,27 +417,14 @@ updateFromFrontend sessionId clientId msg model =
                     ( model, Cmd.none )
 
         -- USER
-        SignInRequest username password ->
-            let
-                maybeUser : Maybe User.User
-                maybeUser =
-                    Dict.get username model.userDictionary
-            in
-            if Just password == Maybe.map .password maybeUser then
-                ( model |> Backend.Session.updateSession sessionId username
-                , Cmd.batch
-                    [ Lamdera.sendToFrontend clientId (GotMessage "Sign in successful!")
-                    , Lamdera.sendToFrontend clientId (UserSignedIn maybeUser)
-                    ]
-                )
+        SignInRequest username _ ->
+            -- TODO: this code is a placeholder pendig using Martin's code
+            case Dict.get username model.userDictionary of
+                Nothing ->
+                    ( model, Lamdera.sendToFrontend clientId (GotMessage "No such user ") )
 
-            else
-                ( model
-                , Cmd.batch
-                    [ Lamdera.sendToFrontend clientId (UserSignedIn Nothing)
-                    , Lamdera.sendToFrontend clientId (GotMessage "Username and password do not match. ")
-                    ]
-                )
+                Just _ ->
+                    ( model, Lamdera.sendToFrontend clientId (GotMessage "Signed in") )
 
         SignOutRequest username ->
             ( model |> Backend.Session.removeSessions username
