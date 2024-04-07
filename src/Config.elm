@@ -1,12 +1,12 @@
 module Config exposing
-    ( ApiKey
-    , contactEmail
+    ( contactEmail
     , postmarkApiKey
     , postmarkServerToken
     , secretKey
     )
 
 import Env
+import Postmark exposing (ApiKey)
 
 
 contactEmail : String
@@ -14,28 +14,24 @@ contactEmail =
     "foo@bar.com"
 
 
-type alias ApiKey =
-    String
-
-
-postmarkApiKey : ApiKey
+postmarkApiKey : Postmark.ApiKey
 postmarkApiKey =
     case Env.mode of
         Env.Development ->
-            "dev"
+            Postmark.apiKey "dev"
 
         Env.Production ->
-            "prod"
+            Postmark.apiKey "prod"
 
 
 postmarkServerToken : ApiKey
 postmarkServerToken =
     case Env.mode of
         Env.Development ->
-            "dev"
+            Postmark.apiKey "dev"
 
         Env.Production ->
-            "prod"
+            Postmark.apiKey "prod"
 
 
 secretKey =
