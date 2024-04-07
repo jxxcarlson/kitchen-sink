@@ -448,7 +448,6 @@ updateFromFrontend sessionId clientId msg model =
                                     { realname = realname
                                     , username = username
                                     , email = validEmail
-                                    , password = password
                                     , created_at = model.time
                                     , updated_at = model.time
                                     , id = LocalUUID.extractUUIDAsString uuidData
