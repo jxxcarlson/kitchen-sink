@@ -451,6 +451,19 @@ updateFromBackend msg model =
 updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
 updateFromBackendLoaded msg model =
     case msg of
+        -- TODO: implement the followig 4 cases:
+        CheckLoginResponse _ ->
+            ( model, Cmd.none )
+
+        LoginWithTokenResponse _ ->
+            ( model, Cmd.none )
+
+        GetLoginTokenRateLimited ->
+            ( model, Cmd.none )
+
+        LoggedOutSession ->
+            ( model, Cmd.none )
+
         InitData { prices, productInfo } ->
             ( { model | prices = prices, productInfoDict = productInfo }, Cmd.none )
 

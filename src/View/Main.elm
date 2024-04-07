@@ -15,6 +15,7 @@ import Pages.Notes
 import Pages.Parts
 import Pages.Purchase
 import Pages.SignIn
+import Pages.TermsOfService
 import Predicate
 import Route exposing (Route(..))
 import Theme

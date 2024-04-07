@@ -3,6 +3,7 @@ module BackendHelper exposing
     , errorEmail
     , getAtmosphericRandomNumbers
     , getLoginData
+    , getLoginData2
     , getNewWeatherByCity
     , priceIdToProductId
     , purchaseSupportAddres
@@ -38,6 +39,16 @@ import Weather
 
 getLoginData : User.Id -> User.User -> Types.BackendModel -> Result Types.BackendDataStatus User.LoginData
 getLoginData userId user_ model =
+    User.loginDataOfUser user_ |> Ok
+
+
+
+-- TODO: this is a hack based on a lack of understanding of what is going on.
+-- in Martin's code.
+
+
+getLoginData2 : User.Id -> User.User -> Types.BackendModel -> Result Int User.LoginData
+getLoginData2 userId user_ model =
     User.loginDataOfUser user_ |> Ok
 
 

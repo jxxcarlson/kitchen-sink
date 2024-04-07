@@ -12,6 +12,7 @@ import Email.Html
 import Email.Html.Attributes
 import EmailAddress exposing (EmailAddress)
 import Hex
+import Http
 import HttpHelpers
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
@@ -137,6 +138,13 @@ update : BackendMsg -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 update msg model =
     -- Replace existing randomAtmosphericNumber with a new one if possible
     (case msg of
+        -- TODO: implement the following 2 cases
+        SentLoginEmail _ _ _ ->
+            ( model, Cmd.none )
+
+        AuthenticationConfirmationEmailSent _ ->
+            ( model, Cmd.none )
+
         Types.BackendGotTime sessionId clientId toBackend time ->
             updateFromFrontendWithTime time sessionId clientId toBackend model
 
@@ -376,6 +384,19 @@ update msg model =
 updateFromFrontend : SessionId -> ClientId -> ToBackend -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 updateFromFrontend sessionId clientId msg model =
     case msg of
+        -- TODO: implement the following 4 cases
+        CheckLoginRequest ->
+            ( model, Cmd.none )
+
+        LoginWithTokenRequest _ ->
+            ( model, Cmd.none )
+
+        GetLoginTokenRequest _ ->
+            ( model, Cmd.none )
+
+        LogOutRequest ->
+            ( model, Cmd.none )
+
         -- STRIPE
         RenewPrices ->
             ( model, Stripe.getPrices (GotPrices2 clientId) )
@@ -566,6 +587,10 @@ updateFromFrontendWithTime time sessionId clientId msg model =
                 ( _, Err () ) ->
                     BackendHelper.addLog time (LoginWithToken.FailedToCreateLoginCode model.secretCounter) model
 
+        _ ->
+            -- TODO: is this hack a good idea?
+            ( model, Cmd.none )
+
 
 noReplyEmailAddress : EmailAddress
 noReplyEmailAddress =
@@ -573,7 +598,7 @@ noReplyEmailAddress =
 
 
 sendLoginEmail :
-    (Result Postmark.SendEmailError () -> backendMsg)
+    (Result Http.Error Postmark.PostmarkSendResponse -> backendMsg)
     -> EmailAddress
     -> Int
     -> Cmd backendMsg
@@ -660,8 +685,7 @@ loginWithToken time sessionId clientId loginCode model =
                                 | sessionDict = AssocList.insert sessionId userId model.sessionDict
                                 , pendingLogins = AssocList.remove sessionId model.pendingLogins
                               }
-                            , BackendHelper.getLoginData userId user model
-                                |> Ok
+                            , BackendHelper.getLoginData2 userId user model
                                 |> LoginWithTokenResponse
                                 |> Lamdera.sendToFrontend sessionId
                             )

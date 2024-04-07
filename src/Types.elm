@@ -239,15 +239,15 @@ type BackendMsg
     | GotAtmosphericRandomNumbers (Result Http.Error String)
       -- TOKEN
     | BackendGotTime SessionId ClientId ToBackend Time.Posix
-    | SentLoginEmail Time.Posix EmailAddress (Result Postmark.SendEmailError ())
-    | AuthenticationConfirmationEmailSent (Result Postmark.SendEmailError ())
+    | SentLoginEmail Time.Posix EmailAddress (Result Http.Error Postmark.PostmarkSendResponse)
+    | AuthenticationConfirmationEmailSent (Result Http.Error Postmark.PostmarkSendResponse)
       -- STRIPE
     | GotPrices (Result Http.Error (List PriceData))
     | GotPrices2 ClientId (Result Http.Error (List PriceData))
     | CreatedCheckoutSession SessionId ClientId (Id PriceId) PurchaseFormValidated (Result Http.Error ( Id StripeSessionId, Time.Posix ))
     | ExpiredStripeSession (Id StripeSessionId) (Result Http.Error ())
     | ConfirmationEmailSent (Id StripeSessionId) (Result Http.Error PostmarkSendResponse)
-    | ErrorEmailSent (Result Postmark.SendEmailError () -> BackendMsg)
+    | ErrorEmailSent (Result Http.Error Postmark.PostmarkSendResponse)
       -- EXAMPLES
     | GotWeatherData ClientId (Result Http.Error Weather.WeatherData)
 

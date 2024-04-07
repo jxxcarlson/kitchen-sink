@@ -8,5 +8,5 @@ import Types
 
 
 view : Types.LoadedModel -> Element Types.FrontendMsg
-view model =
+view _ =
     Element.text "Terms of Service"
