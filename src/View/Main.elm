@@ -63,6 +63,9 @@ loadedView model =
             -- Pages.Home.view model
             Pages.Parts.generic model Pages.Home.view
 
+        TermsOfServiceRoute ->
+            Pages.Parts.generic model Pages.TermsOfService.view
+
         Features ->
             Pages.Parts.generic model Pages.Features.view
 
