@@ -19,7 +19,6 @@ import Lamdera exposing (ClientId, SessionId)
 import List.Extra
 import List.Nonempty
 import LocalUUID
-import LoginWithToken
 import Postmark
 import Quantity
 import Sha256
@@ -29,6 +28,7 @@ import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId
 import Task
 import Time
 import Token.LoginForm
+import Token.Types
 import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
 import Unsafe
 import Untrusted
@@ -559,7 +559,7 @@ updateFromFrontendWithTime time sessionId clientId msg model =
                     if BackendHelper.shouldRateLimit time user then
                         let
                             ( model3, cmd ) =
-                                BackendHelper.addLog time (LoginWithToken.LoginsRateLimited userId) model
+                                BackendHelper.addLog time (Token.Types.LoginsRateLimited userId) model
                         in
                         ( model3
                         , Cmd.batch [ cmd, Lamdera.sendToFrontend clientId GetLoginTokenRateLimited ]
@@ -585,7 +585,7 @@ updateFromFrontendWithTime time sessionId clientId msg model =
                     ( model, Cmd.none )
 
                 ( _, Err () ) ->
-                    BackendHelper.addLog time (LoginWithToken.FailedToCreateLoginCode model.secretCounter) model
+                    BackendHelper.addLog time (Token.Types.FailedToCreateLoginCode model.secretCounter) model
 
         _ ->
             -- TODO: is this hack a good idea?

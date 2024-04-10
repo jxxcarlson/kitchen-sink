@@ -7,7 +7,7 @@ module Token.LoginForm exposing
     , maxLoginAttempts
     , rateLimited
     , submitEmailButtonId
-    , update
+    , validateLoginCode
     , view
     )
 
@@ -24,84 +24,21 @@ import Env
 import Html.Attributes
 import Martin
 import Route exposing (Route)
-import Token.Types exposing (EnterEmail2, EnterLoginCode2, LoginCodeStatus(..), LoginForm(..), Msg(..))
+import Token.Types exposing (EnterEmail2, EnterLoginCode2, LoginCodeStatus(..), LoginForm(..))
+import Types exposing (FrontendMsg)
 import View.MyElement as MyElement
 
 
-update :
-    Bool
-    -> (EmailAddress -> Cmd Msg)
-    -> (Int -> Cmd Msg)
-    -> Msg
-    -> LoginForm
-    -> Maybe ( LoginForm, Cmd Msg )
-update isLoadingBackend onSubmitEmail onSubmitLoginCode msg model =
-    case msg of
-        PressedSubmitEmail ->
-            (if isLoadingBackend then
-                ( model, Cmd.none )
 
-             else
-                case model of
-                    EnterEmail loginForm ->
-                        case EmailAddress.fromString loginForm.email of
-                            Just email ->
-                                ( EnterLoginCode { sentTo = email, loginCode = "", attempts = Dict.empty }
-                                , onSubmitEmail email
-                                )
-
-                            Nothing ->
-                                ( EnterEmail { loginForm | pressedSubmitEmail = True }, Cmd.none )
-
-                    EnterLoginCode _ ->
-                        -- TODO: handle EnterLoginCode with parameter loginCode instead of _ ??
-                        ( model, Cmd.none )
-            )
-                |> Just
-
-        TypedLoginFormEmail text ->
-            (case model of
-                EnterEmail loginForm ->
-                    ( EnterEmail { loginForm | email = text }, Cmd.none )
-
-                EnterLoginCode _ ->
-                    ( model, Cmd.none )
-            )
-                |> Just
-
-        PressedCancelLogin ->
-            Nothing
-
-        TypedLoginCode loginCodeText ->
-            (case model of
-                EnterEmail _ ->
-                    ( model, Cmd.none )
-
-                EnterLoginCode enterLoginCode ->
-                    case validateLoginCode loginCodeText of
-                        Ok loginCode ->
-                            if Dict.member loginCode enterLoginCode.attempts then
-                                ( EnterLoginCode
-                                    { enterLoginCode | loginCode = String.left loginCodeLength loginCodeText }
-                                , Cmd.none
-                                )
-
-                            else
-                                ( EnterLoginCode
-                                    { enterLoginCode
-                                        | loginCode = String.left loginCodeLength loginCodeText
-                                        , attempts =
-                                            Dict.insert loginCode Checking enterLoginCode.attempts
-                                    }
-                                , onSubmitLoginCode loginCode
-                                )
-
-                        Err _ ->
-                            ( EnterLoginCode { enterLoginCode | loginCode = String.left loginCodeLength loginCodeText }
-                            , Cmd.none
-                            )
-            )
-                |> Just
+--update :
+--    Bool
+--    -> (EmailAddress -> Cmd FrontendMsg)
+--    -> (Int -> Cmd FrontendMsg)
+--    -> FrontendMsg
+--    -> LoginForm
+--    -> Maybe ( LoginForm, Cmd FrontendMsg )
+--update isLoadingBackend onSubmitEmail onSubmitLoginCode msg model =
+--    case msg of
 
 
 validateLoginCode : String -> Result String Int
@@ -171,7 +108,7 @@ errorView errorMessage =
         [ Element.text errorMessage ]
 
 
-view : Bool -> LoginForm -> Element Msg
+view : Bool -> LoginForm -> Element FrontendMsg
 view backendIsLoading loginForm =
     Element.column
         [ Element.padding 16
@@ -195,7 +132,7 @@ view backendIsLoading loginForm =
         ]
 
 
-enterLoginCodeView : EnterLoginCode2 -> Element Msg
+enterLoginCodeView : EnterLoginCode2 -> Element FrontendMsg
 enterLoginCodeView model =
     let
         -- label : MyElement.Label
@@ -287,7 +224,7 @@ enterLoginCodeView model =
                     , Element.Border.width 0
                     , Element.Background.color (Element.rgba 0 0 0 0)
                     ]
-                    { onChange = TypedLoginCode
+                    { onChange = Types.TypedLoginCode
                     , text = model.loginCode
                     , placeholder = Nothing
                     , label = label.id
@@ -364,13 +301,13 @@ invalidCode loginCode loginForm =
                 |> EnterLoginCode
 
 
-enterEmailView : Bool -> EnterEmail2 -> Element Msg
+enterEmailView : Bool -> EnterEmail2 -> Element FrontendMsg
 enterEmailView backendIsLoading model =
     Element.column
         [ Element.spacing 16 ]
         [ emailInput
-            PressedSubmitEmail
-            TypedLoginFormEmail
+            Types.PressedSubmitEmail
+            Types.TypedLoginFormEmail
             model.email
             "Enter your email address"
             (case ( model.pressedSubmitEmail, validateEmail model.email ) of
@@ -390,12 +327,12 @@ enterEmailView backendIsLoading model =
             ]
         , Element.row
             [ Element.spacing 16 ]
-            [ MyElement.secondaryButton [ Martin.elementId cancelButtonId ] PressedCancelLogin "Cancel"
+            [ MyElement.secondaryButton [ Martin.elementId cancelButtonId ] Types.PressedCancelLogin "Cancel"
             , if backendIsLoading then
                 Element.none
 
               else
-                MyElement.primaryButton submitEmailButtonId PressedSubmitEmail "Login"
+                MyElement.primaryButton submitEmailButtonId Types.PressedSubmitEmail "Login"
             ]
         , if backendIsLoading then
             errorView

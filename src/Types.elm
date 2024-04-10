@@ -23,7 +23,6 @@ import Id exposing (Id)
 import KeyValueStore
 import Lamdera exposing (ClientId, SessionId)
 import LocalUUID
-import LoginWithToken
 import Postmark exposing (PostmarkSendResponse)
 import Route exposing (Route)
 import Session
@@ -132,7 +131,7 @@ type alias BackendModel =
             , creationTime : Time.Posix
             , loginCode : Int
             }
-    , log : LoginWithToken.Log
+    , log : Token.Types.Log
 
     -- logs here
     -- USER
@@ -162,7 +161,10 @@ type FrontendMsg
     | PressedShowTooltip
     | MouseDown
       -- TOKEN
-    | TokenLogin Token.Types.Msg
+    | PressedSubmitEmail
+    | PressedCancelLogin
+    | TypedLoginFormEmail String
+    | TypedLoginCode String
       -- STRIPE
     | BuyProduct (Id ProductId) (Id PriceId) Stripe.Product.Product_
     | PressedSelectTicket (Id ProductId) (Id PriceId)

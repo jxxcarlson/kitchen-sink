@@ -1,14 +1,16 @@
-module Token.Types exposing (EnterEmail2, EnterLoginCode2, LoginCodeStatus(..), LoginForm(..), Msg(..))
+module Token.Types exposing
+    ( EnterEmail2
+    , EnterLoginCode2
+    , Log
+    , LogItem(..)
+    , LoginCodeStatus(..)
+    , LoginForm(..)
+    )
 
 import Dict exposing (Dict)
 import EmailAddress exposing (EmailAddress)
-
-
-type Msg
-    = PressedSubmitEmail
-    | PressedCancelLogin
-    | TypedLoginFormEmail String
-    | TypedLoginCode String
+import Time
+import User
 
 
 type LoginForm
@@ -30,3 +32,12 @@ type alias EnterLoginCode2 =
 type LoginCodeStatus
     = Checking
     | NotValid
+
+
+type LogItem
+    = LoginsRateLimited User.Id
+    | FailedToCreateLoginCode Int
+
+
+type alias Log =
+    List ( Time.Posix, LogItem )

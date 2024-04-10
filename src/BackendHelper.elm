@@ -22,11 +22,11 @@ import Lamdera
 import List.Extra
 import List.Nonempty
 import LocalUUID
-import LoginWithToken
 import Postmark
 import String.Nonempty
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
 import Time
+import Token.Types
 import Types
 import Unsafe
 import User
@@ -56,7 +56,7 @@ getLoginData2 userId user_ model =
 -- Ok { userId = userId }
 
 
-addLog : Time.Posix -> LoginWithToken.LogItem -> Types.BackendModel -> ( Types.BackendModel, Cmd msg )
+addLog : Time.Posix -> Token.Types.LogItem -> Types.BackendModel -> ( Types.BackendModel, Cmd msg )
 addLog time logItem model =
     ( { model | log = model.log ++ [ ( time, logItem ) ] }, Cmd.none )
 

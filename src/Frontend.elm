@@ -6,6 +6,7 @@ import Browser.Dom
 import Browser.Events
 import Browser.Navigation
 import Dict
+import EmailAddress
 import Env
 import Json.Decode
 import Json.Encode
@@ -28,6 +29,7 @@ import Stripe.View
 import Task
 import Time
 import Token.LoginForm
+import Token.Types exposing (LoginForm(..))
 import Types
     exposing
         ( AdminDisplay(..)
@@ -209,6 +211,82 @@ updateLoaded msg model =
         MouseDown ->
             ( { model | showTooltip = False }, Cmd.none )
 
+        -- TOKEN
+        PressedSubmitEmail ->
+            -- TODO: false was ifloaded .... something or other
+            if False then
+                ( model, Cmd.none )
+
+            else
+                case model.loginForm of
+                    EnterEmail loginForm ->
+                        case EmailAddress.fromString loginForm.email of
+                            Just email ->
+                                ( { model | loginForm = EnterLoginCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
+                                  -- TODO: instead of Cmd.none, do something here ..., onSubmitEmail email
+                                , Cmd.none
+                                )
+
+                            Nothing ->
+                                ( { model | loginForm = EnterEmail { loginForm | pressedSubmitEmail = True } }, Cmd.none )
+
+                    EnterLoginCode _ ->
+                        -- TODO: handle EnterLoginCode with parameter loginCode instead of _ ??
+                        ( model, Cmd.none )
+
+        TypedLoginFormEmail text ->
+            case model.loginForm of
+                EnterEmail loginForm_ ->
+                    let
+                        loginForm =
+                            { loginForm_ | email = text }
+                    in
+                    ( { model | loginForm = EnterEmail loginForm }, Cmd.none )
+
+                EnterLoginCode loginCode_ ->
+                    -- TODO: complete this
+                    --  EnterLoginCode{ sentTo : EmailAddress, loginCode : String, attempts : Dict Int LoginCodeStatus }
+                    ( model, Cmd.none )
+
+        PressedCancelLogin ->
+            -- TODO
+            ( model, Cmd.none )
+
+        TypedLoginCode loginCodeText ->
+            case model.loginForm of
+                Token.Types.EnterEmail _ ->
+                    ( model, Cmd.none )
+
+                EnterLoginCode enterLoginCode ->
+                    case Token.LoginForm.validateLoginCode loginCodeText of
+                        Ok loginCode ->
+                            if Dict.member loginCode enterLoginCode.attempts then
+                                ( { model
+                                    | loginForm =
+                                        EnterLoginCode
+                                            { enterLoginCode | loginCode = String.left Token.LoginForm.loginCodeLength loginCodeText }
+                                  }
+                                , Cmd.none
+                                )
+
+                            else
+                                ( { model
+                                    | loginForm =
+                                        EnterLoginCode
+                                            { enterLoginCode
+                                                | loginCode = String.left Token.LoginForm.loginCodeLength loginCodeText
+                                                , attempts =
+                                                    Dict.insert loginCode Token.Types.Checking enterLoginCode.attempts
+                                            }
+                                  }
+                                , Lamdera.sendToBackend (LoginWithTokenRequest loginCode)
+                                )
+
+                        Err _ ->
+                            ( { model | loginForm = EnterLoginCode { enterLoginCode | loginCode = String.left Token.LoginForm.loginCodeLength loginCodeText } }
+                            , Cmd.none
+                            )
+
         -- ADMIN
         SetAdminDisplay adminDisplay ->
             ( { model | adminDisplay = adminDisplay }, Cmd.none )
@@ -225,11 +303,6 @@ updateLoaded msg model =
 
         Chirp ->
             ( model, Ports.playSound (Json.Encode.string "chirp.mp3") )
-
-        -- TOKEN
-        TokenLogin _ ->
-            -- TODO
-            ( model, Cmd.none )
 
         -- USER
         SetSignInState state ->

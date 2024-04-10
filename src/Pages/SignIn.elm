@@ -26,7 +26,7 @@ view model =
             Debug.log "SignIn.view" model.loginForm
     in
     -- Token.LoginForm.view False (Token.Types.EnterEmail testInput) |> Element.map Types.TokenLogin
-    Token.LoginForm.view False model.loginForm |> Element.map Types.TokenLogin
+    Token.LoginForm.view False model.loginForm
 
 
 
