@@ -1,7 +1,5 @@
-module LoginForm exposing
-    ( LoginForm
-    , Msg(..)
-    , emailInputId
+module Token.LoginForm exposing
+    ( emailInputId
     , init
     , invalidCode
     , loginCodeInputId
@@ -28,35 +26,8 @@ import Env
 import Html.Attributes
 import Martin
 import Route exposing (Route)
+import Token.Types exposing (EnterEmail2, EnterLoginCode2, LoginCodeStatus(..), LoginForm(..), Msg(..))
 import View.MyElement as MyElement
-
-
-type Msg
-    = PressedSubmitEmail
-    | PressedCancelLogin
-    | TypedLoginFormEmail String
-    | TypedLoginCode String
-
-
-type LoginForm
-    = EnterEmail EnterEmail2
-    | EnterLoginCode EnterLoginCode2
-
-
-type alias EnterEmail2 =
-    { email : String
-    , pressedSubmitEmail : Bool
-    , rateLimited : Bool
-    }
-
-
-type alias EnterLoginCode2 =
-    { sentTo : EmailAddress, loginCode : String, attempts : Dict Int LoginCodeStatus }
-
-
-type LoginCodeStatus
-    = Checking
-    | NotValid
 
 
 update :
@@ -412,9 +383,9 @@ enterEmailView backendIsLoading model =
             )
         , Element.paragraph
             []
-            [ Element.text "By continuing, you agree to our "
+            [ Element.text "By continuing, you agree to our Terms of Service."
 
-            -- TODO: below, Route,HomepageRoute is a p
+            -- TODO: below, Route,HomepageRoute is a placeholder
             , MyElement.routeLinkNewTab Route.HomepageRoute Route.TermsOfServiceRoute
             , Element.text "."
             ]

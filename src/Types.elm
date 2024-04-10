@@ -32,6 +32,7 @@ import Stripe.Product
 import Stripe.PurchaseForm exposing (PurchaseForm, PurchaseFormValidated)
 import Stripe.Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
 import Time
+import Token.Types
 import Untrusted exposing (Untrusted)
 import Url exposing (Url)
 import User
@@ -158,6 +159,7 @@ type FrontendMsg
     | PressedShowTooltip
     | MouseDown
       -- TOKEN
+    | TokenLogin Token.Types.Msg
       -- STRIPE
     | BuyProduct (Id ProductId) (Id PriceId) Stripe.Product.Product_
     | PressedSelectTicket (Id ProductId) (Id PriceId)

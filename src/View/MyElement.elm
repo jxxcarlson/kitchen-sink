@@ -12,6 +12,7 @@ module View.MyElement exposing
     )
 
 import Element exposing (Element)
+import Element.Background
 import Element.Font
 import Element.Input
 import Html
@@ -61,12 +62,30 @@ routeLinkNewTab currentRoute route =
 
 secondaryButton : List (Element.Attribute msg) -> msg -> String -> Element msg
 secondaryButton attrList message txt =
-    Element.Input.button attrList { onPress = Just message, label = Element.text txt }
+    Element.Input.button attrList { onPress = Just message, label = Element.el secondaryButtonsStyle (Element.text txt) }
 
 
 primaryButton : Martin.HtmlId -> msg -> String -> Element msg
 primaryButton htmlId message txt =
-    Element.Input.button [ Martin.elementId htmlId ] { onPress = Just message, label = Element.text txt }
+    Element.Input.button [ Martin.elementId htmlId ] { onPress = Just message, label = Element.el primaryButtonsStyle (Element.text txt) }
+
+
+primaryButtonsStyle =
+    [ Element.Background.color (Element.rgb 0.5 0.2 0.2)
+    , Element.Font.color (Element.rgb 1 1 1)
+    , Element.Font.size 14
+    , Element.padding 8
+    , Element.mouseDown [ Element.Background.color (Element.rgb 1 0.1 0.1) ]
+    ]
+
+
+secondaryButtonsStyle =
+    [ Element.Background.color (Element.rgb 0.2 0.2 0.5)
+    , Element.Font.color (Element.rgb 1 1 1)
+    , Element.Font.size 14
+    , Element.padding 8
+    , Element.mouseDown [ Element.Background.color (Element.rgb 0.4 0.4 1) ]
+    ]
 
 
 emailAddressLink : String -> Element msg

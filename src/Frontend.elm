@@ -222,6 +222,11 @@ updateLoaded msg model =
         Chirp ->
             ( model, Ports.playSound (Json.Encode.string "chirp.mp3") )
 
+        -- TOKEN
+        TokenLogin _ ->
+            -- TODO
+            ( model, Cmd.none )
+
         -- USER
         SetSignInState state ->
             ( { model
@@ -455,8 +460,13 @@ updateFromBackendLoaded msg model =
         CheckLoginResponse _ ->
             ( model, Cmd.none )
 
-        LoginWithTokenResponse _ ->
-            ( model, Cmd.none )
+        LoginWithTokenResponse result ->
+            case result of
+                Err code ->
+                    ( model, Cmd.none )
+
+                Ok loginData ->
+                    ( model, Cmd.none )
 
         GetLoginTokenRateLimited ->
             ( model, Cmd.none )

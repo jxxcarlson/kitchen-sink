@@ -19,7 +19,6 @@ import Lamdera exposing (ClientId, SessionId)
 import List.Extra
 import List.Nonempty
 import LocalUUID
-import LoginForm
 import LoginWithToken
 import Postmark
 import Quantity
@@ -29,6 +28,7 @@ import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
 import Task
 import Time
+import Token.LoginForm
 import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
 import Unsafe
 import Untrusted
@@ -637,7 +637,7 @@ loginEmailContent loginCode =
                             [ Email.Html.text (String.fromChar char) ]
                     )
                 |> (\a ->
-                        List.take (LoginForm.loginCodeLength // 2) a
+                        List.take (Token.LoginForm.loginCodeLength // 2) a
                             ++ [ Email.Html.span
                                     [ Email.Html.Attributes.backgroundColor "black"
                                     , Email.Html.Attributes.padding "0px 4px 0px 5px"
@@ -646,7 +646,7 @@ loginEmailContent loginCode =
                                     ]
                                     []
                                ]
-                            ++ List.drop (LoginForm.loginCodeLength // 2) a
+                            ++ List.drop (Token.LoginForm.loginCodeLength // 2) a
                    )
             )
         , Email.Html.text "Please type it in the Ambue login page you were previously on."
@@ -672,7 +672,7 @@ loginWithToken time sessionId clientId loginCode model =
     case AssocList.get sessionId model.pendingLogins of
         Just pendingLogin ->
             if
-                (pendingLogin.loginAttempts < LoginForm.maxLoginAttempts)
+                (pendingLogin.loginAttempts < Token.LoginForm.maxLoginAttempts)
                     && (Duration.from pendingLogin.creationTime time |> Quantity.lessThan Duration.hour)
             then
                 if loginCode == pendingLogin.loginCode then
@@ -741,9 +741,9 @@ getLoginCode time model =
             getUniqueId time model
     in
     ( model2
-    , case Id.toString id |> String.left LoginForm.loginCodeLength |> Hex.fromString of
+    , case Id.toString id |> String.left Token.LoginForm.loginCodeLength |> Hex.fromString of
         Ok int ->
-            case String.fromInt int |> String.left LoginForm.loginCodeLength |> String.toInt of
+            case String.fromInt int |> String.left Token.LoginForm.loginCodeLength |> String.toInt of
                 Just int2 ->
                     Ok int2
 
