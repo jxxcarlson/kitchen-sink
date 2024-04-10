@@ -140,13 +140,17 @@ update msg model =
     (case msg of
         -- TODO: implement the following 2 cases
         SentLoginEmail _ _ _ ->
+            -- TODO
             ( model, Cmd.none )
 
         AuthenticationConfirmationEmailSent _ ->
+            -- TODO
             ( model, Cmd.none )
 
         Types.BackendGotTime sessionId clientId toBackend time ->
-            updateFromFrontendWithTime time sessionId clientId toBackend model
+            -- TODO
+            -- updateFromFrontendWithTime time sessionId clientId toBackend model
+            ( model, Cmd.none )
 
         GotAtmosphericRandomNumbers tryRandomAtmosphericNumbers ->
             let
@@ -386,13 +390,63 @@ updateFromFrontend sessionId clientId msg model =
     case msg of
         -- TODO: implement the following 4 cases
         CheckLoginRequest ->
-            ( model, Cmd.none )
+            ( model
+            , if Dict.isEmpty model.userDictionary then
+                Cmd.batch
+                    [ Err Types.Sunny |> CheckLoginResponse |> Lamdera.sendToFrontend clientId
+                    ]
 
-        LoginWithTokenRequest _ ->
-            ( model, Cmd.none )
+              else
+                case getUserFromSessionId sessionId model of
+                    Just ( userId, user ) ->
+                        BackendHelper.getLoginData userId user model
+                            |> CheckLoginResponse
+                            |> Lamdera.sendToFrontend clientId
 
-        GetLoginTokenRequest _ ->
-            ( model, Cmd.none )
+                    Nothing ->
+                        CheckLoginResponse (Err Types.LoadedBackendData) |> Lamdera.sendToFrontend clientId
+            )
+
+        LoginWithTokenRequest loginCode ->
+            loginWithToken model.time sessionId clientId loginCode model
+
+        GetLoginTokenRequest email ->
+            let
+                ( model2, result ) =
+                    getLoginCode model.time model
+            in
+            case ( List.Extra.find (\( _, user ) -> user.email == email) (Dict.toList model.userDictionary), result ) of
+                ( Just ( userId, user ), Ok loginCode ) ->
+                    if BackendHelper.shouldRateLimit model.time user then
+                        let
+                            ( model3, cmd ) =
+                                BackendHelper.addLog model.time (Token.Types.LoginsRateLimited userId) model
+                        in
+                        ( model3
+                        , Cmd.batch [ cmd, Lamdera.sendToFrontend clientId GetLoginTokenRateLimited ]
+                        )
+
+                    else
+                        ( { model2
+                            | pendingLogins =
+                                AssocList.insert
+                                    sessionId
+                                    { creationTime = model.time, emailAddress = email, loginAttempts = 0, loginCode = loginCode }
+                                    model2.pendingLogins
+                            , userDictionary =
+                                Dict.insert
+                                    userId
+                                    { user | recentLoginEmails = model.time :: List.take 100 user.recentLoginEmails }
+                                    model.userDictionary
+                          }
+                        , sendLoginEmail (SentLoginEmail model.time email) email loginCode
+                        )
+
+                ( Nothing, Ok _ ) ->
+                    ( model, Cmd.none )
+
+                ( _, Err () ) ->
+                    BackendHelper.addLog model.time (Token.Types.FailedToCreateLoginCode model.secretCounter) model
 
         LogOutRequest ->
             ( model, Cmd.none )
@@ -509,87 +563,6 @@ updateFromFrontend sessionId clientId msg model =
         -- DATA
         GetKeyValueStore ->
             ( model, Lamdera.sendToFrontend clientId (GotKeyValueStore model.keyValueStore) )
-
-
-updateFromFrontendWithTime :
-    Time.Posix
-    -> SessionId
-    -> ClientId
-    -> ToBackend
-    -> BackendModel
-    -> ( BackendModel, Cmd BackendMsg )
-
-
-
---Type mismatch.
---Required: Result BackendDataStatus (Result BackendDataStatus LoginData) → ToFrontend
---Found: Result BackendDataStatus LoginData → ToFrontend
-
-
-updateFromFrontendWithTime time sessionId clientId msg model =
-    case msg of
-        CheckLoginRequest ->
-            ( model
-            , if Dict.isEmpty model.userDictionary then
-                Cmd.batch
-                    [ Err Types.Sunny |> CheckLoginResponse |> Lamdera.sendToFrontend clientId
-                    ]
-
-              else
-                case getUserFromSessionId sessionId model of
-                    Just ( userId, user ) ->
-                        BackendHelper.getLoginData userId user model
-                            |> CheckLoginResponse
-                            |> Lamdera.sendToFrontend clientId
-
-                    Nothing ->
-                        CheckLoginResponse (Err Types.LoadedBackendData) |> Lamdera.sendToFrontend clientId
-            )
-
-        LoginWithTokenRequest loginCode ->
-            loginWithToken time sessionId clientId loginCode model
-
-        GetLoginTokenRequest email ->
-            let
-                ( model2, result ) =
-                    getLoginCode time model
-            in
-            case ( List.Extra.find (\( _, user ) -> user.email == email) (Dict.toList model.userDictionary), result ) of
-                ( Just ( userId, user ), Ok loginCode ) ->
-                    if BackendHelper.shouldRateLimit time user then
-                        let
-                            ( model3, cmd ) =
-                                BackendHelper.addLog time (Token.Types.LoginsRateLimited userId) model
-                        in
-                        ( model3
-                        , Cmd.batch [ cmd, Lamdera.sendToFrontend clientId GetLoginTokenRateLimited ]
-                        )
-
-                    else
-                        ( { model2
-                            | pendingLogins =
-                                AssocList.insert
-                                    sessionId
-                                    { creationTime = time, emailAddress = email, loginAttempts = 0, loginCode = loginCode }
-                                    model2.pendingLogins
-                            , userDictionary =
-                                Dict.insert
-                                    userId
-                                    { user | recentLoginEmails = time :: List.take 100 user.recentLoginEmails }
-                                    model.userDictionary
-                          }
-                        , sendLoginEmail (SentLoginEmail time email) email loginCode
-                        )
-
-                ( Nothing, Ok _ ) ->
-                    ( model, Cmd.none )
-
-                ( _, Err () ) ->
-                    BackendHelper.addLog time (Token.Types.FailedToCreateLoginCode model.secretCounter) model
-
-        _ ->
-            -- TODO: is this hack a good idea?
-            ( model, Cmd.none )
 
 
 noReplyEmailAddress : EmailAddress
