@@ -250,7 +250,7 @@ updateLoaded msg model =
 
         PressedCancelLogin ->
             -- TODO
-            ( model, Cmd.none )
+            ( { model | route = HomepageRoute }, Cmd.none )
 
         TypedLoginCode loginCodeText ->
             case model.loginForm of
