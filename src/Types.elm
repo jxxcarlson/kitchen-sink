@@ -63,6 +63,9 @@ type alias LoadedModel =
     , window : { width : Int, height : Int }
     , showTooltip : Bool
 
+    -- TOKEN
+    , loginForm : Token.Types.LoginForm
+
     -- STRIPE
     , prices : AssocList.Dict (Id ProductId) { priceId : Id PriceId, price : Price }
     , productInfoDict : AssocList.Dict (Id ProductId) Stripe.Stripe.ProductInfo

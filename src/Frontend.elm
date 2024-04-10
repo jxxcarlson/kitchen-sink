@@ -27,6 +27,7 @@ import Stripe.Stripe as Stripe
 import Stripe.View
 import Task
 import Time
+import Token.LoginForm
 import Types
     exposing
         ( AdminDisplay(..)
@@ -132,6 +133,9 @@ tryLoading loadingModel =
                             , billingEmail = ""
                             , country = ""
                             }
+
+                        -- TOKEN
+                        , loginForm = Token.LoginForm.init
 
                         -- USER
                         , currentUser = Nothing

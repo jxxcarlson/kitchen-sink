@@ -47,9 +47,15 @@ onEnter message =
 
 
 label : String -> List (Element.Attribute msg) -> Element msg -> { element : Element msg, id : Element.Input.Label msg }
+
+
+
+-- TODO: this is likely not quite right, I am setting the label to an empty string FOR NOW
+
+
 label idString attrList element =
     { element = element
-    , id = Element.Input.labelAbove (Martin.elementId_ idString :: attrList) (Element.text "Foo")
+    , id = Element.Input.labelAbove (Martin.elementId_ idString :: attrList) (Element.text "")
     }
 
 

@@ -11,8 +11,6 @@ module Token.LoginForm exposing
     , view
     )
 
--- import Command as Command exposing (Command, FrontendOnly)
-
 import Config
 import Dict exposing (Dict)
 import Element exposing (Element)
@@ -56,6 +54,7 @@ update isLoadingBackend onSubmitEmail onSubmitLoginCode msg model =
                                 ( EnterEmail { loginForm | pressedSubmitEmail = True }, Cmd.none )
 
                     EnterLoginCode _ ->
+                        -- TODO: handle EnterLoginCode with parameter loginCode instead of _ ??
                         ( model, Cmd.none )
             )
                 |> Just
@@ -154,7 +153,7 @@ emailInput onSubmit onChange text labelText maybeError =
                 ]
                 { text = text
                 , onChange = onChange
-                , placeholder = Nothing
+                , placeholder = Just <| Element.Input.placeholder [] <| Element.text "abc@def.com"
                 , label = label.id
                 }
             ]
@@ -391,10 +390,7 @@ enterEmailView backendIsLoading model =
             ]
         , Element.row
             [ Element.spacing 16 ]
-            [ MyElement.secondaryButton
-                [ Martin.elementId cancelButtonId ]
-                PressedCancelLogin
-                "Cancel"
+            [ MyElement.secondaryButton [ Martin.elementId cancelButtonId ] PressedCancelLogin "Cancel"
             , if backendIsLoading then
                 Element.none
 
