@@ -223,8 +223,7 @@ updateLoaded msg model =
                         case EmailAddress.fromString loginForm.email of
                             Just email ->
                                 ( { model | loginForm = EnterLoginCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
-                                  -- TODO: instead of Cmd.none, do something here ..., onSubmitEmail email
-                                , Cmd.none
+                                , Lamdera.sendToBackend (GetLoginTokenRequest email)
                                 )
 
                             Nothing ->
@@ -249,7 +248,6 @@ updateLoaded msg model =
                     ( model, Cmd.none )
 
         PressedCancelLogin ->
-            -- TODO
             ( { model | route = HomepageRoute }, Cmd.none )
 
         TypedLoginCode loginCodeText ->

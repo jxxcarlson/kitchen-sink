@@ -419,6 +419,9 @@ updateFromFrontend sessionId clientId msg model =
                 ( Just ( userId, user ), Ok loginCode ) ->
                     if BackendHelper.shouldRateLimit model.time user then
                         let
+                            _ =
+                                Debug.log "@## BRANCH" 1
+
                             ( model3, cmd ) =
                                 BackendHelper.addLog model.time (Token.Types.LoginsRateLimited userId) model
                         in
@@ -427,25 +430,39 @@ updateFromFrontend sessionId clientId msg model =
                         )
 
                     else
+                        let
+                            _ =
+                                Debug.log "@## BRANCH" 2
+                        in
                         ( { model2
                             | pendingLogins =
                                 AssocList.insert
                                     sessionId
                                     { creationTime = model.time, emailAddress = email, loginAttempts = 0, loginCode = loginCode }
                                     model2.pendingLogins
+                                    |> Debug.log "@## pendingLogins"
                             , userDictionary =
                                 Dict.insert
                                     userId
                                     { user | recentLoginEmails = model.time :: List.take 100 user.recentLoginEmails }
                                     model.userDictionary
+                                    |> Debug.log "@## userDictionary"
                           }
                         , sendLoginEmail (SentLoginEmail model.time email) email loginCode
                         )
 
                 ( Nothing, Ok _ ) ->
+                    let
+                        _ =
+                            Debug.log "@## BRANCH" 3
+                    in
                     ( model, Cmd.none )
 
                 ( _, Err () ) ->
+                    let
+                        _ =
+                            Debug.log "@## BRANCH" 4
+                    in
                     BackendHelper.addLog model.time (Token.Types.FailedToCreateLoginCode model.secretCounter) model
 
         LogOutRequest ->
@@ -567,7 +584,7 @@ updateFromFrontend sessionId clientId msg model =
 
 noReplyEmailAddress : EmailAddress
 noReplyEmailAddress =
-    Unsafe.emailAddress "stephen@ambue.com"
+    Unsafe.emailAddress "hoho@foo.com"
 
 
 sendLoginEmail :
@@ -578,7 +595,7 @@ sendLoginEmail :
 sendLoginEmail msg emailAddress loginCode =
     let
         _ =
-            Debug.log "login" loginCode
+            Debug.log "@## sendLoginEmail" loginCode
     in
     { from = { name = "", email = noReplyEmailAddress }
     , to = List.Nonempty.fromElement { name = "", email = emailAddress }

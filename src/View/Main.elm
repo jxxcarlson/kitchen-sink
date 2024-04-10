@@ -59,10 +59,6 @@ view model =
 
 loadedView : LoadedModel -> Element FrontendMsg
 loadedView model =
-    let
-        _ =
-            Debug.log "@##ROUTE" model.route
-    in
     case model.route of
         HomepageRoute ->
             -- Pages.Home.view model

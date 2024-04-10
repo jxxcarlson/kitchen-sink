@@ -28,16 +28,16 @@ postmarkServerToken : ApiKey
 postmarkServerToken =
     case Env.mode of
         Env.Development ->
-            Postmark.apiKey "dev"
+            Postmark.apiKey "hohoho"
 
         Env.Production ->
-            Postmark.apiKey "prod"
+            Postmark.apiKey "hahaha
 
 
 secretKey =
     case Env.mode of
         Env.Development ->
-            "dev"
+            "devsecret"
 
         Env.Production ->
-            "prod"
+            "prodsecret"
