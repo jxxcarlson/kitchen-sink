@@ -31,7 +31,7 @@ postmarkServerToken =
             Postmark.apiKey "hohoho"
 
         Env.Production ->
-            Postmark.apiKey "hahaha
+            Postmark.apiKey "hahaha"
 
 
 secretKey =
