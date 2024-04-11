@@ -149,15 +149,7 @@ errorEmail errorMessage =
                 { from = { name = "elm-camp", email = purchaseSupportAddres }
                 , to = List.Nonempty.map (\email -> { name = "", email = email }) to
                 , subject =
-                    String.Nonempty.NonemptyString 'E'
-                        ("rror occurred "
-                            ++ (if Env.isProduction then
-                                    "(prod)"
-
-                                else
-                                    "(dev)"
-                               )
-                        )
+                    String.Nonempty.NonemptyString 'E' "rror occurred "
                 , body = Postmark.BodyText errorMessage
                 , messageStream = "outbound"
                 }
