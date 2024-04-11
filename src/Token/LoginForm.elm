@@ -341,13 +341,7 @@ enterEmailView backendIsLoading model =
                 MyElement.primaryButton submitEmailButtonId Types.PressedSubmitEmail "Login"
             ]
         , if backendIsLoading then
-            errorView
-                (if Env.isProduction then
-                    "Loading backend data..."
-
-                 else
-                    "Loading backend data. Please don't refresh the page."
-                )
+            errorView "Loading backend data. Please don't refresh the page."
 
           else
             Element.none

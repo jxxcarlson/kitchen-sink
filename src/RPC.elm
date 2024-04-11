@@ -48,11 +48,7 @@ purchaseCompletedEndpoint :
 purchaseCompletedEndpoint _ model request =
     let
         response =
-            if Env.isProduction then
-                Ok (Json.Encode.string "prod")
-
-            else
-                Ok (Json.Encode.string "dev")
+            Ok (Json.Encode.string "ok")
     in
     case Json.Decode.decodeValue Stripe.decodeWebhook request of
         Ok webhook ->
