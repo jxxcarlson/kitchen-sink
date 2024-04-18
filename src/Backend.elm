@@ -584,7 +584,7 @@ updateFromFrontend sessionId clientId msg model =
 
 noReplyEmailAddress : EmailAddress
 noReplyEmailAddress =
-    Unsafe.emailAddress "hoho@foo.com"
+    Unsafe.emailAddress Config.postmarkNoReplyEmail
 
 
 sendLoginEmail :

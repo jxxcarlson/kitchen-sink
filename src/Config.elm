@@ -1,6 +1,7 @@
 module Config exposing
     ( contactEmail
     , postmarkApiKey
+    , postmarkNoReplyEmail
     , postmarkServerToken
     , secretKey
     )
@@ -32,6 +33,16 @@ postmarkServerToken =
 
         Env.Production ->
             Postmark.apiKey "hahaha"
+
+
+postmarkNoReplyEmail : String
+postmarkNoReplyEmail =
+    case Env.mode of
+        Env.Development ->
+            "hello@elm-kitchen-sink.lamdera.app"
+
+        Env.Production ->
+            " hello@elm-kitchen-sink.lamdera.app"
 
 
 secretKey =
