@@ -606,7 +606,7 @@ sendLoginEmail msg emailAddress loginCode =
             ("Here is your code " ++ String.fromInt loginCode ++ "\n\nPlease type it in the XXX login page you were previously on.\n\nIf you weren't expecting this email you can safely ignore it.")
     , messageStream = "outbound"
     }
-        |> Postmark.sendEmail msg Config.postmarkServerToken
+        |> Postmark.sendEmail msg Config.postmarkApiKey
 
 
 loginEmailContent : Int -> Email.Html.Html
@@ -639,7 +639,7 @@ loginEmailContent loginCode =
                             ++ List.drop (Token.LoginForm.loginCodeLength // 2) a
                    )
             )
-        , Email.Html.text "Please type it in the Ambue login page you were previously on."
+        , Email.Html.text "Please type it in the login page you were previously on."
         , Email.Html.br [] []
         , Email.Html.br [] []
         , Email.Html.text "If you weren't expecting this email you can safely ignore it."

@@ -2,7 +2,6 @@ module Config exposing
     ( contactEmail
     , postmarkApiKey
     , postmarkNoReplyEmail
-    , postmarkServerToken
     , secretKey
     )
 
@@ -23,16 +22,6 @@ postmarkApiKey =
 
         Env.Production ->
             Postmark.apiKey "prod"
-
-
-postmarkServerToken : ApiKey
-postmarkServerToken =
-    case Env.mode of
-        Env.Development ->
-            Postmark.apiKey "hohoho"
-
-        Env.Production ->
-            Postmark.apiKey "hahaha"
 
 
 postmarkNoReplyEmail : String
