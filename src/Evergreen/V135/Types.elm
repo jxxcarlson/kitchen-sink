@@ -175,7 +175,7 @@ type FrontendMsg
     | NewKeyValuePair
     | AddKeyValuePair String Evergreen.V135.KeyValueStore.KVDatum
     | GetValueWithKey String
-    | GotValue (Result Http.Error Evergreen.V135.KeyValueStore.KVDatum)
+    | GotValueFromKVStore (Result Http.Error Evergreen.V135.KeyValueStore.KVDatum)
     | DataUploaded (Result Http.Error ())
     | SetKVViewType Evergreen.V135.KeyValueStore.KVViewType
     | CycleVerbosity Evergreen.V135.KeyValueStore.KVVerbosity

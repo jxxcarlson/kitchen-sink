@@ -623,7 +623,7 @@ migrate_Types_FrontendMsg old =
             Evergreen.V135.Types.GetValueWithKey p0
 
         Evergreen.V134.Types.GotValue p0 ->
-            Evergreen.V135.Types.GotValue p0
+            Evergreen.V135.Types.GotValueFromKVStore p0
 
         Evergreen.V134.Types.DataUploaded p0 ->
             Evergreen.V135.Types.DataUploaded p0
