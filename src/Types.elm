@@ -204,7 +204,7 @@ type FrontendMsg
     | GotValueFromKVStore (Result Http.Error KeyValueStore.KVDatum)
     | DataUploaded (Result Http.Error ())
     | SetKVViewType KeyValueStore.KVViewType
-    | CycleVerbosity KeyValueStore.KVVerbosity
+    | CycleKVVerbosity KeyValueStore.KVVerbosity
 
 
 type ToBackend

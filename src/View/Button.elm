@@ -111,7 +111,7 @@ cycleVerbosity currentVerbosity =
                 KeyValueStore.KVVerbose ->
                     "Verbose"
     in
-    button (Types.CycleVerbosity newVerbosity) label
+    button (Types.CycleKVVerbosity newVerbosity) label
 
 
 setKVViewType : KeyValueStore.KVViewType -> KeyValueStore.KVViewType -> String -> Element.Element Types.FrontendMsg

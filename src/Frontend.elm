@@ -438,7 +438,7 @@ updateLoaded msg model =
         SetKVViewType kvViewType ->
             ( { model | kvViewType = kvViewType }, Cmd.none )
 
-        CycleVerbosity newVerbosity ->
+        CycleKVVerbosity newVerbosity ->
             ( { model | kvVerbosity = newVerbosity }, Cmd.none )
 
         DataUploaded _ ->
