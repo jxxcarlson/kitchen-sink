@@ -65,6 +65,9 @@ type alias LoadedModel =
     -- TOKEN
     , loginForm : Token.Types.LoginForm
 
+    -- User
+    , currentUserData : Maybe User.LoginData
+
     -- STRIPE
     , prices : AssocList.Dict (Id ProductId) { priceId : Id PriceId, price : Price }
     , productInfoDict : AssocList.Dict (Id ProductId) Stripe.Stripe.ProductInfo
@@ -173,16 +176,6 @@ type FrontendMsg
     | PressedCancelForm
     | AskToRenewPrices
       -- USER
-    | SignIn
-    | SetSignInState SignInState
-    | SubmitSignIn
-    | SubmitSignOut
-    | SubmitSignUp
-    | InputRealname String
-    | InputUsername String
-    | InputEmail String
-    | InputPassword String
-    | InputPasswordConfirmation String
       -- ADMIN
     | SetAdminDisplay AdminDisplay
       --

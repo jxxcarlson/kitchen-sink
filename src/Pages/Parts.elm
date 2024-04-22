@@ -93,9 +93,9 @@ header model route config =
                 { url = Route.encode SignInRoute
                 , label =
                     Element.text
-                        (case model.currentUser of
-                            Just user ->
-                                user.username
+                        (case model.currentUserData of
+                            Just currentUserData_ ->
+                                currentUserData_.username
 
                             Nothing ->
                                 "Sign in"

@@ -21,11 +21,6 @@ testInput =
 
 view : LoadedModel -> Element FrontendMsg
 view model =
-    let
-        _ =
-            Debug.log "SignIn.view" model.loginForm
-    in
-    -- Token.LoginForm.view False (Token.Types.EnterEmail testInput) |> Element.map Types.TokenLogin
     Token.LoginForm.view False model.loginForm
 
 

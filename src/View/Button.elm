@@ -10,17 +10,12 @@ module View.Button exposing
     , saveKeyValuePair
     , setAdminDisplay
     , setKVViewType
-    , setSignInState
-    , signIn
-    , signOut
-    , signUp
     , updateKeyValuePair
     )
 
 import Element
 import Element.Background
 import Element.Border as Border
-import Element.Events
 import Element.Font
 import Element.Input
 import Id exposing (Id)
@@ -33,26 +28,6 @@ import View.Color
 
 
 -- USER
-
-
-signIn : Element.Element Types.FrontendMsg
-signIn =
-    button Types.SubmitSignIn "Submit"
-
-
-signOut : Element.Element Types.FrontendMsg
-signOut =
-    button Types.SubmitSignOut "Sign out"
-
-
-signUp : Element.Element Types.FrontendMsg
-signUp =
-    button Types.SubmitSignUp "Submit"
-
-
-setSignInState : String -> Types.SignInState -> Element.Element Types.FrontendMsg
-setSignInState label state =
-    button (Types.SetSignInState state) label
 
 
 setAdminDisplay : Types.AdminDisplay -> Types.AdminDisplay -> String -> Element.Element Types.FrontendMsg

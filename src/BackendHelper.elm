@@ -91,7 +91,7 @@ testUserDictionary =
         , ( "aristotle"
           , { realname = "Aristotle"
             , username = "aristotle"
-            , email = EmailAddress.EmailAddress { domain = "gmail", localPart = "aristotle", tags = [], tld = [ "com" ] }
+            , email = EmailAddress.EmailAddress { domain = "mac", localPart = "jxxcarlson", tags = [], tld = [ "com" ] }
             , id = "38952d62-9772-4e5d-a927-b8e41b6ef2ed"
             , created_at = Time.millisToPosix 1704237963000
             , updated_at = Time.millisToPosix 1704237963000

@@ -140,6 +140,7 @@ tryLoading loadingModel =
                         , loginForm = Token.LoginForm.init
 
                         -- USER
+                        , currentUserData = Nothing
                         , currentUser = Nothing
                         , realname = ""
                         , username = ""
@@ -251,6 +252,10 @@ updateLoaded msg model =
             ( { model | route = HomepageRoute }, Cmd.none )
 
         TypedLoginCode loginCodeText ->
+            let
+                _ =
+                    Debug.log "@###@ TypedLoginCode" loginCodeText
+            in
             case model.loginForm of
                 Token.Types.EnterEmail _ ->
                     ( model, Cmd.none )
@@ -303,95 +308,6 @@ updateLoaded msg model =
             ( model, Ports.playSound (Json.Encode.string "chirp.mp3") )
 
         -- USER
-        SetSignInState state ->
-            ( { model
-                | signInState = state
-                , username = ""
-                , realname = ""
-                , email = ""
-                , password = ""
-                , passwordConfirmation = ""
-              }
-            , Cmd.none
-            )
-
-        SignIn ->
-            ( model, Cmd.none )
-
-        SubmitSignIn ->
-            ( model, Lamdera.sendToBackend (SignInRequest model.username model.password) )
-
-        SubmitSignOut ->
-            case model.currentUser of
-                Just { username } ->
-                    ( { model
-                        | currentUser = Nothing
-                        , signInState = SignedOut
-                        , username = ""
-                        , password = ""
-                      }
-                    , Lamdera.sendToBackend (SignOutRequest username)
-                    )
-
-                Nothing ->
-                    ( model, Cmd.none )
-
-        SubmitSignUp ->
-            let
-                msg1 : Maybe String
-                msg1 =
-                    if model.password == model.passwordConfirmation then
-                        Nothing
-
-                    else
-                        Just "Passwords do not match"
-
-                msg2 : Maybe String
-                msg2 =
-                    if String.length model.password < 8 then
-                        Just "Password must be at least 8 characters long"
-
-                    else
-                        Nothing
-
-                msg3 : Maybe String
-                msg3 =
-                    if not <| String.contains "@" model.email then
-                        Just "Email must contain @"
-
-                    else
-                        Nothing
-
-                messages : List String
-                messages =
-                    List.filterMap identity [ msg1, msg2, msg3 ]
-
-                message =
-                    String.join ", " messages
-            in
-            ( { model | message = message }
-            , if messages == [] then
-                Lamdera.sendToBackend (SignUpRequest model.realname model.username model.email model.password)
-
-              else
-                Cmd.none
-            )
-
-        InputRealname str ->
-            ( { model | realname = str }, Cmd.none )
-
-        InputUsername str ->
-            ( { model | username = str }, Cmd.none )
-
-        InputEmail str ->
-            ( { model | email = str }, Cmd.none )
-
-        InputPassword str ->
-            ( { model | password = str }, Cmd.none )
-
-        InputPasswordConfirmation str ->
-            ( { model | passwordConfirmation = str }, Cmd.none )
-
         -- STRIPE
         BuyProduct productId priceId product ->
             ( { model | selectedProduct = Just ( productId, priceId, product ) }, Cmd.none )
@@ -531,17 +447,25 @@ updateFromBackend msg model =
 updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
 updateFromBackendLoaded msg model =
     case msg of
-        -- TODO: implement the followig 4 cases:
+        -- TODO: implement the following 4 cases:
         CheckLoginResponse _ ->
             ( model, Cmd.none )
 
         LoginWithTokenResponse result ->
             case result of
                 Err code ->
+                    let
+                        _ =
+                            Debug.log "@## LoginWithTokenResponse, Err" code
+                    in
                     ( model, Cmd.none )
 
                 Ok loginData ->
-                    ( model, Cmd.none )
+                    let
+                        _ =
+                            Debug.log "@## LoginWithTokenResponse, Ok" loginData
+                    in
+                    ( { model | currentUserData = Just loginData, route = HomepageRoute }, Cmd.none )
 
         GetLoginTokenRateLimited ->
             ( model, Cmd.none )
