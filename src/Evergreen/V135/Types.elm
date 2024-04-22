@@ -178,7 +178,7 @@ type FrontendMsg
     | GotValueFromKVStore (Result Http.Error Evergreen.V135.KeyValueStore.KVDatum)
     | DataUploaded (Result Http.Error ())
     | SetKVViewType Evergreen.V135.KeyValueStore.KVViewType
-    | CycleVerbosity Evergreen.V135.KeyValueStore.KVVerbosity
+    | CycleKVVerbosity Evergreen.V135.KeyValueStore.KVVerbosity
 
 
 type ToBackend

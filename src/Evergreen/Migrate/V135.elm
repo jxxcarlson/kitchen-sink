@@ -632,7 +632,7 @@ migrate_Types_FrontendMsg old =
             Evergreen.V135.Types.SetKVViewType (p0 |> migrate_KeyValueStore_KVViewType)
 
         Evergreen.V134.Types.CycleVerbosity p0 ->
-            Evergreen.V135.Types.CycleVerbosity (p0 |> migrate_KeyValueStore_KVVerbosity)
+            Evergreen.V135.Types.CycleKVVerbosity (p0 |> migrate_KeyValueStore_KVVerbosity)
 
 
 migrate_Types_InitData2 : Evergreen.V134.Types.InitData2 -> Evergreen.V135.Types.InitData2
