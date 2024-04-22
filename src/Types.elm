@@ -128,7 +128,7 @@ type alias BackendModel =
 
     -- TOKEN
     , secretCounter : Int
-    , sessionDict : AssocList.Dict SessionId String
+    , sessionDict : AssocList.Dict SessionId String -- sessionId usernamae
     , pendingLogins :
         AssocList.Dict
             SessionId
@@ -248,6 +248,7 @@ type BackendMsg
     | OnConnected SessionId ClientId
     | GotAtmosphericRandomNumbers (Result Http.Error String)
       -- TOKEN
+    | AutoLogin SessionId User.LoginData
     | BackendGotTime SessionId ClientId ToBackend Time.Posix
     | SentLoginEmail Time.Posix EmailAddress (Result Http.Error Postmark.PostmarkSendResponse)
     | AuthenticationConfirmationEmailSent (Result Http.Error Postmark.PostmarkSendResponse)

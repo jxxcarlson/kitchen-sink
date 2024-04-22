@@ -20,6 +20,7 @@ import List.Extra
 import List.Nonempty
 import LocalUUID
 import Postmark
+import Process
 import Quantity
 import Sha256
 import String.Nonempty exposing (NonemptyString)
@@ -289,10 +290,13 @@ update msg model =
                 Err error ->
                     ( model, BackendHelper.errorEmail ("GotPrices failed: " ++ HttpHelpers.httpErrorToString error) )
 
+        AutoLogin sessionId loginData ->
+            ( model, Lamdera.sendToFrontend sessionId (LoginWithTokenResponse <| Ok <| loginData) )
+
         OnConnected sessionId clientId ->
             let
                 _ =
-                    Debug.log "@## OnConnected (1)" ( sessionId, clientId )
+                    Debug.log "@##!OnConnected (1)" ( sessionId, clientId )
 
                 maybeUsername : Maybe String
                 maybeUsername =
@@ -302,7 +306,7 @@ update msg model =
                 maybeUserData =
                     Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername
                         |> Maybe.map User.loginDataOfUser
-                        |> Debug.log "@## OnConnected, loginDataOfUser (2)"
+                        |> Debug.log "@##! OnConnected, loginDataOfUser (2)"
             in
             ( model
             , Cmd.batch
@@ -318,14 +322,27 @@ update msg model =
                         , productInfo = model.products
                         }
                     )
-                , case maybeUserData of
-                    Nothing ->
-                        Cmd.none
 
-                    Just userData ->
-                        Ok userData
-                            |> LoginWithTokenResponse
-                            |> Lamdera.sendToFrontend sessionId
+                --, case maybeUserData of
+                --    Nothing ->
+                --        Cmd.none
+                --
+                --    Just userData ->
+                --        Ok userData
+                --            |> LoginWithTokenResponse
+                --            |> Lamdera.sendToFrontend sessionId
+                , case AssocList.get sessionId model.sessionDict of
+                    Just username ->
+                        case Dict.get username model.userDictionary of
+                            Just user ->
+                                -- Lamdera.sendToFrontend sessionId (LoginWithTokenResponse <| Ok <| Debug.log "@##! send loginDATA" <| User.loginDataOfUser user)
+                                Process.sleep 60 |> Task.perform (always (AutoLogin sessionId (User.loginDataOfUser user)))
+
+                            Nothing ->
+                                Lamdera.sendToFrontend clientId (LoginWithTokenResponse (Err 0))
+
+                    Nothing ->
+                        Lamdera.sendToFrontend clientId (LoginWithTokenResponse (Err 1))
                 ]
             )
 
@@ -747,51 +764,61 @@ loginWithToken :
     -> BackendModel
     -> ( BackendModel, Cmd BackendMsg )
 loginWithToken time sessionId clientId loginCode model =
-    case AssocList.get sessionId model.pendingLogins of
-        Just pendingLogin ->
-            if
-                (pendingLogin.loginAttempts < Token.LoginForm.maxLoginAttempts)
-                    && (Duration.from pendingLogin.creationTime time |> Quantity.lessThan Duration.hour)
-            then
-                if loginCode == pendingLogin.loginCode then
-                    case
-                        Dict.toList model.userDictionary
-                            |> List.Extra.find (\( _, user ) -> user.email == pendingLogin.emailAddress)
-                    of
-                        Just ( userId, user ) ->
-                            ( { model
-                                | sessionDict = AssocList.insert sessionId userId model.sessionDict |> Debug.log "@##! Update sesssionDict (2)"
-                                , pendingLogins = AssocList.remove sessionId model.pendingLogins
-                              }
-                            , User.loginDataOfUser user
-                                |> Ok
-                                |> LoginWithTokenResponse
-                                |> Lamdera.sendToFrontend sessionId
-                            )
+    case AssocList.get sessionId model.sessionDict of
+        Just username ->
+            case Dict.get username model.userDictionary of
+                Just user ->
+                    ( model, Lamdera.sendToFrontend sessionId (LoginWithTokenResponse <| Ok <| User.loginDataOfUser user) )
 
-                        Nothing ->
-                            ( model
-                            , Err loginCode
-                                |> LoginWithTokenResponse
-                                |> Lamdera.sendToFrontend clientId
-                            )
-
-                else
-                    ( { model
-                        | pendingLogins =
-                            AssocList.insert
-                                sessionId
-                                { pendingLogin | loginAttempts = pendingLogin.loginAttempts + 1 }
-                                model.pendingLogins
-                      }
-                    , Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId
-                    )
-
-            else
-                ( model, Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId )
+                Nothing ->
+                    ( model, Lamdera.sendToFrontend clientId (LoginWithTokenResponse (Err loginCode)) )
 
         Nothing ->
-            ( model, Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId )
+            case AssocList.get sessionId model.pendingLogins of
+                Just pendingLogin ->
+                    if
+                        (pendingLogin.loginAttempts < Token.LoginForm.maxLoginAttempts)
+                            && (Duration.from pendingLogin.creationTime time |> Quantity.lessThan Duration.hour)
+                    then
+                        if loginCode == pendingLogin.loginCode then
+                            case
+                                Dict.toList model.userDictionary
+                                    |> List.Extra.find (\( _, user ) -> user.email == pendingLogin.emailAddress)
+                            of
+                                Just ( userId, user ) ->
+                                    ( { model
+                                        | sessionDict = AssocList.insert sessionId userId model.sessionDict |> Debug.log "@##! Update sesssionDict (2)"
+                                        , pendingLogins = AssocList.remove sessionId model.pendingLogins
+                                      }
+                                    , User.loginDataOfUser user
+                                        |> Ok
+                                        |> LoginWithTokenResponse
+                                        |> Lamdera.sendToFrontend sessionId
+                                    )
+
+                                Nothing ->
+                                    ( model
+                                    , Err loginCode
+                                        |> LoginWithTokenResponse
+                                        |> Lamdera.sendToFrontend clientId
+                                    )
+
+                        else
+                            ( { model
+                                | pendingLogins =
+                                    AssocList.insert
+                                        sessionId
+                                        { pendingLogin | loginAttempts = pendingLogin.loginAttempts + 1 }
+                                        model.pendingLogins
+                              }
+                            , Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId
+                            )
+
+                    else
+                        ( model, Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId )
+
+                Nothing ->
+                    ( model, Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId )
 
 
 getUserFromSessionId : SessionId -> BackendModel -> Maybe ( User.Id, User.User )
