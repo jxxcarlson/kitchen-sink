@@ -418,7 +418,7 @@ updateLoaded msg model =
         GetValueWithKey key ->
             ( model, RPC.getValueWithKey key )
 
-        GotValue result ->
+        GotValueFromKVStore result ->
             case result of
                 Ok value ->
                     ( { model

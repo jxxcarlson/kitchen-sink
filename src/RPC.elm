@@ -249,7 +249,7 @@ getValueWithKey key =
     Http.post
         { url = Env.dataSource Env.mode ++ "/_r/getKeyValuePair"
         , body = Http.jsonBody <| KeyValueStore.encodeKey key
-        , expect = Http.expectJson Types.GotValue kvDatumDecoder
+        , expect = Http.expectJson Types.GotValueFromKVStore kvDatumDecoder
         }
 
 

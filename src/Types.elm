@@ -201,7 +201,7 @@ type FrontendMsg
     | NewKeyValuePair
     | AddKeyValuePair String KeyValueStore.KVDatum
     | GetValueWithKey String
-    | GotValue (Result Http.Error KeyValueStore.KVDatum)
+    | GotValueFromKVStore (Result Http.Error KeyValueStore.KVDatum)
     | DataUploaded (Result Http.Error ())
     | SetKVViewType KeyValueStore.KVViewType
     | CycleVerbosity KeyValueStore.KVVerbosity
