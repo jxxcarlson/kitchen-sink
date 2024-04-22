@@ -3,8 +3,9 @@ module Postmark exposing
     , PostmarkEmailBody(..)
     , PostmarkSend
     , PostmarkSendResponse
-    , PostmarkTemplateSend
-      --, SendEmailError
+    ,  PostmarkTemplateSend
+       --, SendEmailError
+
     , apiKey
     , sendEmail
     )

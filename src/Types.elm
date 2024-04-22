@@ -122,6 +122,7 @@ type AdminDisplay
 type alias BackendModel =
     { randomAtmosphericNumbers : Maybe (List Int)
     , localUuidData : Maybe LocalUUID.Data
+    , time : Time.Posix
 
     -- TOKEN
     , secretCounter : Int
@@ -147,7 +148,6 @@ type alias BackendModel =
     , pendingOrder : AssocList.Dict (Id StripeSessionId) Stripe.Codec.PendingOrder
     , expiredOrders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.PendingOrder
     , prices : AssocList.Dict (Id ProductId) Stripe.Codec.Price2
-    , time : Time.Posix
     , products : Stripe.Stripe.ProductInfoDict
 
     -- EXPERIMENTAL
@@ -234,7 +234,8 @@ type ToBackend
 
 
 type BackendMsg
-    = GotTime Time.Posix
+    = GotSlowTick Time.Posix
+    | GotFastTick Time.Posix
     | OnConnected SessionId ClientId
     | GotAtmosphericRandomNumbers (Result Http.Error String)
       -- TOKEN

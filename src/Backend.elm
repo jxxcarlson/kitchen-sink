@@ -49,6 +49,7 @@ init =
     ( { userDictionary = BackendHelper.testUserDictionary
       , sessions = BiDict.empty
       , sessionInfo = Dict.empty
+      , time = Time.millisToPosix 0
 
       -- TOKEN
       , secretCounter = 0
@@ -61,7 +62,6 @@ init =
       , pendingOrder = AssocList.empty
       , expiredOrders = AssocList.empty
       , prices = AssocList.empty
-      , time = Time.millisToPosix 0
       , randomAtmosphericNumbers = Nothing
       , localUuidData = Nothing
       , products =
@@ -87,7 +87,8 @@ init =
                 ]
       }
     , Cmd.batch
-        [ Time.now |> Task.perform GotTime
+        [ Time.now |> Task.perform GotSlowTick
+        , Time.now |> Task.perform GotFastTick
         , Stripe.getPrices GotPrices
         , BackendHelper.getAtmosphericRandomNumbers
         ]
@@ -129,7 +130,8 @@ NGC.4649,2.0,1090
 subscriptions : BackendModel -> Sub BackendMsg
 subscriptions _ =
     Sub.batch
-        [ Time.every (1000 * 60 * 15) GotTime
+        [ Time.every (1000 * 60 * 15) GotSlowTick
+        , Time.every 1000 GotFastTick
         , Lamdera.onConnect OnConnected
         ]
 
@@ -188,7 +190,12 @@ update msg model =
         GotWeatherData clientId result ->
             ( model, Lamdera.sendToFrontend clientId (Types.ReceivedWeatherData result) )
 
-        GotTime time ->
+        GotFastTick time ->
+            ( { model | time = time }
+            , Cmd.none
+            )
+
+        GotSlowTick time ->
             let
                 ( expiredOrders, remainingOrders ) =
                     AssocList.partition
