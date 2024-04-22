@@ -64,6 +64,7 @@ type AdminDisplay
 type alias BackendModel =
     { randomAtmosphericNumbers : Maybe (List Int)
     , localUuidData : Maybe Evergreen.V135.LocalUUID.Data
+    , time : Time.Posix
     , secretCounter : Int
     , sessionDict : AssocList.Dict Lamdera.SessionId String
     , pendingLogins :
@@ -82,7 +83,6 @@ type alias BackendModel =
     , pendingOrder : AssocList.Dict (Evergreen.V135.Id.Id Evergreen.V135.Stripe.Stripe.StripeSessionId) Evergreen.V135.Stripe.Codec.PendingOrder
     , expiredOrders : AssocList.Dict (Evergreen.V135.Id.Id Evergreen.V135.Stripe.Stripe.StripeSessionId) Evergreen.V135.Stripe.Codec.PendingOrder
     , prices : AssocList.Dict (Evergreen.V135.Id.Id Evergreen.V135.Stripe.Stripe.ProductId) Evergreen.V135.Stripe.Codec.Price2
-    , time : Time.Posix
     , products : Evergreen.V135.Stripe.Stripe.ProductInfoDict
     , keyValueStore : Dict.Dict String Evergreen.V135.KeyValueStore.KVDatum
     }
@@ -190,7 +190,8 @@ type ToBackend
 
 
 type BackendMsg
-    = GotTime Time.Posix
+    = GotSlowTick Time.Posix
+    | GotFastTick Time.Posix
     | OnConnected Lamdera.SessionId Lamdera.ClientId
     | GotAtmosphericRandomNumbers (Result Http.Error String)
     | BackendGotTime Lamdera.SessionId Lamdera.ClientId ToBackend Time.Posix
