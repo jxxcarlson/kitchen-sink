@@ -150,6 +150,7 @@ type FrontendMsg
     | PressedCancelLogin
     | TypedLoginFormEmail String
     | TypedLoginCode String
+    | SignOut
     | BuyProduct (Evergreen.V135.Id.Id Evergreen.V135.Stripe.Stripe.ProductId) (Evergreen.V135.Id.Id Evergreen.V135.Stripe.Stripe.PriceId) Evergreen.V135.Stripe.Product.Product_
     | PressedSelectTicket (Evergreen.V135.Id.Id Evergreen.V135.Stripe.Stripe.ProductId) (Evergreen.V135.Id.Id Evergreen.V135.Stripe.Stripe.PriceId)
     | FormChanged Evergreen.V135.Stripe.PurchaseForm.PurchaseForm
@@ -181,7 +182,8 @@ type FrontendMsg
 
 
 type ToBackend
-    = SubmitFormRequest (Evergreen.V135.Id.Id Evergreen.V135.Stripe.Stripe.PriceId) (Evergreen.V135.Untrusted.Untrusted Evergreen.V135.Stripe.PurchaseForm.PurchaseFormValidated)
+    = ToBackendNoOp
+    | SubmitFormRequest (Evergreen.V135.Id.Id Evergreen.V135.Stripe.Stripe.PriceId) (Evergreen.V135.Untrusted.Untrusted Evergreen.V135.Stripe.PurchaseForm.PurchaseFormValidated)
     | CancelPurchaseRequest
     | AdminInspect (Maybe Evergreen.V135.User.User)
     | GetBackendModel
