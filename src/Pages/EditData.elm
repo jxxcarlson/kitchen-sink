@@ -25,7 +25,7 @@ dataEditor model =
                     Element.none
 
                 Just user ->
-                    if Predicate.isAdmin model.currentUser && model.inputKey /= "" && model.inputValue /= "" then
+                    if Predicate.isAdmin model.currentUserData && model.inputKey /= "" && model.inputValue /= "" then
                         let
                             curator =
                                 case model.currentKVPair of

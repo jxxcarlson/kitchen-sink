@@ -515,36 +515,8 @@ updateFromBackendLoaded msg model =
 
         -- USER
         UserSignedIn maybeUser ->
-            case maybeUser of
-                Nothing ->
-                    ( { model
-                        | signInState = SignedOut
-                        , realname = ""
-                        , username = ""
-                        , email = ""
-                        , password = ""
-                        , passwordConfirmation = ""
-                        , currentUser = Nothing
-                      }
-                    , Cmd.none
-                    )
-
-                Just user ->
-                    ( { model
-                        | signInState = SignedIn
-                        , realname = ""
-                        , username = ""
-                        , email = ""
-                        , password = ""
-                        , passwordConfirmation = ""
-                        , currentUser = Just user
-                      }
-                    , if Predicate.isAdmin (Just user) then
-                        Lamdera.sendToBackend (AdminInspect maybeUser)
-
-                      else
-                        Cmd.none
-                    )
+            -- TODO: use or remove
+            ( model, Cmd.none )
 
         ReceivedWeatherData result ->
             case result of

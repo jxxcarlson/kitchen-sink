@@ -3,11 +3,11 @@ module Predicate exposing (isAdmin)
 import User
 
 
-isAdmin : Maybe User.User -> Bool
-isAdmin currentUser =
-    case currentUser of
-        Just user ->
-            user.role == User.AdminRole
+isAdmin : Maybe User.LoginData -> Bool
+isAdmin maybeLoginData =
+    case maybeLoginData of
+        Just loginData ->
+            loginData.username == "jxxcarlson"
 
         Nothing ->
             False

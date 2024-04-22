@@ -66,7 +66,7 @@ header model route config =
             [ Element.link
                 (linkStyle route HomepageRoute)
                 { url = Route.encode HomepageRoute, label = Element.text "Lamdera Kitchen Sink" }
-            , if Predicate.isAdmin model.currentUser then
+            , if Predicate.isAdmin model.currentUserData then
                 Element.link
                     (linkStyle route AdminRoute)
                     { url = Route.encode AdminRoute, label = Element.text "Admin" }

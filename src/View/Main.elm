@@ -86,7 +86,7 @@ loadedView model =
             Pages.Parts.generic model Pages.Brillig.view
 
         AdminRoute ->
-            if Predicate.isAdmin model.currentUser then
+            if Predicate.isAdmin model.currentUserData then
                 Pages.Parts.generic model Pages.Admin.view
 
             else
