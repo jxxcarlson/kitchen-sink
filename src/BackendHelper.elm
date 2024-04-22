@@ -13,6 +13,7 @@ module BackendHelper exposing
     )
 
 import AssocList
+import Config
 import Dict
 import EmailAddress
 import Env
@@ -145,7 +146,7 @@ errorEmail errorMessage =
         Just to ->
             Postmark.sendEmail
                 Types.AuthenticationConfirmationEmailSent
-                Env.postmarkApiKey
+                Config.postmarkApiKey
                 { from = { name = "elm-camp", email = purchaseSupportAddres }
                 , to = List.Nonempty.map (\email -> { name = "", email = email }) to
                 , subject =

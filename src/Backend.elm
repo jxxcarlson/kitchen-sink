@@ -648,7 +648,7 @@ loginEmailContent loginCode =
 
 loginEmailSubject : NonemptyString
 loginEmailSubject =
-    String.Nonempty.NonemptyString 'A' "mbue login code"
+    String.Nonempty.NonemptyString 'L' "ogin code"
 
 
 loginWithToken :

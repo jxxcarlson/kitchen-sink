@@ -9,6 +9,7 @@ import AssocList
 import Backend
 import BackendHelper
 import Codec
+import Config
 import Dict
 import Email
 import Email.Html as Html
@@ -87,7 +88,7 @@ purchaseCompletedEndpoint _ model request =
                                       }
                                     , Postmark.sendEmail
                                         (ConfirmationEmailSent stripeSessionId)
-                                        Env.postmarkApiKey
+                                        Config.postmarkApiKey
                                         { from = { name = "elm-camp", email = BackendHelper.purchaseSupportAddres }
                                         , to =
                                             Nonempty
