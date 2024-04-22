@@ -3,7 +3,6 @@ module BackendHelper exposing
     , errorEmail
     , getAtmosphericRandomNumbers
     , getLoginData
-    , getLoginData2
     , getNewWeatherByCity
     , priceIdToProductId
     , purchaseSupportAddres
@@ -46,15 +45,6 @@ getLoginData userId user_ model =
 
 -- TODO: this is a hack based on a lack of understanding of what is going on.
 -- in Martin's code.
-
-
-getLoginData2 : User.Id -> User.User -> Types.BackendModel -> Result Int User.LoginData
-getLoginData2 userId user_ model =
-    User.loginDataOfUser user_ |> Ok
-
-
-
--- Ok { userId = userId }
 
 
 addLog : Time.Posix -> Token.Types.LogItem -> Types.BackendModel -> ( Types.BackendModel, Cmd msg )
