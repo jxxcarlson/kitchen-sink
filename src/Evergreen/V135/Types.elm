@@ -58,6 +58,7 @@ type SignInState
 type AdminDisplay
     = ADStripe
     | ADUser
+    | ADSession
     | ADKeyValues
 
 
@@ -183,6 +184,7 @@ type ToBackend
     = SubmitFormRequest (Evergreen.V135.Id.Id Evergreen.V135.Stripe.Stripe.PriceId) (Evergreen.V135.Untrusted.Untrusted Evergreen.V135.Stripe.PurchaseForm.PurchaseFormValidated)
     | CancelPurchaseRequest
     | AdminInspect (Maybe Evergreen.V135.User.User)
+    | GetBackendModel
     | CheckLoginRequest
     | LoginWithTokenRequest Int
     | GetLoginTokenRequest Evergreen.V135.EmailAddress.EmailAddress
@@ -201,6 +203,7 @@ type BackendMsg
     | GotFastTick Time.Posix
     | OnConnected Lamdera.SessionId Lamdera.ClientId
     | GotAtmosphericRandomNumbers (Result Http.Error String)
+    | AutoLogin Lamdera.SessionId Evergreen.V135.User.LoginData
     | BackendGotTime Lamdera.SessionId Lamdera.ClientId ToBackend Time.Posix
     | SentLoginEmail Time.Posix Evergreen.V135.EmailAddress.EmailAddress (Result Http.Error Evergreen.V135.Postmark.PostmarkSendResponse)
     | AuthenticationConfirmationEmailSent (Result Http.Error Evergreen.V135.Postmark.PostmarkSendResponse)
@@ -232,3 +235,4 @@ type ToFrontend
     | UserSignedIn (Maybe Evergreen.V135.User.User)
     | ReceivedWeatherData (Result Http.Error Evergreen.V135.Weather.WeatherData)
     | GotKeyValueStore (Dict.Dict String Evergreen.V135.KeyValueStore.KVDatum)
+    | GotBackendModel BackendModel

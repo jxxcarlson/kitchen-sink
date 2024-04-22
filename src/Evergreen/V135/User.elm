@@ -4,14 +4,15 @@ import Evergreen.V135.EmailAddress
 import Time
 
 
-type alias LoginData =
-    { username : String
-    }
-
-
 type Role
     = AdminRole
     | UserRole
+
+
+type alias LoginData =
+    { username : String
+    , role : Role
+    }
 
 
 type alias User =
