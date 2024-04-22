@@ -3,9 +3,8 @@ module Postmark exposing
     , PostmarkEmailBody(..)
     , PostmarkSend
     , PostmarkSendResponse
-    ,  PostmarkTemplateSend
-       --, SendEmailError
-
+    , PostmarkTemplateSend
+      --, SendEmailError
     , apiKey
     , sendEmail
     )
@@ -70,7 +69,7 @@ sendEmailTask (ApiKey token) d =
     in
     Http.task
         { method = "POST"
-        , headers = [ Http.header "X-Email-Server-Token" token ]
+        , headers = [ Http.header "X-Postmark-Server-Token" token ]
         , url = endpoint ++ "/email"
         , body = httpBody
         , resolver = jsonResolver decodePostmarkSendResponse
@@ -155,7 +154,7 @@ sendTemplateEmail d =
     in
     Http.task
         { method = "POST"
-        , headers = [ Http.header "X-Email-Server-Token" d.token ]
+        , headers = [ Http.header "X-Postmark-Server-Token" d.token ]
         , url = endpoint ++ "/email/withTemplate"
         , body = httpBody
         , resolver = jsonResolver decodePostmarkTemplateSendResponse

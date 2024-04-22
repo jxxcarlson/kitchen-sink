@@ -16,22 +16,12 @@ contactEmail =
 
 postmarkApiKey : Postmark.ApiKey
 postmarkApiKey =
-    case Env.mode of
-        Env.Development ->
-            Postmark.apiKey "dev"
-
-        Env.Production ->
-            Postmark.apiKey "prod"
+    Postmark.apiKey Env.postmarkApiKey
 
 
 postmarkNoReplyEmail : String
 postmarkNoReplyEmail =
-    case Env.mode of
-        Env.Development ->
-            "hello@elm-kitchen-sink.lamdera.app"
-
-        Env.Production ->
-            " hello@elm-kitchen-sink.lamdera.app"
+    "hello@elm-kitchen-sink.lamdera.app"
 
 
 secretKey =

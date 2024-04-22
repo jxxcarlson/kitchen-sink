@@ -6,7 +6,6 @@ module Env exposing
     , isProduction
     , mode
     , postmarkApiKey
-    , postmarkApiKey_
     , stripePrivateApiKey
     , stripePublicApiKey
     , weatherAPIKey
@@ -56,12 +55,8 @@ isProduction =
     String.toLower isProduction_ == "true"
 
 
-postmarkApiKey_ =
-    "ddd"
-
-
 postmarkApiKey =
-    Postmark.apiKey postmarkApiKey_
+    "ddd"
 
 
 developerEmails_ =
