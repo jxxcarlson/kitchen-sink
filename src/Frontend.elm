@@ -465,6 +465,9 @@ updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
 updateFromBackendLoaded msg model =
     case msg of
         -- TODO: implement the following 4 cases:
+        SignInError message ->
+            ( { model | loginErrorMessage = Just message }, Cmd.none )
+
         CheckLoginResponse _ ->
             ( model, Cmd.none )
 

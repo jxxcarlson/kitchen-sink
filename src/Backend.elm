@@ -463,7 +463,7 @@ updateFromFrontend sessionId clientId msg model =
                         _ =
                             Debug.log "@## BRANCH" 3
                     in
-                    ( model, Cmd.none )
+                    ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account" |> Debug.log "@## AddUser (2)") )
 
                 ( _, Err () ) ->
                     let
@@ -519,12 +519,16 @@ updateFromFrontend sessionId clientId msg model =
         AddUser realname username email ->
             case model.localUuidData of
                 Nothing ->
+                    let
+                        _ =
+                            Debug.log "@## AddUser (1)" Nothing
+                    in
                     ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
 
                 Just uuidData ->
                     case EmailAddress.fromString email of
                         Nothing ->
-                            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
+                            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing |> Debug.log "@## AddUser (2)") )
 
                         Just validEmail ->
                             let
@@ -557,19 +561,19 @@ updateFromFrontend sessionId clientId msg model =
 
         SignOutRequest username ->
             ( model |> Backend.Session.removeSessions username
-            , Lamdera.sendToFrontend clientId (UserSignedIn Nothing)
+            , Lamdera.sendToFrontend clientId (UserSignedIn Nothing |> Debug.log "@## SignOutRequest (3)")
             )
 
         SignUpRequest realname username email password ->
             case model.localUuidData of
                 Nothing ->
-                    ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
+                    ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing |> Debug.log "@## SignUpRequest (4)") )
 
                 -- TODO, need to signal & handle error
                 Just uuidData ->
                     case EmailAddress.fromString email of
                         Nothing ->
-                            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
+                            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing |> Debug.log "@## SignUpRequest (5)") )
 
                         Just validEmail ->
                             let

@@ -276,6 +276,7 @@ type ToFrontend
     | LoginWithTokenResponse (Result Int User.LoginData)
     | GetLoginTokenRateLimited
     | LoggedOutSession
+    | SignInError String
       -- USER
     | UserSignedIn (Maybe User.User)
       -- EXAMPLE
