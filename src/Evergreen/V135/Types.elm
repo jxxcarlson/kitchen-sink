@@ -228,6 +228,7 @@ type ToFrontend
     | LoginWithTokenResponse (Result Int Evergreen.V135.User.LoginData)
     | GetLoginTokenRateLimited
     | LoggedOutSession
+    | SignInError String
     | UserSignedIn (Maybe Evergreen.V135.User.User)
     | ReceivedWeatherData (Result Http.Error Evergreen.V135.Weather.WeatherData)
     | GotKeyValueStore (Dict.Dict String Evergreen.V135.KeyValueStore.KVDatum)
