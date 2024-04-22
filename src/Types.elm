@@ -170,6 +170,7 @@ type FrontendMsg
     | PressedCancelLogin
     | TypedLoginFormEmail String
     | TypedLoginCode String
+    | SignOut
       -- STRIPE
     | BuyProduct (Id ProductId) (Id PriceId) Stripe.Product.Product_
     | PressedSelectTicket (Id ProductId) (Id PriceId)
@@ -207,7 +208,8 @@ type FrontendMsg
 
 
 type ToBackend
-    = SubmitFormRequest (Id PriceId) (Untrusted PurchaseFormValidated)
+    = ToBackendNoOp
+    | SubmitFormRequest (Id PriceId) (Untrusted PurchaseFormValidated)
     | CancelPurchaseRequest
     | AdminInspect (Maybe User.User)
     | GetBackendModel

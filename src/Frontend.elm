@@ -314,6 +314,9 @@ updateLoaded msg model =
         SubmitSignUp ->
             ( model, Lamdera.sendToBackend (AddUser model.realname model.username model.email) )
 
+        SignOut ->
+            ( { model | currentUserData = Nothing }, Cmd.none )
+
         InputRealname str ->
             ( { model | realname = str }, Cmd.none )
 

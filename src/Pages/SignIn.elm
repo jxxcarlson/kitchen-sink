@@ -21,63 +21,34 @@ testInput =
 
 view : LoadedModel -> Element FrontendMsg
 view model =
+    case model.currentUserData of
+        Nothing ->
+            signInView model
+
+        Just _ ->
+            signedInView model
+
+
+signedInView : LoadedModel -> Element FrontendMsg
+signedInView model =
     Element.column []
-        [ Token.LoginForm.view model model.loginForm
-        , signUp model
+        [ View.Button.signOut
         ]
 
 
-
---
---view : LoadedModel -> Element FrontendMsg
---view model =
---    case model.signInState of
---        SignedOut ->
---            signIn model
---
---        SignedIn ->
---            signedIn model
---
---        SignUp ->
---            signUp model
---
---
---signIn : LoadedModel -> Element FrontendMsg
---signIn model =
---    Element.column [ Element.spacing 18, topPadding ]
---        [ Element.el [ Element.Font.bold, Element.Font.size 24 ] (Element.text "Sign in")
---        , Element.column [ Element.spacing 8, Element.Font.italic ]
---            [ Element.el [ Element.Font.size 14 ] (Element.text "This is a mock sign in page.")
---            , Element.el [ Element.Font.size 14 ] (Element.text "Put in a throwaway password - NOT one you use elsewhere.")
---            , Element.el [ Element.Font.size 14 ] (Element.text "There is ABSOLUTELY NO security here.")
---            , Element.el [ Element.Font.size 14 ] (Element.text "This for initial testing only.")
---            , Element.el [ Element.Font.size 14 ] (Element.text "From time to time the database will be reset and all will be lost.")
---            , Element.el [ Element.Font.size 14 ] (Element.text "PS: sign in as jxxcarlson with password 1234 to play administrator")
---            ]
---        , View.Input.template "User Name" model.username InputUsername
---        , View.Input.passwordTemplateWithAttr [ View.Utility.onEnter Types.SubmitSignIn ] "Password" model.password InputPassword
---        , Element.row [ Element.spacing 18 ]
---            [ View.Button.signIn
---            , View.Button.setSignInState "Need an account?" SignUp
---            ]
---        , Element.el [] (Element.text model.message)
---        ]
---
---
---signedIn : LoadedModel -> Element FrontendMsg
---signedIn model =
---    Element.column [ Element.spacing 18, topPadding, Element.Font.size 24, Element.Font.color View.Color.darkGray ]
---        [ Element.text <| "Signed in as " ++ (Maybe.map .username model.currentUser |> Maybe.withDefault "??")
---        , View.Button.signOut
---        ]
---
---
+signInView : LoadedModel -> Element FrontendMsg
+signInView model =
+    Element.column []
+        [ Element.el [ Element.Font.semiBold, Element.Font.size 24 ] (Element.text "Sign in")
+        , Token.LoginForm.view model model.loginForm
+        , signUp model
+        ]
 
 
 signUp : LoadedModel -> Element FrontendMsg
 signUp model =
     Element.column [ Element.spacing 18, topPadding ]
-        [ Element.el [ Element.Font.bold, Element.Font.size 24 ] (Element.text "Sign up")
+        [ Element.el [ Element.Font.semiBold, Element.Font.size 24 ] (Element.text "Sign up")
         , Element.column [ Element.spacing 8, Element.Font.italic ]
             [ Element.el [ Element.Font.size 14 ] (Element.text "Testing ...")
             ]

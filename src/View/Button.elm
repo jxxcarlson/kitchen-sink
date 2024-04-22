@@ -11,6 +11,7 @@ module View.Button exposing
     , saveKeyValuePair
     , setAdminDisplay
     , setKVViewType
+    , signOut
     , signUp
     , updateKeyValuePair
     )
@@ -35,6 +36,11 @@ import View.Color
 signUp : Element.Element Types.FrontendMsg
 signUp =
     button Types.SubmitSignUp "Submit"
+
+
+signOut : Element.Element Types.FrontendMsg
+signOut =
+    button Types.SignOut "Sign out"
 
 
 cancelSignUp =

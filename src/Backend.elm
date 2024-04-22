@@ -456,6 +456,9 @@ update msg model =
 updateFromFrontend : SessionId -> ClientId -> ToBackend -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 updateFromFrontend sessionId clientId msg model =
     case msg of
+        ToBackendNoOp ->
+            ( model, Cmd.none )
+
         GetBackendModel ->
             ( model, Lamdera.sendToFrontend clientId (GotBackendModel model) )
 
