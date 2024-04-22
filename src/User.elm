@@ -18,12 +18,14 @@ type alias User =
 
 type alias LoginData =
     { username : String
+    , role : Role
     }
 
 
 loginDataOfUser : User -> LoginData
 loginDataOfUser user =
     { username = user.username
+    , role = user.role
     }
 
 

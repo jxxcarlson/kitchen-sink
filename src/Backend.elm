@@ -290,11 +290,27 @@ update msg model =
                     ( model, BackendHelper.errorEmail ("GotPrices failed: " ++ HttpHelpers.httpErrorToString error) )
 
         OnConnected sessionId clientId ->
+            let
+                _ =
+                    Debug.log "@## OnConnected (1)" ( sessionId, clientId )
+
+                maybeUsername : Maybe String
+                maybeUsername =
+                    BiDict.get sessionId model.sessions
+
+                maybeUserData : Maybe User.LoginData
+                maybeUserData =
+                    Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername
+                        |> Maybe.map User.loginDataOfUser
+                        |> Debug.log "@## OnConnected, loginDataOfUser (2)"
+            in
             ( model
             , Cmd.batch
                 [ BackendHelper.getAtmosphericRandomNumbers
                 , Backend.Session.reconnect model sessionId clientId
                 , Lamdera.sendToFrontend clientId (GotKeyValueStore model.keyValueStore)
+
+                ---, Lamdera.sendToFrontend sessionId (GotMessage "Connected")
                 , Lamdera.sendToFrontend
                     clientId
                     (InitData
@@ -302,6 +318,14 @@ update msg model =
                         , productInfo = model.products
                         }
                     )
+                , case maybeUserData of
+                    Nothing ->
+                        Cmd.none
+
+                    Just userData ->
+                        Ok userData
+                            |> LoginWithTokenResponse
+                            |> Lamdera.sendToFrontend sessionId
                 ]
             )
 
@@ -415,6 +439,9 @@ update msg model =
 updateFromFrontend : SessionId -> ClientId -> ToBackend -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 updateFromFrontend sessionId clientId msg model =
     case msg of
+        GetBackendModel ->
+            ( model, Lamdera.sendToFrontend clientId (GotBackendModel model) )
+
         -- TODO: implement the following 4 cases
         CheckLoginRequest ->
             ( model
@@ -580,7 +607,7 @@ updateFromFrontend sessionId clientId msg model =
                     ( model, Lamdera.sendToFrontend clientId (GotMessage "Signed in") )
 
         SignOutRequest username ->
-            ( model |> Backend.Session.removeSessions username
+            ( model |> Backend.Session.removeSession username
             , Lamdera.sendToFrontend clientId (UserSignedIn Nothing |> Debug.log "@## SignOutRequest (3)")
             )
 
@@ -733,10 +760,11 @@ loginWithToken time sessionId clientId loginCode model =
                     of
                         Just ( userId, user ) ->
                             ( { model
-                                | sessionDict = AssocList.insert sessionId userId model.sessionDict
+                                | sessionDict = AssocList.insert sessionId userId model.sessionDict |> Debug.log "@##! Update sesssionDict (2)"
                                 , pendingLogins = AssocList.remove sessionId model.pendingLogins
                               }
-                            , BackendHelper.getLoginData2 userId user model
+                            , User.loginDataOfUser user
+                                |> Ok
                                 |> LoginWithTokenResponse
                                 |> Lamdera.sendToFrontend sessionId
                             )

@@ -46,6 +46,7 @@ import Untrusted
 import Url
 import Url.Parser exposing ((</>), (<?>))
 import Url.Parser.Query as Query
+import User
 import View.Main
 
 
@@ -464,6 +465,9 @@ updateFromBackend msg model =
 updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
 updateFromBackendLoaded msg model =
     case msg of
+        GotBackendModel beModel ->
+            ( { model | backendModel = Just beModel }, Cmd.none )
+
         -- TODO: implement the following 4 cases:
         SignInError message ->
             ( { model | loginErrorMessage = Just message }, Cmd.none )
@@ -485,7 +489,16 @@ updateFromBackendLoaded msg model =
                         _ =
                             Debug.log "@## LoginWithTokenResponse, Ok" loginData
                     in
-                    ( { model | currentUserData = Just loginData, route = HomepageRoute }, Cmd.none )
+                    let
+                        adminCommand =
+                            case loginData.role of
+                                User.AdminRole ->
+                                    Lamdera.sendToBackend GetBackendModel
+
+                                User.UserRole ->
+                                    Cmd.none
+                    in
+                    ( { model | currentUserData = Just loginData, route = HomepageRoute }, adminCommand )
 
         GetLoginTokenRateLimited ->
             ( model, Cmd.none )

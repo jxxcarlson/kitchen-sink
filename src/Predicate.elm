@@ -7,7 +7,7 @@ isAdmin : Maybe User.LoginData -> Bool
 isAdmin maybeLoginData =
     case maybeLoginData of
         Just loginData ->
-            loginData.username == "jxxcarlson"
+            loginData.role == User.AdminRole
 
         Nothing ->
             False

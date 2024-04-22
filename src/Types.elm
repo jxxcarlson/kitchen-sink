@@ -117,6 +117,7 @@ type SignInState
 type AdminDisplay
     = ADStripe
     | ADUser
+    | ADSession
     | ADKeyValues
 
 

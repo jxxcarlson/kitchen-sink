@@ -1,4 +1,4 @@
-module Backend.Session exposing (reconnect, removeSessions, updateSession)
+module Backend.Session exposing (reconnect, removeSession, updateSession)
 
 import BiDict
 import Dict
@@ -26,8 +26,8 @@ updateSession sessionId username model =
     { model | sessions = newSessions_, sessionInfo = newSessionInfo_ }
 
 
-removeSessions : String -> Types.BackendModel -> Types.BackendModel
-removeSessions username model =
+removeSession : String -> Types.BackendModel -> Types.BackendModel
+removeSession username model =
     let
         ( sessions, sessionInfo ) =
             Session.remove username ( model.sessions, model.sessionInfo )

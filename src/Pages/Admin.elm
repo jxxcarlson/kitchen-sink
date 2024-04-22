@@ -1,6 +1,7 @@
 module Pages.Admin exposing (Window, view)
 
 import AssocList
+import BiDict
 import Codec
 import Dict
 import Element exposing (Element, column, fill, height, px, row, scrollbarY, spacing, text, width)
@@ -33,6 +34,7 @@ view model =
     Element.column []
         [ Element.row [ Element.spacing 24, Element.paddingEach { left = 0, right = 0, top = 0, bottom = 24 } ]
             [ View.Button.setAdminDisplay model.adminDisplay ADUser "Users"
+            , View.Button.setAdminDisplay model.adminDisplay ADSession "Sessions"
             , View.Button.setAdminDisplay model.adminDisplay ADKeyValues "Key-Value Store"
             , View.Button.setAdminDisplay model.adminDisplay ADStripe "Stripe Data"
             ]
@@ -44,6 +46,9 @@ view model =
                 case model.adminDisplay of
                     ADUser ->
                         viewUserData model.window backendModel
+
+                    ADSession ->
+                        viewSessions model.window backendModel
 
                     ADKeyValues ->
                         viewKeyValuePairs model.window backendModel
@@ -114,15 +119,6 @@ viewUserData window backendModel =
 
 viewUserDictionary : Window -> Dict.Dict String User.User -> Element msg
 viewUserDictionary window userDictionary =
-    --type alias User =
-    --    { id : String
-    --    , realname : String
-    --    , username : String
-    --    , email : String
-    --    , password : String
-    --    , created_at : Time.Posix
-    --    , updated_at : Time.Posix
-    --    }
     let
         users : List User.User
         users =
@@ -150,22 +146,31 @@ viewUser =
             ]
 
 
+viewSessions : Window -> BackendModel -> Element msg
+viewSessions window backendModel =
+    column
+        [ width fill
+        , spacing 12
+        ]
+        (backendModel.sessionDict
+            |> Debug.log "@##! SESSIONS"
+            |> AssocList.toList
+            |> List.map viewSession
+        )
+
+
+viewSession : ( String, String ) -> Element msg
+viewSession ( key, value ) =
+    column
+        [ width fill
+        ]
+        [ text key
+        , text value
+        ]
+
+
 viewStripeData : BackendModel -> Element msg
 viewStripeData backendModel =
-    --{ randomAtmosphericNumbers : Maybe (List Int)
-    --    , localUuidData : Maybe LocalUUID.Data
-    --
-    --    -- USER
-    --    , userDictionary : Dict.Dict String User.User
-    --
-    --    --STRIPE
-    --    , orders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.Order
-    --    , pendingOrder : AssocList.Dict (Id StripeSessionId) Stripe.Codec.PendingOrder
-    --    , expiredOrders : AssocList.Dict (Id StripeSessionId) Stripe.Codec.PendingOrder
-    --    , prices : AssocList.Dict (Id ProductId) Stripe.Codec.Price2
-    --    , time : Time.Posix
-    --    , products : Stripe.Stripe.ProductInfoDict
-    --    }
     column
         [ width fill
         , spacing 40
