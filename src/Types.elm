@@ -64,6 +64,7 @@ type alias LoadedModel =
 
     -- TOKEN
     , loginForm : Token.Types.LoginForm
+    , loginErrorMessage : Maybe String
 
     -- User
     , currentUserData : Maybe User.LoginData
@@ -175,7 +176,12 @@ type FrontendMsg
     | PressedSubmitForm (Id ProductId) (Id PriceId)
     | PressedCancelForm
     | AskToRenewPrices
-      -- USER
+      -- USER: sign up
+    | SubmitSignUp
+    | InputRealname String
+    | InputUsername String
+    | InputEmail String
+    | CancelSignUp
       -- ADMIN
     | SetAdminDisplay AdminDisplay
       --
@@ -211,6 +217,7 @@ type ToBackend
       -- STRIPE
     | RenewPrices
       -- USER
+    | AddUser String String String -- realname, username, email
     | SignInRequest String String
     | SignOutRequest String
     | SignUpRequest String String String String -- realname, username, email, password

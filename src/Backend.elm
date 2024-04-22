@@ -516,6 +516,36 @@ updateFromFrontend sessionId clientId msg model =
                     ( model, Cmd.none )
 
         -- USER
+        AddUser realname username email ->
+            case model.localUuidData of
+                Nothing ->
+                    ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
+
+                Just uuidData ->
+                    case EmailAddress.fromString email of
+                        Nothing ->
+                            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
+
+                        Just validEmail ->
+                            let
+                                user =
+                                    { realname = realname
+                                    , username = username
+                                    , email = validEmail
+                                    , created_at = model.time
+                                    , updated_at = model.time
+                                    , id = LocalUUID.extractUUIDAsString uuidData
+                                    , role = User.UserRole
+                                    , recentLoginEmails = []
+                                    }
+                            in
+                            ( { model
+                                | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
+                                , userDictionary = Dict.insert username user model.userDictionary
+                              }
+                            , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
+                            )
+
         SignInRequest username _ ->
             -- TODO: this code is a placeholder pendig using Martin's code
             case Dict.get username model.userDictionary of

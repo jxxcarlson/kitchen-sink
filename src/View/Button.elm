@@ -1,6 +1,7 @@
 module View.Button exposing
     ( askToRenewPrices
     , buyProduct
+    , cancelSignUp
     , copyTextToClipboard
     , cycleVerbosity
     , getValueWithKey
@@ -10,6 +11,7 @@ module View.Button exposing
     , saveKeyValuePair
     , setAdminDisplay
     , setKVViewType
+    , signUp
     , updateKeyValuePair
     )
 
@@ -28,6 +30,15 @@ import View.Color
 
 
 -- USER
+
+
+signUp : Element.Element Types.FrontendMsg
+signUp =
+    button Types.SubmitSignUp "Submit"
+
+
+cancelSignUp =
+    button Types.CancelSignUp "Cancel"
 
 
 setAdminDisplay : Types.AdminDisplay -> Types.AdminDisplay -> String -> Element.Element Types.FrontendMsg

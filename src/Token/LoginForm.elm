@@ -108,14 +108,8 @@ errorView errorMessage =
         [ Element.text errorMessage ]
 
 
-view : Bool -> LoginForm -> Element FrontendMsg
-
-
-
--- TODO: set backendIsLoading ...
-
-
-view backendIsLoading loginForm =
+view : Types.LoadedModel -> LoginForm -> Element FrontendMsg
+view model loginForm =
     Element.column
         [ Element.padding 16
         , Element.centerX
@@ -126,10 +120,18 @@ view backendIsLoading loginForm =
         ]
         [ case loginForm of
             EnterEmail enterEmail2 ->
-                enterEmailView backendIsLoading enterEmail2
+                enterEmailView enterEmail2
 
             EnterLoginCode enterLoginCode ->
                 enterLoginCodeView enterLoginCode
+        , case model.loginErrorMessage of
+            Just errorMessage ->
+                Element.paragraph
+                    [ Element.Font.center ]
+                    [ errorView errorMessage ]
+
+            Nothing ->
+                Element.none
         , Element.paragraph
             [ Element.Font.center ]
             [ Element.text "If you're having trouble logging in, we can be reached at "
@@ -167,75 +169,75 @@ enterLoginCodeView model =
         [ label.element
         , Element.column
             [ Element.spacing 6, Element.centerX, Element.width Element.shrink, Element.moveRight 18 ]
-            [ Element.el
-                [ Element.Font.size 36
-                , Element.paragraph
-                    [ Element.Font.letterSpacing 26
-                    , Element.paddingXY 0 6
-                    , Element.Font.family [ Element.Font.monospace ]
-                    , Martin.noPointerEvents
-                    ]
-                    (List.range 0 (loginCodeLength - 1)
-                        |> List.map
-                            (\index ->
-                                Element.el
-                                    [ Element.paddingXY -1 -1
-                                    , Element.behindContent
-                                        (Element.el
-                                            [ Element.height (Element.px 54)
-                                            , Element.paddingXY 0 24
-                                            , Element.width (Element.px 32)
-                                            , Element.Font.color (Element.rgba 0 0 0 1)
-                                            , if index == (loginCodeLength - 1) // 2 then
-                                                Element.onRight
-                                                    (Element.el
-                                                        [ Element.Border.widthEach
-                                                            { left = 0
-                                                            , right = 0
-                                                            , top = 1
-                                                            , bottom = 1
-                                                            }
-                                                        , Element.moveRight 3
-                                                        , Element.centerY
-                                                        , Element.width (Element.px 9)
-                                                        ]
-                                                        Element.none
-                                                    )
-
-                                              else
-                                                Martin.noAttr
-                                            , Element.Border.width 1
-                                            , Element.Border.rounded 8
-                                            , Element.Border.color MyElement.gray
-                                            , Element.Border.shadow { offset = ( 0, 1 ), blur = 2, size = 0, color = Element.rgba 0 0 0 0.2 }
-                                            , Martin.noPointerEvents
-                                            ]
-                                            Element.none
-                                        )
-                                    , Element.Font.color (Element.rgba 0 0 0 0)
-                                    , Martin.noPointerEvents
-                                    ]
-                                    (Element.text "_")
-                            )
-                    )
-                    |> Element.behindContent
-                , Element.width (Element.px 400)
+            [ --Element.el
+              --    [ Element.Font.size 36
+              --    , Element.paragraph
+              --        [ Element.Font.letterSpacing 26
+              --        , Element.paddingXY 0 6
+              --        , Element.Font.family [ Element.Font.monospace ]
+              --        , Martin.noPointerEvents
+              --        ]
+              --        (List.range 0 (loginCodeLength - 1)
+              --            |> List.map
+              --                (\index ->
+              --                    Element.el
+              --                        [ Element.paddingXY -1 -1
+              --                        , Element.behindContent
+              --                            (Element.el
+              --                                [ Element.height (Element.px 54)
+              --                                , Element.paddingXY 0 24
+              --                                , Element.width (Element.px 32)
+              --                                , Element.Font.color (Element.rgba 0 0 0 1)
+              --                                , if index == (loginCodeLength - 1) // 2 then
+              --                                    Element.onRight
+              --                                        (Element.el
+              --                                            [ Element.Border.widthEach
+              --                                                { left = 0
+              --                                                , right = 0
+              --                                                , top = 1
+              --                                                , bottom = 1
+              --                                                }
+              --                                            , Element.moveRight 3
+              --                                            , Element.centerY
+              --                                            , Element.width (Element.px 9)
+              --                                            ]
+              --                                            Element.none
+              --                                        )
+              --
+              --                                  else
+              --                                    Martin.noAttr
+              --                                , Element.Border.width 1
+              --                                , Element.Border.rounded 8
+              --                                , Element.Border.color MyElement.gray
+              --                                , Element.Border.shadow { offset = ( 0, 1 ), blur = 2, size = 0, color = Element.rgba 0 0 0 0.2 }
+              --                                , Martin.noPointerEvents
+              --                                ]
+              --                                Element.none
+              --                            )
+              --                        , Element.Font.color (Element.rgba 0 0 0 0)
+              --                        , Martin.noPointerEvents
+              --                        ]
+              --                        (Element.text "_")
+              --                )
+              --        )
+              --        |> Element.behindContent
+              --    , Element.width (Element.px 400)
+              --    ]
+              Element.Input.text
+                [ -- Element.Font.letterSpacing 26
+                  Element.paddingEach { left = 6, right = 0, top = 2, bottom = 8 }
+                , Element.Font.family [ Element.Font.monospace ]
+                , Element.Font.size 14
+                , Html.Attributes.attribute "inputmode" "numeric" |> Element.htmlAttribute
+                , Html.Attributes.type_ "number" |> Element.htmlAttribute
+                , Element.Border.width 1
+                , Element.Background.color (Element.rgba 0 0 0.2 0)
                 ]
-                (Element.Input.text
-                    [ Element.Font.letterSpacing 26
-                    , Element.paddingEach { left = 6, right = 0, top = 0, bottom = 8 }
-                    , Element.Font.family [ Element.Font.monospace ]
-                    , Html.Attributes.attribute "inputmode" "numeric" |> Element.htmlAttribute
-                    , Html.Attributes.type_ "number" |> Element.htmlAttribute
-                    , Element.Border.width 0
-                    , Element.Background.color (Element.rgba 0 0 0 0)
-                    ]
-                    { onChange = Types.TypedLoginCode
-                    , text = model.loginCode
-                    , placeholder = Nothing
-                    , label = label.id
-                    }
-                )
+                { onChange = Types.TypedLoginCode
+                , text = model.loginCode
+                , placeholder = Nothing --Just (Element.Input.placeholder [] (Element.text "12345678"))
+                , label = label.id
+                }
             , if Dict.size model.attempts < maxLoginAttempts then
                 case validateLoginCode model.loginCode of
                     Ok loginCode ->
@@ -307,8 +309,8 @@ invalidCode loginCode loginForm =
                 |> EnterLoginCode
 
 
-enterEmailView : Bool -> EnterEmail2 -> Element FrontendMsg
-enterEmailView backendIsLoading model =
+enterEmailView : EnterEmail2 -> Element FrontendMsg
+enterEmailView model =
     Element.column
         [ Element.spacing 16 ]
         [ emailInput
@@ -334,17 +336,8 @@ enterEmailView backendIsLoading model =
         , Element.row
             [ Element.spacing 16 ]
             [ MyElement.secondaryButton [ Martin.elementId cancelButtonId ] Types.PressedCancelLogin "Cancel"
-            , if backendIsLoading then
-                Element.none
-
-              else
-                MyElement.primaryButton submitEmailButtonId Types.PressedSubmitEmail "Login"
+            , MyElement.primaryButton submitEmailButtonId Types.PressedSubmitEmail "Login"
             ]
-        , if backendIsLoading then
-            errorView "Loading backend data. Please don't refresh the page."
-
-          else
-            Element.none
         , if model.rateLimited then
             errorView "Too many login attempts have been made. Please try again later."
 

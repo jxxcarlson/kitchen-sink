@@ -138,6 +138,7 @@ tryLoading loadingModel =
 
                         -- TOKEN
                         , loginForm = Token.LoginForm.init
+                        , loginErrorMessage = Nothing
 
                         -- USER
                         , currentUserData = Nothing
@@ -308,6 +309,22 @@ updateLoaded msg model =
             ( model, Ports.playSound (Json.Encode.string "chirp.mp3") )
 
         -- USER
+        -- TODO: complete this section (4 cases)
+        SubmitSignUp ->
+            ( model, Lamdera.sendToBackend (AddUser model.realname model.username model.email) )
+
+        InputRealname str ->
+            ( { model | realname = str }, Cmd.none )
+
+        InputUsername str ->
+            ( { model | username = str }, Cmd.none )
+
+        InputEmail str ->
+            ( { model | email = str }, Cmd.none )
+
+        CancelSignUp ->
+            ( model, Cmd.none )
+
         -- STRIPE
         BuyProduct productId priceId product ->
             ( { model | selectedProduct = Just ( productId, priceId, product ) }, Cmd.none )
@@ -458,7 +475,7 @@ updateFromBackendLoaded msg model =
                         _ =
                             Debug.log "@## LoginWithTokenResponse, Err" code
                     in
-                    ( model, Cmd.none )
+                    ( { model | loginErrorMessage = Just "Invalid login code" }, Cmd.none )
 
                 Ok loginData ->
                     let
