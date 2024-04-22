@@ -80,10 +80,6 @@ second gives details on their implementation. The **Purchase** tab
 allows you to make fake purchases using Stripe.  Your credit card
 will not be charged — this is all done in test mode.
 
-During the testing phase, the app comes preloaded with two users, `jxxcarlson`
-and `aristotle`, both with password `1234`. Use the **Sign in** tab for these.
-You can also sign up for your own account.
-
 Note that you can play administrator by signing in as `jxxcarlson`. When signed
 is as an administrator, the **Admin** tab appears.  Using it, you
 can display the current users, Stripe data, and a key-value store.  You can
