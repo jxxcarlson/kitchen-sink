@@ -209,6 +209,7 @@ type ToBackend
     = SubmitFormRequest (Id PriceId) (Untrusted PurchaseFormValidated)
     | CancelPurchaseRequest
     | AdminInspect (Maybe User.User)
+    | GetBackendModel
       -- TOKEN
     | CheckLoginRequest
     | LoginWithTokenRequest Int
@@ -283,6 +284,7 @@ type ToFrontend
     | ReceivedWeatherData (Result Http.Error Weather.WeatherData)
       -- DATA (JC)
     | GotKeyValueStore (Dict.Dict String KeyValueStore.KVDatum)
+    | GotBackendModel BackendModel
 
 
 

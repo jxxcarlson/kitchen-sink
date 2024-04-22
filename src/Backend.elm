@@ -141,6 +141,26 @@ update msg model =
     -- Replace existing randomAtmosphericNumber with a new one if possible
     (case msg of
         -- TODO: implement the following 2 cases
+        --OnConnected sessionId clientId ->
+        --    let
+        --        maybeUsername : Maybe String
+        --        maybeUsername =
+        --            BiDict.get sessionId model.sessions
+        --
+        --        maybeUserData : Maybe User.LoginData
+        --        maybeUserData =
+        --            Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername |> Maybe.map User.loginDataOfUser
+        --    in
+        --    case ( maybeUsername, maybeUserData ) of
+        --        ( Just username, Just userData ) ->
+        --            ( model
+        --            , Cmd.batch
+        --                --- (Backend.Session.reconnect model sessionId clientId :: Backend.Session.sendUserData model username userData sessionId clientId)
+        --                (Backend.Session.reconnect model sessionId clientId :: [])
+        --            )
+        --
+        --        ( _, _ ) ->
+        --            ( model, Cmd.none )
         SentLoginEmail _ _ _ ->
             -- TODO
             ( model, Cmd.none )
