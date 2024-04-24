@@ -692,9 +692,12 @@ updateFromFrontend sessionId clientId msg model =
 
 noReplyEmailAddress : EmailAddress
 noReplyEmailAddress =
-    -- Unsafe.emailAddress Config.postmarkNoReplyEmail
-    -- Unsafe.emailAddress "a@a.com"
-    EmailAddress.fromString Config.postmarkNoReplyEmail |> Maybe.withDefault (Unsafe.emailAddress "a@a.com")
+    EmailAddress.EmailAddress
+        { localPart = "hello"
+        , tags = []
+        , domain = "elm-kitchen-sink.lamdera"
+        , tld = [ "app" ]
+        }
 
 
 sendLoginEmail :
