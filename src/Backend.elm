@@ -31,7 +31,6 @@ import Time
 import Token.LoginForm
 import Token.Types
 import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
-import Unsafe
 import Untrusted
 import User
 

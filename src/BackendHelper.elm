@@ -28,7 +28,6 @@ import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId
 import Time
 import Token.Types
 import Types
-import Unsafe
 import User
 import Weather
 
@@ -151,7 +150,12 @@ errorEmail errorMessage =
 
 purchaseSupportAddres : EmailAddress.EmailAddress
 purchaseSupportAddres =
-    Unsafe.emailAddress "team@elm.camp"
+    EmailAddress.EmailAddress
+        { localPart = "team"
+        , tags = []
+        , domain = "elm"
+        , tld = [ "camp" ]
+        }
 
 
 shouldRateLimit time user =
