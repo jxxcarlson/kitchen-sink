@@ -224,7 +224,7 @@ type ToBackend
     | AddUser String String String -- realname, username, email
     | SignInRequest String String
     | SignOutRequest String
-    | SignUpRequest String String String String -- realname, username, email, password
+    | RequestSignup String String String String -- realname, username, email, password
       -- EXAMPLES
     | GetWeatherData String
       -- DATA (JC)

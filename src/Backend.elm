@@ -630,7 +630,7 @@ updateFromFrontend sessionId clientId msg model =
             , Lamdera.sendToFrontend clientId (UserSignedIn Nothing |> Debug.log "@## SignOutRequest (3)")
             )
 
-        SignUpRequest realname username email password ->
+        RequestSignup realname username email password ->
             case model.localUuidData of
                 Nothing ->
                     ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing |> Debug.log "@## SignUpRequest (4)") )
