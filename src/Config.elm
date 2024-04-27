@@ -16,7 +16,8 @@ contactEmail =
 
 postmarkApiKey : Postmark.ApiKey
 postmarkApiKey =
-    Postmark.apiKey Env.postmarkApiKey
+    -- Postmark.apiKey Env.postmarkApiKey
+    Postmark.apiKey "e4457a18-289d-4dd2-96f5-2ccf68dc2879"
 
 
 postmarkNoReplyEmail : String
