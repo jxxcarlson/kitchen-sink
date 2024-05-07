@@ -328,7 +328,7 @@ updateLoaded msg model =
             ( { model | email = str }, Cmd.none )
 
         CancelSignUp ->
-            ( { model | signInStatus = Token.Types.SigningUp }, Cmd.none )
+            ( { model | signInStatus = Token.Types.NotSignedIn }, Cmd.none )
 
         OpenSignUp ->
             ( { model | signInStatus = Token.Types.SigningUp }, Cmd.none )
@@ -539,7 +539,7 @@ updateFromBackendLoaded msg model =
         -- USER
         UserSignedIn maybeUser ->
             -- TODO: use or remove
-            ( model, Cmd.none )
+            ( { model | signInStatus = Token.Types.NotSignedIn }, Cmd.none )
 
         ReceivedWeatherData result ->
             case result of

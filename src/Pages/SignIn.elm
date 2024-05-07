@@ -41,7 +41,21 @@ signInView model =
     Element.column []
         [ Element.el [ Element.Font.semiBold, Element.Font.size 24 ] (Element.text "Sign in")
         , Token.LoginForm.view model model.loginForm
-        , signUp model
+
+        --, Element.el [ Element.paddingXY 8 12 ] View.Button.openSignUp
+        , case model.signInStatus of
+            Token.Types.NotSignedIn ->
+                Element.row
+                    [ Element.spacing 12
+                    , Element.paddingEach { left = 18, right = 0, top = 0, bottom = 0 }
+                    ]
+                    [ Element.el [] (Element.text "Need to sign up?  "), View.Button.openSignUp ]
+
+            Token.Types.SigningUp ->
+                signUp model
+
+            _ ->
+                Element.none
         ]
 
 
