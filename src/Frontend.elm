@@ -316,7 +316,52 @@ updateLoaded msg model =
             ( model, Lamdera.sendToBackend (AddUser model.realname model.username model.email) )
 
         SignOut ->
-            ( { model | currentUserData = Nothing }, Cmd.none )
+            ( { model
+                | showTooltip = False
+                , form =
+                    { submitStatus = NotSubmitted NotPressedSubmit
+                    , name = ""
+                    , billingEmail = ""
+                    , country = ""
+                    }
+
+                -- TOKEN
+                , loginForm = Token.LoginForm.init
+                , loginErrorMessage = Nothing
+                , signInStatus = Token.Types.NotSignedIn
+
+                -- USER
+                , currentUserData = Nothing
+                , currentUser = Nothing
+                , realname = ""
+                , username = ""
+                , email = ""
+                , password = ""
+                , passwordConfirmation = ""
+                , signInState = SignedOut
+
+                -- ADMIN
+                , adminDisplay = ADUser
+
+                --
+                , backendModel = Nothing
+                , message = ""
+
+                -- EXAMPLES
+                , language = "en-US"
+                , inputCity = ""
+                , weatherData = Nothing
+
+                -- DATA
+                , currentKVPair = Nothing
+                , inputKey = ""
+                , inputValue = ""
+                , inputFilterData = ""
+                , kvViewType = KeyValueStore.KVVSummary
+                , kvVerbosity = KeyValueStore.KVQuiet
+              }
+            , Cmd.none
+            )
 
         InputRealname str ->
             ( { model | realname = str }, Cmd.none )
