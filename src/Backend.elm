@@ -538,8 +538,15 @@ updateFromFrontend sessionId clientId msg model =
                     in
                     BackendHelper.addLog model.time (Token.Types.FailedToCreateLoginCode model.secretCounter) model
 
-        LogOutRequest ->
-            ( model, Cmd.none )
+        LogOutRequest userData ->
+            case userData of
+                Just user ->
+                    ( { model | sessionDict = model.sessionDict |> AssocList.filter (\_ name -> name /= user.username) }
+                    , Lamdera.sendToFrontend clientId (UserSignedIn Nothing)
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         -- STRIPE
         RenewPrices ->

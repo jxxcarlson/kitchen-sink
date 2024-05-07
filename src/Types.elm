@@ -219,7 +219,7 @@ type ToBackend
     | CheckLoginRequest
     | LoginWithTokenRequest Int
     | GetLoginTokenRequest EmailAddress
-    | LogOutRequest
+    | LogOutRequest (Maybe User.LoginData)
       -- STRIPE
     | RenewPrices
       -- USER

@@ -360,7 +360,7 @@ updateLoaded msg model =
                 , kvViewType = KeyValueStore.KVVSummary
                 , kvVerbosity = KeyValueStore.KVQuiet
               }
-            , Cmd.none
+            , Lamdera.sendToBackend (LogOutRequest model.currentUserData)
             )
 
         InputRealname str ->
