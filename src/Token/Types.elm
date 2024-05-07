@@ -5,6 +5,7 @@ module Token.Types exposing
     , LogItem(..)
     , LoginCodeStatus(..)
     , LoginForm(..)
+    , SignInStatus(..)
     )
 
 import Dict exposing (Dict)
@@ -13,9 +14,29 @@ import Time
 import User
 
 
+
+-- TOKEN
+
+
 type LoginForm
     = EnterEmail EnterEmail2
     | EnterLoginCode EnterLoginCode2
+
+
+type SignInStatus
+    = NotSignedIn
+    | SigningUp
+    | SignedIn
+
+
+type LoginCodeStatus
+    = Checking
+    | NotValid
+
+
+type LogItem
+    = LoginsRateLimited User.Id
+    | FailedToCreateLoginCode Int
 
 
 type alias EnterEmail2 =
@@ -27,16 +48,6 @@ type alias EnterEmail2 =
 
 type alias EnterLoginCode2 =
     { sentTo : EmailAddress, loginCode : String, attempts : Dict Int LoginCodeStatus }
-
-
-type LoginCodeStatus
-    = Checking
-    | NotValid
-
-
-type LogItem
-    = LoginsRateLimited User.Id
-    | FailedToCreateLoginCode Int
 
 
 type alias Log =

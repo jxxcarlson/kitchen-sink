@@ -7,6 +7,7 @@ module View.Button exposing
     , getValueWithKey
     , newKeyValuePair
     , noOp
+    , openSignUp
     , playSound
     , saveKeyValuePair
     , setAdminDisplay
@@ -45,6 +46,10 @@ signOut =
 
 cancelSignUp =
     button Types.CancelSignUp "Cancel"
+
+
+openSignUp =
+    button Types.OpenSignUp "Sign Up"
 
 
 setAdminDisplay : Types.AdminDisplay -> Types.AdminDisplay -> String -> Element.Element Types.FrontendMsg

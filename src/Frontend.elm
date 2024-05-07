@@ -140,6 +140,7 @@ tryLoading loadingModel =
                         -- TOKEN
                         , loginForm = Token.LoginForm.init
                         , loginErrorMessage = Nothing
+                        , signInStatus = Token.Types.NotSignedIn
 
                         -- USER
                         , currentUserData = Nothing
@@ -327,7 +328,10 @@ updateLoaded msg model =
             ( { model | email = str }, Cmd.none )
 
         CancelSignUp ->
-            ( model, Cmd.none )
+            ( { model | signInStatus = Token.Types.SigningUp }, Cmd.none )
+
+        OpenSignUp ->
+            ( { model | signInStatus = Token.Types.SigningUp }, Cmd.none )
 
         -- STRIPE
         BuyProduct productId priceId product ->

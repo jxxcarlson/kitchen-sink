@@ -65,6 +65,7 @@ type alias LoadedModel =
     -- TOKEN
     , loginForm : Token.Types.LoginForm
     , loginErrorMessage : Maybe String
+    , signInStatus : Token.Types.SignInStatus
 
     -- User
     , currentUserData : Maybe User.LoginData
@@ -184,6 +185,7 @@ type FrontendMsg
     | InputUsername String
     | InputEmail String
     | CancelSignUp
+    | OpenSignUp
       -- ADMIN
     | SetAdminDisplay AdminDisplay
       --
