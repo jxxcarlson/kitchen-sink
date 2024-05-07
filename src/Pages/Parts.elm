@@ -11,10 +11,11 @@ import Predicate
 import Route exposing (Route(..))
 import Theme
 import Types
+import View.Button
 import View.Color
 
 
-genericNoScrollBar : Types.LoadedModel -> (Types.LoadedModel -> Element msg) -> Element msg
+genericNoScrollBar : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) -> Element Types.FrontendMsg
 genericNoScrollBar model view =
     Element.column
         [ Element.width Element.fill, Element.height Element.fill, Element.clip ]
@@ -31,7 +32,7 @@ genericNoScrollBar model view =
         ]
 
 
-generic : Types.LoadedModel -> (Types.LoadedModel -> Element msg) -> Element msg
+generic : Types.LoadedModel -> (Types.LoadedModel -> Element Types.FrontendMsg) -> Element Types.FrontendMsg
 generic model view =
     Element.column
         [ Element.width Element.fill, Element.height Element.fill ]
@@ -48,7 +49,7 @@ generic model view =
         ]
 
 
-header : Types.LoadedModel -> Route -> { window : { width : Int, height : Int }, isCompact : Bool } -> Element msg
+header : Types.LoadedModel -> Route -> { window : { width : Int, height : Int }, isCompact : Bool } -> Element Types.FrontendMsg
 header model route config =
     Element.el
         [ Element.Background.color View.Color.blue
@@ -82,25 +83,29 @@ header model route config =
             , Element.link
                 (linkStyle route Purchase)
                 { url = Route.encode Purchase, label = Element.text "Purchase" }
-            , Element.link
-                (linkStyle route DataStore)
-                { url = Route.encode DataStore, label = Element.text "View Data" }
-            , Element.link
-                (linkStyle route EditData)
-                { url = Route.encode EditData, label = Element.text "Edit Data" }
-            , Element.link
-                (linkStyle route SignInRoute)
-                { url = Route.encode SignInRoute
-                , label =
-                    Element.text
-                        (case model.currentUserData of
-                            Just currentUserData_ ->
-                                currentUserData_.username
 
-                            Nothing ->
-                                "Sign in"
-                        )
-                }
+            --.url = Route.encode DataStore, label = Element.text "View Data" }
+            --, Element.link
+            --    (linkStyle route EditData)
+            --    { url = Route.encode EditData, label = Element.text "Edit Data" }
+            , case model.currentUserData of
+                Just currentUserData_ ->
+                    View.Button.signOut currentUserData_.username
+
+                Nothing ->
+                    Element.link
+                        (linkStyle route SignInRoute)
+                        { url = Route.encode SignInRoute
+                        , label =
+                            Element.el []
+                                (case model.currentUserData of
+                                    Just currentUserData_ ->
+                                        View.Button.signOut currentUserData_.username
+
+                                    Nothing ->
+                                        Element.text "Sign in"
+                                )
+                        }
             ]
         )
 

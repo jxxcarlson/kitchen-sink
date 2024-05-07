@@ -31,9 +31,12 @@ view model =
 
 signedInView : LoadedModel -> Element FrontendMsg
 signedInView model =
-    Element.column []
-        [ View.Button.signOut
-        ]
+    case model.currentUserData of
+        Nothing ->
+            Element.none
+
+        Just userData ->
+            View.Button.signOut userData.username
 
 
 signInView : LoadedModel -> Element FrontendMsg

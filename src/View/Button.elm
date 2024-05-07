@@ -39,9 +39,9 @@ signUp =
     button Types.SubmitSignUp "Submit"
 
 
-signOut : Element.Element Types.FrontendMsg
-signOut =
-    button Types.SignOut "Sign out"
+signOut : String -> Element.Element Types.FrontendMsg
+signOut str =
+    button Types.SignOut ("Sign out " ++ str)
 
 
 cancelSignUp =
