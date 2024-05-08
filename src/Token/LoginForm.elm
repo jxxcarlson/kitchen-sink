@@ -159,7 +159,7 @@ enterLoginCodeView model =
                 , Element.Border.width 1
                 , Element.Background.color (Element.rgba 0 0 0.2 0)
                 ]
-                { onChange = Types.TypedLoginCode
+                { onChange = Types.UseReceivedCodetoSignIn
                 , text = model.loginCode
                 , placeholder = Nothing --Just (Element.Input.placeholder [] (Element.text "12345678"))
                 , label = label.id

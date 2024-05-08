@@ -13,7 +13,6 @@ import Json.Encode
 import KeyValueStore
 import Lamdera
 import Ports
-import Predicate
 import RPC
 import Route exposing (Route(..))
 import Stripe.Product as Tickets exposing (Product_)
@@ -28,6 +27,7 @@ import Stripe.Stripe as Stripe
 import Stripe.View
 import Task
 import Time
+import Token.Frontend
 import Token.LoginForm
 import Token.Types exposing (LoginForm(..))
 import Types
@@ -237,28 +237,26 @@ updateLoaded msg model =
                         -- TODO: handle EnterLoginCode with parameter loginCode instead of _ ??
                         ( model, Cmd.none )
 
-        TypedLoginFormEmail text ->
-            case model.loginForm of
-                EnterEmail loginForm_ ->
-                    let
-                        loginForm =
-                            { loginForm_ | email = text }
-                    in
-                    ( { model | loginForm = EnterEmail loginForm }, Cmd.none )
-
-                EnterLoginCode loginCode_ ->
-                    -- TODO: complete this
-                    --  EnterLoginCode{ sentTo : EmailAddress, loginCode : String, attempts : Dict Int LoginCodeStatus }
-                    ( model, Cmd.none )
+        TypedLoginFormEmail loginCode ->
+            -- Token.Frontend.useReceivedCodeToSignIn model text
+            -- case model.loginForm of
+            --EnterEmail loginForm_ ->
+            --    let
+            --        loginForm =
+            --            { loginForm_ | email = text }
+            --    in
+            --    ( { model | loginForm = EnterEmail loginForm }, Cmd.none )
+            --
+            --EnterLoginCode loginCode_ ->
+            --    -- TODO: complete this
+            --    --  EnterLoginCode{ sentTo : EmailAddress, loginCode : String, attempts : Dict Int LoginCodeStatus }
+            --    ( model, Cmd.none )
+            Token.Frontend.useReceivedCodeToSignIn model loginCode
 
         PressedCancelLogin ->
             ( { model | route = HomepageRoute }, Cmd.none )
 
-        TypedLoginCode loginCodeText ->
-            let
-                _ =
-                    Debug.log "@###@ TypedLoginCode" loginCodeText
-            in
+        UseReceivedCodetoSignIn loginCodeText ->
             case model.loginForm of
                 Token.Types.EnterEmail _ ->
                     ( model, Cmd.none )

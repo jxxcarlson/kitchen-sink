@@ -170,7 +170,7 @@ type FrontendMsg
     | PressedSubmitEmail
     | PressedCancelLogin
     | TypedLoginFormEmail String
-    | TypedLoginCode String
+    | UseReceivedCodetoSignIn String
     | SignOut
       -- STRIPE
     | BuyProduct (Id ProductId) (Id PriceId) Stripe.Product.Product_
