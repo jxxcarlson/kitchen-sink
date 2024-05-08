@@ -586,7 +586,12 @@ updateFromBackendLoaded msg model =
 
         -- USER
         UserRegistered user ->
-            ( { model | currentUser = Just user, signInStatus = Token.Types.SuccessfulRegistration user.username }, Cmd.none )
+            ( { model
+                | currentUser = Just user
+                , signInStatus = Token.Types.SuccessfulRegistration user.username (EmailAddress.toString user.email)
+              }
+            , Cmd.none
+            )
 
         UserSignedIn maybeUser ->
             -- TODO: use or remove

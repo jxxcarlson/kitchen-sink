@@ -31,10 +31,10 @@ view model =
         Token.Types.SigningUp ->
             signUp model
 
-        Token.Types.SuccessfulRegistration username ->
+        Token.Types.SuccessfulRegistration username email ->
             Element.column []
                 [ signInAfterRegisteringView model
-                , Element.el [ Element.Font.color (Element.rgb 0 0 1) ] (Element.text <| username ++ ", you are now registered")
+                , Element.el [ Element.Font.color (Element.rgb 0 0 1) ] (Element.text <| username ++ ", you are now registered as " ++ email)
                 ]
 
         Token.Types.ErrorNotRegistered message ->
@@ -81,9 +81,6 @@ signUp : LoadedModel -> Element FrontendMsg
 signUp model =
     Element.column [ Element.spacing 18, topPadding ]
         [ Element.el [ Element.Font.semiBold, Element.Font.size 24 ] (Element.text "Sign up")
-        , Element.column [ Element.spacing 8, Element.Font.italic ]
-            [ Element.el [ Element.Font.size 14 ] (Element.text "Testing ...")
-            ]
         , View.Input.template "Real Name" model.realname InputRealname
         , View.Input.template "User Name" model.username InputUsername
         , View.Input.template "Email" model.email InputEmail

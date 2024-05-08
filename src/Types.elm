@@ -129,7 +129,7 @@ type alias BackendModel =
 
     -- TOKEN
     , secretCounter : Int
-    , sessionDict : AssocList.Dict SessionId String -- sessionId usernamae
+    , sessionDict : AssocList.Dict SessionId String -- Dict sessionId usernames
     , pendingLogins :
         AssocList.Dict
             SessionId
