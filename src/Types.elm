@@ -167,7 +167,7 @@ type FrontendMsg
     | PressedShowTooltip
     | MouseDown
       -- TOKEN
-    | PressedSubmitEmail
+    | SubmitEmailForToken
     | PressedCancelLogin
     | TypedLoginFormEmail String
     | UseReceivedCodetoSignIn String

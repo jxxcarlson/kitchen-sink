@@ -240,7 +240,7 @@ enterEmailView model =
     Element.column
         [ Element.spacing 16 ]
         [ emailInput
-            Types.PressedSubmitEmail
+            Types.SubmitEmailForToken
             Types.TypedLoginFormEmail
             model.email
             "Enter your email address"
@@ -262,7 +262,7 @@ enterEmailView model =
         , Element.row
             [ Element.spacing 16 ]
             [ MyElement.secondaryButton [ Martin.elementId cancelButtonId ] Types.PressedCancelLogin "Cancel"
-            , MyElement.primaryButton submitEmailButtonId Types.PressedSubmitEmail "Login"
+            , MyElement.primaryButton submitEmailButtonId Types.SubmitEmailForToken "Login"
             ]
         , if model.rateLimited then
             errorView "Too many login attempts have been made. Please try again later."

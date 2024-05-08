@@ -216,80 +216,50 @@ updateLoaded msg model =
             ( { model | showTooltip = False }, Cmd.none )
 
         -- TOKEN
-        PressedSubmitEmail ->
-            -- TODO: false was ifloaded .... something or other
-            if False then
-                ( model, Cmd.none )
-
-            else
-                case model.loginForm of
-                    EnterEmail loginForm ->
-                        case EmailAddress.fromString loginForm.email of
-                            Just email ->
-                                ( { model | loginForm = EnterLoginCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
-                                , Lamdera.sendToBackend (GetSignInTokenRequest email)
-                                )
-
-                            Nothing ->
-                                ( { model | loginForm = EnterEmail { loginForm | pressedSubmitEmail = True } }, Cmd.none )
-
-                    EnterLoginCode _ ->
-                        -- TODO: handle EnterLoginCode with parameter loginCode instead of _ ??
-                        ( model, Cmd.none )
+        SubmitEmailForToken ->
+            Token.Frontend.submitEmailForToken model
 
         TypedLoginFormEmail loginCode ->
-            -- Token.Frontend.useReceivedCodeToSignIn model text
-            -- case model.loginForm of
-            --EnterEmail loginForm_ ->
-            --    let
-            --        loginForm =
-            --            { loginForm_ | email = text }
-            --    in
-            --    ( { model | loginForm = EnterEmail loginForm }, Cmd.none )
-            --
-            --EnterLoginCode loginCode_ ->
-            --    -- TODO: complete this
-            --    --  EnterLoginCode{ sentTo : EmailAddress, loginCode : String, attempts : Dict Int LoginCodeStatus }
-            --    ( model, Cmd.none )
-            Token.Frontend.useReceivedCodeToSignIn model loginCode
+            Token.Frontend.enterEmail model loginCode
 
         PressedCancelLogin ->
             ( { model | route = HomepageRoute }, Cmd.none )
 
         UseReceivedCodetoSignIn loginCodeText ->
-            case model.loginForm of
-                Token.Types.EnterEmail _ ->
-                    ( model, Cmd.none )
-
-                EnterLoginCode enterLoginCode ->
-                    case Token.LoginForm.validateLoginCode loginCodeText of
-                        Ok loginCode ->
-                            if Dict.member loginCode enterLoginCode.attempts then
-                                ( { model
-                                    | loginForm =
-                                        EnterLoginCode
-                                            { enterLoginCode | loginCode = String.left Token.LoginForm.loginCodeLength loginCodeText }
-                                  }
-                                , Cmd.none
-                                )
-
-                            else
-                                ( { model
-                                    | loginForm =
-                                        EnterLoginCode
-                                            { enterLoginCode
-                                                | loginCode = String.left Token.LoginForm.loginCodeLength loginCodeText
-                                                , attempts =
-                                                    Dict.insert loginCode Token.Types.Checking enterLoginCode.attempts
-                                            }
-                                  }
-                                , Lamdera.sendToBackend (SigInWithTokenRequest loginCode)
-                                )
-
-                        Err _ ->
-                            ( { model | loginForm = EnterLoginCode { enterLoginCode | loginCode = String.left Token.LoginForm.loginCodeLength loginCodeText } }
-                            , Cmd.none
-                            )
+            --case model.loginForm of
+            --    Token.Types.EnterEmail _ ->
+            --        ( model, Cmd.none )
+            --
+            --    EnterLoginCode enterLoginCode ->
+            --        case Token.LoginForm.validateLoginCode loginCodeText of
+            --            Ok loginCode ->
+            --                if Dict.member loginCode enterLoginCode.attempts then
+            --                    ( { model
+            --                        | loginForm =
+            --                            EnterLoginCode
+            --                                { enterLoginCode | loginCode = String.left Token.LoginForm.loginCodeLength loginCodeText }
+            --                      }
+            --                    , Cmd.none
+            --                    )
+            --
+            --                else
+            --                    ( { model
+            --                        | loginForm =
+            --                            EnterLoginCode
+            --                                { enterLoginCode
+            --                                    | loginCode = String.left Token.LoginForm.loginCodeLength loginCodeText
+            --                                    , attempts =
+            --                                        Dict.insert loginCode Token.Types.Checking enterLoginCode.attempts
+            --                                }
+            --                      }
+            --                    , Lamdera.sendToBackend (SigInWithTokenRequest loginCode)
+            --                    )
+            --
+            --            Err _ ->
+            --                ( { model | loginForm = EnterLoginCode { enterLoginCode | loginCode = String.left Token.LoginForm.loginCodeLength loginCodeText } }
+            --                , Cmd.none
+            --                )
+            Token.Frontend.signInWithCode model loginCodeText
 
         -- ADMIN
         SetAdminDisplay adminDisplay ->
