@@ -1,4 +1,10 @@
-module Token.Backend exposing (addUser, checkLogin, loginWithToken, sendLoginEmail)
+module Token.Backend exposing
+    ( addUser
+    , checkLogin
+    , loginWithToken
+    , logout
+    , sendLoginEmail
+    )
 
 import AssocList
 import BackendHelper
@@ -162,6 +168,17 @@ addUser2 model clientId email realname username =
               }
             , Lamdera.sendToFrontend clientId (UserRegistered user)
             )
+
+
+logout model clientId userData =
+    case userData of
+        Just user ->
+            ( { model | sessionDict = model.sessionDict |> AssocList.filter (\_ name -> name /= user.username) }
+            , Lamdera.sendToFrontend clientId (UserSignedIn Nothing)
+            )
+
+        Nothing ->
+            ( model, Cmd.none )
 
 
 emailNotRegistered : EmailAddress -> Dict.Dict String User.User -> Bool

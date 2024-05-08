@@ -129,35 +129,6 @@ update : BackendMsg -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 update msg model =
     -- Replace existing randomAtmosphericNumber with a new one if possible
     (case msg of
-        -- TODO: implement the following 2 cases
-        --OnConnected sessionId clientId ->
-        --    let
-        --        maybeUsername : Maybe String
-        --        maybeUsername =
-        --            BiDict.get sessionId model.sessions
-        --
-        --        maybeUserData : Maybe User.LoginData
-        --        maybeUserData =
-        --            Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername |> Maybe.map User.loginDataOfUser
-        --    in
-        --    case ( maybeUsername, maybeUserData ) of
-        --        ( Just username, Just userData ) ->
-        --            ( model
-        --            , Cmd.batch
-        --                --- (Backend.Session.reconnect model sessionId clientId :: Backend.Session.sendUserData model username userData sessionId clientId)
-        --                (Backend.Session.reconnect model sessionId clientId :: [])
-        --            )
-        --
-        --        ( _, _ ) ->
-        --            ( model, Cmd.none )
-        SentLoginEmail _ _ _ ->
-            -- TODO
-            ( model, Cmd.none )
-
-        AuthenticationConfirmationEmailSent _ ->
-            -- TODO
-            ( model, Cmd.none )
-
         Types.BackendGotTime sessionId clientId toBackend time ->
             -- TODO
             -- updateFromFrontendWithTime time sessionId clientId toBackend model
@@ -204,6 +175,7 @@ update msg model =
             , Cmd.none
             )
 
+        -- STRIPE
         GotSlowTick time ->
             let
                 ( expiredOrders, remainingOrders ) =
@@ -278,6 +250,15 @@ update msg model =
                 Err error ->
                     ( model, BackendHelper.errorEmail ("GotPrices failed: " ++ HttpHelpers.httpErrorToString error) )
 
+        -- TOKEN
+        SentLoginEmail _ _ _ ->
+            -- TODO
+            ( model, Cmd.none )
+
+        AuthenticationConfirmationEmailSent _ ->
+            -- TODO
+            ( model, Cmd.none )
+
         AutoLogin sessionId loginData ->
             ( model, Lamdera.sendToFrontend sessionId (LoginWithTokenResponse <| Ok <| loginData) )
 
@@ -310,15 +291,6 @@ update msg model =
                         , productInfo = model.products
                         }
                     )
-
-                --, case maybeUserData of
-                --    Nothing ->
-                --        Cmd.none
-                --
-                --    Just userData ->
-                --        Ok userData
-                --            |> LoginWithTokenResponse
-                --            |> Lamdera.sendToFrontend sessionId
                 , case AssocList.get sessionId model.sessionDict of
                     Just username ->
                         case Dict.get username model.userDictionary of
@@ -450,7 +422,7 @@ updateFromFrontend sessionId clientId msg model =
         GetBackendModel ->
             ( model, Lamdera.sendToFrontend clientId (GotBackendModel model) )
 
-        -- TODO: implement the following 4 cases
+        -- TOKEN
         CheckLoginRequest ->
             Token.Backend.checkLogin model clientId sessionId
 
@@ -461,14 +433,7 @@ updateFromFrontend sessionId clientId msg model =
             Token.Backend.sendLoginEmail model clientId sessionId email
 
         LogOutRequest userData ->
-            case userData of
-                Just user ->
-                    ( { model | sessionDict = model.sessionDict |> AssocList.filter (\_ name -> name /= user.username) }
-                    , Lamdera.sendToFrontend clientId (UserSignedIn Nothing)
-                    )
-
-                Nothing ->
-                    ( model, Cmd.none )
+            Token.Backend.logout model clientId userData
 
         -- STRIPE
         RenewPrices ->
