@@ -40,7 +40,7 @@ view model =
             ]
         , case model.backendModel of
             Nothing ->
-                text "Can't find that data"
+                text ""
 
             Just backendModel ->
                 case model.adminDisplay of
