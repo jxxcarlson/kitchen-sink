@@ -1,9 +1,13 @@
 module Token.Frontend exposing
     ( enterEmail
+    , handleRegistrationError
+    , handleSignInError
     , signInWithCode
+    , signInWithTokenResponse
     , signOut
     , submitEmailForToken
     , submitSignUp
+    , userRegistered
     )
 
 import AssocList
@@ -173,4 +177,47 @@ signOut model =
         , kvVerbosity = KeyValueStore.KVQuiet
       }
     , Lamdera.sendToBackend (SignOutRequest model.currentUserData)
+    )
+
+
+signInWithTokenResponse model result =
+    case result of
+        Err code ->
+            let
+                _ =
+                    Debug.log "@## SignInWithTokenResponse, Err" code
+            in
+            ( { model | loginErrorMessage = Just "Invalid login code" }, Cmd.none )
+
+        Ok signInData ->
+            let
+                _ =
+                    Debug.log "@## in, Ok" signInData
+            in
+            let
+                adminCommand =
+                    case signInData.role of
+                        User.AdminRole ->
+                            Lamdera.sendToBackend GetBackendModel
+
+                        User.UserRole ->
+                            Cmd.none
+            in
+            ( { model | currentUserData = Just signInData, route = HomepageRoute }, adminCommand )
+
+
+handleSignInError model message =
+    ( { model | loginErrorMessage = Just message, signInStatus = Token.Types.ErrorNotRegistered message }, Cmd.none )
+
+
+handleRegistrationError model str =
+    ( { model | signInStatus = Token.Types.ErrorNotRegistered str }, Cmd.none )
+
+
+userRegistered model user =
+    ( { model
+        | currentUser = Just user
+        , signInStatus = Token.Types.SuccessfulRegistration user.username (EmailAddress.toString user.email)
+      }
+    , Cmd.none
     )

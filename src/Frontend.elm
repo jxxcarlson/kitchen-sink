@@ -410,38 +410,16 @@ updateFromBackendLoaded msg model =
 
         -- TOKEN
         SignInError message ->
-            ( { model | loginErrorMessage = Just message, signInStatus = Token.Types.ErrorNotRegistered message }, Cmd.none )
+            Token.Frontend.handleSignInError model message
 
         RegistrationError str ->
-            ( { model | signInStatus = Token.Types.ErrorNotRegistered str }, Cmd.none )
+            Token.Frontend.handleRegistrationError model str
 
-        CheckLoginResponse _ ->
+        CheckSignInResponse _ ->
             ( model, Cmd.none )
 
-        LoginWithTokenResponse result ->
-            case result of
-                Err code ->
-                    let
-                        _ =
-                            Debug.log "@## LoginWithTokenResponse, Err" code
-                    in
-                    ( { model | loginErrorMessage = Just "Invalid login code" }, Cmd.none )
-
-                Ok loginData ->
-                    let
-                        _ =
-                            Debug.log "@## LoginWithTokenResponse, Ok" loginData
-                    in
-                    let
-                        adminCommand =
-                            case loginData.role of
-                                User.AdminRole ->
-                                    Lamdera.sendToBackend GetBackendModel
-
-                                User.UserRole ->
-                                    Cmd.none
-                    in
-                    ( { model | currentUserData = Just loginData, route = HomepageRoute }, adminCommand )
+        SignInWithTokenResponse result ->
+            Token.Frontend.signInWithTokenResponse model result
 
         GetLoginTokenRateLimited ->
             ( model, Cmd.none )
@@ -450,12 +428,7 @@ updateFromBackendLoaded msg model =
             ( model, Cmd.none )
 
         UserRegistered user ->
-            ( { model
-                | currentUser = Just user
-                , signInStatus = Token.Types.SuccessfulRegistration user.username (EmailAddress.toString user.email)
-              }
-            , Cmd.none
-            )
+            Token.Frontend.userRegistered model user
 
         -- STRIPE
         InitData { prices, productInfo } ->

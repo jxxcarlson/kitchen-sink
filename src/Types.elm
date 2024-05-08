@@ -264,8 +264,8 @@ type ToFrontend
     | SubmitFormResponse (Result String (Id StripeSessionId))
     | AdminInspectResponse BackendModel
       -- TOKEN
-    | CheckLoginResponse (Result BackendDataStatus User.LoginData)
-    | LoginWithTokenResponse (Result Int User.LoginData)
+    | CheckSignInResponse (Result BackendDataStatus User.LoginData)
+    | SignInWithTokenResponse (Result Int User.LoginData)
     | GetLoginTokenRateLimited
     | LoggedOutSession
     | RegistrationError String

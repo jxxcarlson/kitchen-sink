@@ -69,18 +69,18 @@ checkLogin model clientId sessionId =
     ( model
     , if Dict.isEmpty model.userDictionary then
         Cmd.batch
-            [ Err Types.Sunny |> CheckLoginResponse |> Lamdera.sendToFrontend clientId
+            [ Err Types.Sunny |> CheckSignInResponse |> Lamdera.sendToFrontend clientId
             ]
 
       else
         case getUserFromSessionId sessionId model of
             Just ( userId, user ) ->
                 getLoginData userId user model
-                    |> CheckLoginResponse
+                    |> CheckSignInResponse
                     |> Lamdera.sendToFrontend clientId
 
             Nothing ->
-                CheckLoginResponse (Err Types.LoadedBackendData) |> Lamdera.sendToFrontend clientId
+                CheckSignInResponse (Err Types.LoadedBackendData) |> Lamdera.sendToFrontend clientId
     )
 
 
@@ -107,10 +107,10 @@ loginWithToken time sessionId clientId loginCode model =
         Just username ->
             case Dict.get username model.userDictionary of
                 Just user ->
-                    ( model, Lamdera.sendToFrontend sessionId (LoginWithTokenResponse <| Ok <| User.loginDataOfUser user) )
+                    ( model, Lamdera.sendToFrontend sessionId (SignInWithTokenResponse <| Ok <| User.loginDataOfUser user) )
 
                 Nothing ->
-                    ( model, Lamdera.sendToFrontend clientId (LoginWithTokenResponse (Err loginCode)) )
+                    ( model, Lamdera.sendToFrontend clientId (SignInWithTokenResponse (Err loginCode)) )
 
         Nothing ->
             case AssocList.get sessionId model.pendingLogins of
@@ -131,14 +131,14 @@ loginWithToken time sessionId clientId loginCode model =
                                       }
                                     , User.loginDataOfUser user
                                         |> Ok
-                                        |> LoginWithTokenResponse
+                                        |> SignInWithTokenResponse
                                         |> Lamdera.sendToFrontend sessionId
                                     )
 
                                 Nothing ->
                                     ( model
                                     , Err loginCode
-                                        |> LoginWithTokenResponse
+                                        |> SignInWithTokenResponse
                                         |> Lamdera.sendToFrontend clientId
                                     )
 
@@ -150,14 +150,14 @@ loginWithToken time sessionId clientId loginCode model =
                                         { pendingLogin | loginAttempts = pendingLogin.loginAttempts + 1 }
                                         model.pendingLogins
                               }
-                            , Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId
+                            , Err loginCode |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId
                             )
 
                     else
-                        ( model, Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId )
+                        ( model, Err loginCode |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId )
 
                 Nothing ->
-                    ( model, Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId )
+                    ( model, Err loginCode |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId )
 
 
 addUser model clientId email realname username =

@@ -259,7 +259,7 @@ update msg model =
             ( model, Cmd.none )
 
         AutoLogin sessionId loginData ->
-            ( model, Lamdera.sendToFrontend sessionId (LoginWithTokenResponse <| Ok <| loginData) )
+            ( model, Lamdera.sendToFrontend sessionId (SignInWithTokenResponse <| Ok <| loginData) )
 
         OnConnected sessionId clientId ->
             let
@@ -298,10 +298,10 @@ update msg model =
                                 Process.sleep 60 |> Task.perform (always (AutoLogin sessionId (User.loginDataOfUser user)))
 
                             Nothing ->
-                                Lamdera.sendToFrontend clientId (LoginWithTokenResponse (Err 0))
+                                Lamdera.sendToFrontend clientId (SignInWithTokenResponse (Err 0))
 
                     Nothing ->
-                        Lamdera.sendToFrontend clientId (LoginWithTokenResponse (Err 1))
+                        Lamdera.sendToFrontend clientId (SignInWithTokenResponse (Err 1))
                 ]
             )
 
