@@ -29,18 +29,6 @@ import Types exposing (FrontendMsg)
 import View.MyElement as MyElement
 
 
-
---update :
---    Bool
---    -> (EmailAddress -> Cmd FrontendMsg)
---    -> (Int -> Cmd FrontendMsg)
---    -> FrontendMsg
---    -> LoginForm
---    -> Maybe ( LoginForm, Cmd FrontendMsg )
---update isLoadingBackend onSubmitEmail onSubmitLoginCode msg model =
---    case msg of
-
-
 validateLoginCode : String -> Result String Int
 validateLoginCode text =
     if String.any (\char -> Char.isDigit char |> not) text then
@@ -124,15 +112,6 @@ view model loginForm =
 
             EnterLoginCode enterLoginCode ->
                 enterLoginCodeView enterLoginCode
-
-        --, case model.loginErrorMessage of
-        --    Just errorMessage ->
-        --        Element.paragraph
-        --            [ Element.Font.center ]
-        --            [ errorView errorMessage ]
-        --
-        --    Nothing ->
-        --        Element.none
         , Element.paragraph
             [ Element.Font.center ]
             [ Element.text "If you're having trouble logging in, we can be reached at "
@@ -170,61 +149,7 @@ enterLoginCodeView model =
         [ label.element
         , Element.column
             [ Element.spacing 6, Element.centerX, Element.width Element.shrink, Element.moveRight 18 ]
-            [ --Element.el
-              --    [ Element.Font.size 36
-              --    , Element.paragraph
-              --        [ Element.Font.letterSpacing 26
-              --        , Element.paddingXY 0 6
-              --        , Element.Font.family [ Element.Font.monospace ]
-              --        , Martin.noPointerEvents
-              --        ]
-              --        (List.range 0 (loginCodeLength - 1)
-              --            |> List.map
-              --                (\index ->
-              --                    Element.el
-              --                        [ Element.paddingXY -1 -1
-              --                        , Element.behindContent
-              --                            (Element.el
-              --                                [ Element.height (Element.px 54)
-              --                                , Element.paddingXY 0 24
-              --                                , Element.width (Element.px 32)
-              --                                , Element.Font.color (Element.rgba 0 0 0 1)
-              --                                , if index == (loginCodeLength - 1) // 2 then
-              --                                    Element.onRight
-              --                                        (Element.el
-              --                                            [ Element.Border.widthEach
-              --                                                { left = 0
-              --                                                , right = 0
-              --                                                , top = 1
-              --                                                , bottom = 1
-              --                                                }
-              --                                            , Element.moveRight 3
-              --                                            , Element.centerY
-              --                                            , Element.width (Element.px 9)
-              --                                            ]
-              --                                            Element.none
-              --                                        )
-              --
-              --                                  else
-              --                                    Martin.noAttr
-              --                                , Element.Border.width 1
-              --                                , Element.Border.rounded 8
-              --                                , Element.Border.color MyElement.gray
-              --                                , Element.Border.shadow { offset = ( 0, 1 ), blur = 2, size = 0, color = Element.rgba 0 0 0 0.2 }
-              --                                , Martin.noPointerEvents
-              --                                ]
-              --                                Element.none
-              --                            )
-              --                        , Element.Font.color (Element.rgba 0 0 0 0)
-              --                        , Martin.noPointerEvents
-              --                        ]
-              --                        (Element.text "_")
-              --                )
-              --        )
-              --        |> Element.behindContent
-              --    , Element.width (Element.px 400)
-              --    ]
-              Element.Input.text
+            [ Element.Input.text
                 [ -- Element.Font.letterSpacing 26
                   Element.paddingEach { left = 6, right = 0, top = 2, bottom = 8 }
                 , Element.Font.family [ Element.Font.monospace ]
