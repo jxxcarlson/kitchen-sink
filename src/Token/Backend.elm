@@ -128,6 +128,15 @@ loginWithToken time sessionId clientId loginCode model =
 
 
 addUser model clientId email realname username =
+    case EmailAddress.fromString email of
+        Nothing ->
+            ( model, Lamdera.sendToFrontend clientId (SignInError <| "Invalid email: " ++ email) )
+
+        Just validEmail ->
+            addUser1 model clientId validEmail realname username
+
+
+addUser1 model clientId email realname username =
     if emailNotRegistered email model.userDictionary then
         case Dict.get username model.userDictionary of
             Just _ ->

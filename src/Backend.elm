@@ -477,12 +477,7 @@ updateFromFrontend sessionId clientId msg model =
 
         -- USER
         AddUser realname username email ->
-            case EmailAddress.fromString email of
-                Nothing ->
-                    ( model, Lamdera.sendToFrontend clientId (SignInError <| "Invalid email: " ++ email) )
-
-                Just validEmail ->
-                    Token.Backend.addUser model clientId validEmail realname username
+            Token.Backend.addUser model clientId email realname username
 
         SignInRequest username _ ->
             -- TODO: this code is a placeholder pendig using Martin's code
