@@ -26,7 +26,12 @@ import User
 
 addUser model clientId email realname username =
     if emailNotRegistered email model.userDictionary then
-        addUser2 model clientId email realname username
+        case Dict.get username model.userDictionary of
+            Just _ ->
+                ( model, Lamdera.sendToFrontend clientId (RegistrationError "That username is already registered") )
+
+            Nothing ->
+                addUser2 model clientId email realname username
 
     else
         ( model, Lamdera.sendToFrontend clientId (RegistrationError "That email is already registered") )
@@ -65,6 +70,16 @@ addUser2 model clientId email realname username =
 emailNotRegistered : EmailAddress -> Dict.Dict String User.User -> Bool
 emailNotRegistered email userDictionary =
     Dict.filter (\_ user -> user.email == email) userDictionary |> Debug.log "@## DICT" |> Dict.isEmpty
+
+
+userNameNotFound : String -> Dict.Dict String User.User -> Bool
+userNameNotFound username userDictionary =
+    case Dict.get username userDictionary of
+        Nothing ->
+            True
+
+        Just _ ->
+            False
 
 
 sendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
