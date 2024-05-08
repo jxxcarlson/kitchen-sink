@@ -1,8 +1,6 @@
 module BackendHelper exposing
-    ( addLog
-    , errorEmail
+    ( errorEmail
     , getAtmosphericRandomNumbers
-    , getLoginData
     , getNewWeatherByCity
     , priceIdToProductId
     , purchaseSupportAddres
@@ -34,24 +32,8 @@ import Weather
 
 
 -- TOKEN
-
-
-getLoginData : User.Id -> User.User -> Types.BackendModel -> Result Types.BackendDataStatus User.LoginData
-getLoginData userId user_ model =
-    User.loginDataOfUser user_ |> Ok
-
-
-
 -- TODO: this is a hack based on a lack of understanding of what is going on.
 -- in Martin's code.
-
-
-addLog : Time.Posix -> Token.Types.LogItem -> Types.BackendModel -> ( Types.BackendModel, Cmd msg )
-addLog time logItem model =
-    ( { model | log = model.log ++ [ ( time, logItem ) ] }, Cmd.none )
-
-
-
 -- OTHER
 
 

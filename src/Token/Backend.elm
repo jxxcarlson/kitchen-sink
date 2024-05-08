@@ -1,4 +1,4 @@
-module Token.Lib exposing (addUser, loginWithToken, sendLoginEmail)
+module Token.Backend exposing (addUser, checkLogin, loginWithToken, sendLoginEmail)
 
 import AssocList
 import BackendHelper
@@ -24,6 +24,36 @@ import Token.LoginForm
 import Token.Types
 import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
 import User
+
+
+checkLogin model clientId sessionId =
+    ( model
+    , if Dict.isEmpty model.userDictionary then
+        Cmd.batch
+            [ Err Types.Sunny |> CheckLoginResponse |> Lamdera.sendToFrontend clientId
+            ]
+
+      else
+        case getUserFromSessionId sessionId model of
+            Just ( userId, user ) ->
+                getLoginData userId user model
+                    |> CheckLoginResponse
+                    |> Lamdera.sendToFrontend clientId
+
+            Nothing ->
+                CheckLoginResponse (Err Types.LoadedBackendData) |> Lamdera.sendToFrontend clientId
+    )
+
+
+getLoginData : User.Id -> User.User -> Types.BackendModel -> Result Types.BackendDataStatus User.LoginData
+getLoginData userId user_ model =
+    User.loginDataOfUser user_ |> Ok
+
+
+getUserFromSessionId : SessionId -> BackendModel -> Maybe ( User.Id, User.User )
+getUserFromSessionId sessionId model =
+    AssocList.get sessionId model.sessionDict
+        |> Maybe.andThen (\userId -> Dict.get userId model.userDictionary |> Maybe.map (Tuple.pair userId))
 
 
 loginWithToken :
@@ -180,7 +210,7 @@ sendLoginEmail2 model clientId sessionId email =
                         Debug.log "@## BRANCH" 1
 
                     ( model3, cmd ) =
-                        BackendHelper.addLog model.time (Token.Types.LoginsRateLimited userId) model
+                        addLog model.time (Token.Types.LoginsRateLimited userId) model
                 in
                 ( model3
                 , Cmd.batch [ cmd, Lamdera.sendToFrontend clientId GetLoginTokenRateLimited ]
@@ -220,7 +250,7 @@ sendLoginEmail2 model clientId sessionId email =
                 _ =
                     Debug.log "@## BRANCH" 4
             in
-            BackendHelper.addLog model.time (Token.Types.FailedToCreateLoginCode model.secretCounter) model
+            addLog model.time (Token.Types.FailedToCreateLoginCode model.secretCounter) model
 
 
 getLoginCode : Time.Posix -> { a | secretCounter : Int } -> ( { a | secretCounter : Int }, Result () Int )
@@ -329,3 +359,8 @@ noReplyEmailAddress =
         , domain = "elm-kitchen-sink.lamdera"
         , tld = [ "app" ]
         }
+
+
+addLog : Time.Posix -> Token.Types.LogItem -> Types.BackendModel -> ( Types.BackendModel, Cmd msg )
+addLog time logItem model =
+    ( { model | log = model.log ++ [ ( time, logItem ) ] }, Cmd.none )

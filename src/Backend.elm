@@ -18,7 +18,7 @@ import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
 import Task
 import Time
-import Token.Lib
+import Token.Backend
 import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
 import Untrusted
 import User
@@ -452,28 +452,13 @@ updateFromFrontend sessionId clientId msg model =
 
         -- TODO: implement the following 4 cases
         CheckLoginRequest ->
-            ( model
-            , if Dict.isEmpty model.userDictionary then
-                Cmd.batch
-                    [ Err Types.Sunny |> CheckLoginResponse |> Lamdera.sendToFrontend clientId
-                    ]
-
-              else
-                case getUserFromSessionId sessionId model of
-                    Just ( userId, user ) ->
-                        BackendHelper.getLoginData userId user model
-                            |> CheckLoginResponse
-                            |> Lamdera.sendToFrontend clientId
-
-                    Nothing ->
-                        CheckLoginResponse (Err Types.LoadedBackendData) |> Lamdera.sendToFrontend clientId
-            )
+            Token.Backend.checkLogin model clientId sessionId
 
         LoginWithTokenRequest loginCode ->
-            Token.Lib.loginWithToken model.time sessionId clientId loginCode model
+            Token.Backend.loginWithToken model.time sessionId clientId loginCode model
 
         GetLoginTokenRequest email ->
-            Token.Lib.sendLoginEmail model clientId sessionId email
+            Token.Backend.sendLoginEmail model clientId sessionId email
 
         LogOutRequest userData ->
             case userData of
@@ -532,7 +517,7 @@ updateFromFrontend sessionId clientId msg model =
                     ( model, Lamdera.sendToFrontend clientId (SignInError <| "Invalid email: " ++ email) )
 
                 Just validEmail ->
-                    Token.Lib.addUser model clientId validEmail realname username
+                    Token.Backend.addUser model clientId validEmail realname username
 
         SignInRequest username _ ->
             -- TODO: this code is a placeholder pendig using Martin's code
@@ -605,9 +590,3 @@ updateFromFrontend sessionId clientId msg model =
         -- DATA
         GetKeyValueStore ->
             ( model, Lamdera.sendToFrontend clientId (GotKeyValueStore model.keyValueStore) )
-
-
-getUserFromSessionId : SessionId -> BackendModel -> Maybe ( User.Id, User.User )
-getUserFromSessionId sessionId model =
-    AssocList.get sessionId model.sessionDict
-        |> Maybe.andThen (\userId -> Dict.get userId model.userDictionary |> Maybe.map (Tuple.pair userId))
