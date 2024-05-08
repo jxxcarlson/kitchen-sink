@@ -216,50 +216,38 @@ updateLoaded msg model =
             ( { model | showTooltip = False }, Cmd.none )
 
         -- TOKEN
+        CancelSignIn ->
+            ( { model | route = HomepageRoute }, Cmd.none )
+
+        CancelSignUp ->
+            ( { model | signInStatus = Token.Types.NotSignedIn }, Cmd.none )
+
+        OpenSignUp ->
+            ( { model | signInStatus = Token.Types.SigningUp }, Cmd.none )
+
         SubmitEmailForToken ->
             Token.Frontend.submitEmailForToken model
 
         TypedEmailInSignInForm email ->
             Token.Frontend.enterEmail model (Debug.log "@##" email)
 
-        PressedCancelLogin ->
-            ( { model | route = HomepageRoute }, Cmd.none )
+        UseReceivedCodetoSignIn loginCode ->
+            Token.Frontend.signInWithCode model loginCode
 
-        UseReceivedCodetoSignIn loginCodeText ->
-            --case model.loginForm of
-            --    Token.Types.EnterEmail _ ->
-            --        ( model, Cmd.none )
-            --
-            --    EnterLoginCode enterLoginCode ->
-            --        case Token.LoginForm.validateLoginCode loginCodeText of
-            --            Ok loginCode ->
-            --                if Dict.member loginCode enterLoginCode.attempts then
-            --                    ( { model
-            --                        | loginForm =
-            --                            EnterLoginCode
-            --                                { enterLoginCode | loginCode = String.left Token.LoginForm.loginCodeLength loginCodeText }
-            --                      }
-            --                    , Cmd.none
-            --                    )
-            --
-            --                else
-            --                    ( { model
-            --                        | loginForm =
-            --                            EnterLoginCode
-            --                                { enterLoginCode
-            --                                    | loginCode = String.left Token.LoginForm.loginCodeLength loginCodeText
-            --                                    , attempts =
-            --                                        Dict.insert loginCode Token.Types.Checking enterLoginCode.attempts
-            --                                }
-            --                      }
-            --                    , Lamdera.sendToBackend (SigInWithTokenRequest loginCode)
-            --                    )
-            --
-            --            Err _ ->
-            --                ( { model | loginForm = EnterLoginCode { enterLoginCode | loginCode = String.left Token.LoginForm.loginCodeLength loginCodeText } }
-            --                , Cmd.none
-            --                )
-            Token.Frontend.signInWithCode model loginCodeText
+        SubmitSignUp ->
+            Token.Frontend.submitSignUp model
+
+        SignOut ->
+            Token.Frontend.signOut model
+
+        InputRealname str ->
+            ( { model | realname = str }, Cmd.none )
+
+        InputUsername str ->
+            ( { model | username = str }, Cmd.none )
+
+        InputEmail str ->
+            ( { model | email = str }, Cmd.none )
 
         -- ADMIN
         SetAdminDisplay adminDisplay ->
@@ -277,74 +265,6 @@ updateLoaded msg model =
 
         Chirp ->
             ( model, Ports.playSound (Json.Encode.string "chirp.mp3") )
-
-        -- USER
-        -- TODO: complete this section (4 cases)
-        SubmitSignUp ->
-            ( model, Lamdera.sendToBackend (AddUser model.realname model.username model.email) )
-
-        SignOut ->
-            ( { model
-                | showTooltip = False
-                , form =
-                    { submitStatus = NotSubmitted NotPressedSubmit
-                    , name = ""
-                    , billingEmail = ""
-                    , country = ""
-                    }
-
-                -- TOKEN
-                , loginForm = Token.LoginForm.init
-                , loginErrorMessage = Nothing
-                , signInStatus = Token.Types.NotSignedIn
-
-                -- USER
-                , currentUserData = Nothing
-                , currentUser = Nothing
-                , realname = ""
-                , username = ""
-                , email = ""
-                , password = ""
-                , passwordConfirmation = ""
-                , signInState = SignedOut
-
-                -- ADMIN
-                , adminDisplay = ADUser
-
-                --
-                , backendModel = Nothing
-                , message = ""
-
-                -- EXAMPLES
-                , language = "en-US"
-                , inputCity = ""
-                , weatherData = Nothing
-
-                -- DATA
-                , currentKVPair = Nothing
-                , inputKey = ""
-                , inputValue = ""
-                , inputFilterData = ""
-                , kvViewType = KeyValueStore.KVVSummary
-                , kvVerbosity = KeyValueStore.KVQuiet
-              }
-            , Lamdera.sendToBackend (SignOutRequest model.currentUserData)
-            )
-
-        InputRealname str ->
-            ( { model | realname = str }, Cmd.none )
-
-        InputUsername str ->
-            ( { model | username = str }, Cmd.none )
-
-        InputEmail str ->
-            ( { model | email = str }, Cmd.none )
-
-        CancelSignUp ->
-            ( { model | signInStatus = Token.Types.NotSignedIn }, Cmd.none )
-
-        OpenSignUp ->
-            ( { model | signInStatus = Token.Types.SigningUp }, Cmd.none )
 
         -- STRIPE
         BuyProduct productId priceId product ->
@@ -488,7 +408,7 @@ updateFromBackendLoaded msg model =
         GotBackendModel beModel ->
             ( { model | backendModel = Just beModel }, Cmd.none )
 
-        -- TODO: implement the following 4 cases:
+        -- TOKEN
         SignInError message ->
             ( { model | loginErrorMessage = Just message, signInStatus = Token.Types.ErrorNotRegistered message }, Cmd.none )
 
@@ -529,6 +449,15 @@ updateFromBackendLoaded msg model =
         LoggedOutSession ->
             ( model, Cmd.none )
 
+        UserRegistered user ->
+            ( { model
+                | currentUser = Just user
+                , signInStatus = Token.Types.SuccessfulRegistration user.username (EmailAddress.toString user.email)
+              }
+            , Cmd.none
+            )
+
+        -- STRIPE
         InitData { prices, productInfo } ->
             ( { model | prices = prices, productInfoDict = productInfo }, Cmd.none )
 
@@ -553,14 +482,6 @@ updateFromBackendLoaded msg model =
             ( { model | backendModel = Just backendModel }, Cmd.none )
 
         -- USER
-        UserRegistered user ->
-            ( { model
-                | currentUser = Just user
-                , signInStatus = Token.Types.SuccessfulRegistration user.username (EmailAddress.toString user.email)
-              }
-            , Cmd.none
-            )
-
         UserSignedIn maybeUser ->
             -- TODO: use or remove
             ( { model | signInStatus = Token.Types.NotSignedIn }, Cmd.none )

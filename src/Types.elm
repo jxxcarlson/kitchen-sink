@@ -168,7 +168,7 @@ type FrontendMsg
     | MouseDown
       -- TOKEN
     | SubmitEmailForToken
-    | PressedCancelLogin
+    | CancelSignIn
     | TypedEmailInSignInForm String
     | UseReceivedCodetoSignIn String
     | SignOut

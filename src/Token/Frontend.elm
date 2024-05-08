@@ -1,7 +1,9 @@
 module Token.Frontend exposing
     ( enterEmail
     , signInWithCode
+    , signOut
     , submitEmailForToken
+    , submitSignUp
     )
 
 import AssocList
@@ -119,3 +121,56 @@ signInWithCode model signInCode =
                     ( { model | loginForm = EnterLoginCode { enterLoginCode | loginCode = String.left Token.LoginForm.loginCodeLength signInCode } }
                     , Cmd.none
                     )
+
+
+submitSignUp model =
+    ( model, Lamdera.sendToBackend (AddUser model.realname model.username model.email) )
+
+
+signOut model =
+    ( { model
+        | showTooltip = False
+        , form =
+            { submitStatus = NotSubmitted NotPressedSubmit
+            , name = ""
+            , billingEmail = ""
+            , country = ""
+            }
+
+        -- TOKEN
+        , loginForm = Token.LoginForm.init
+        , loginErrorMessage = Nothing
+        , signInStatus = Token.Types.NotSignedIn
+
+        -- USER
+        , currentUserData = Nothing
+        , currentUser = Nothing
+        , realname = ""
+        , username = ""
+        , email = ""
+        , password = ""
+        , passwordConfirmation = ""
+        , signInState = SignedOut
+
+        -- ADMIN
+        , adminDisplay = ADUser
+
+        --
+        , backendModel = Nothing
+        , message = ""
+
+        -- EXAMPLES
+        , language = "en-US"
+        , inputCity = ""
+        , weatherData = Nothing
+
+        -- DATA
+        , currentKVPair = Nothing
+        , inputKey = ""
+        , inputValue = ""
+        , inputFilterData = ""
+        , kvViewType = KeyValueStore.KVVSummary
+        , kvVerbosity = KeyValueStore.KVQuiet
+      }
+    , Lamdera.sendToBackend (SignOutRequest model.currentUserData)
+    )

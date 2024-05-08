@@ -261,7 +261,7 @@ enterEmailView model =
             ]
         , Element.row
             [ Element.spacing 16 ]
-            [ MyElement.secondaryButton [ Martin.elementId cancelButtonId ] Types.PressedCancelLogin "Cancel"
+            [ MyElement.secondaryButton [ Martin.elementId cancelButtonId ] Types.CancelSignIn "Cancel"
             , MyElement.primaryButton submitEmailButtonId Types.SubmitEmailForToken "Login"
             ]
         , if model.rateLimited then
