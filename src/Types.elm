@@ -233,19 +233,6 @@ type ToBackend
     | GetKeyValueStore
 
 
-
--- YADAYADA:
---required = Email.PostmarkSendResponse
---
---found =  Postmark.PostmarkSendResponse
---
--- Missing fields: { submittedAt : String, messageId : String }
--- Mismatched fields:
---   Field to:
---   Required: String
--- Found: List EmailAddress
-
-
 type BackendMsg
     = GotSlowTick Time.Posix
     | GotFastTick Time.Posix
@@ -283,9 +270,11 @@ type ToFrontend
     | LoginWithTokenResponse (Result Int User.LoginData)
     | GetLoginTokenRateLimited
     | LoggedOutSession
+    | RegistrationError String
     | SignInError String
       -- USER
     | UserSignedIn (Maybe User.User)
+    | UserRegistered User.User
       -- EXAMPLE
     | ReceivedWeatherData (Result Http.Error Weather.WeatherData)
       -- DATA (JC)

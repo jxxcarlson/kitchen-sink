@@ -522,7 +522,10 @@ updateFromBackendLoaded msg model =
 
         -- TODO: implement the following 4 cases:
         SignInError message ->
-            ( { model | loginErrorMessage = Just message }, Cmd.none )
+            ( { model | loginErrorMessage = Just message, signInStatus = Token.Types.ErrorNotRegistered message }, Cmd.none )
+
+        RegistrationError str ->
+            ( { model | signInStatus = Token.Types.ErrorNotRegistered str }, Cmd.none )
 
         CheckLoginResponse _ ->
             ( model, Cmd.none )
@@ -582,6 +585,9 @@ updateFromBackendLoaded msg model =
             ( { model | backendModel = Just backendModel }, Cmd.none )
 
         -- USER
+        UserRegistered user ->
+            ( { model | currentUser = Just user, signInStatus = Token.Types.SuccessfulRegistration user.username }, Cmd.none )
+
         UserSignedIn maybeUser ->
             -- TODO: use or remove
             ( { model | signInStatus = Token.Types.NotSignedIn }, Cmd.none )
@@ -592,7 +598,7 @@ updateFromBackendLoaded msg model =
                     ( { model | weatherData = Just weatherData }, Cmd.none )
 
                 Err _ ->
-                    ( { model | weatherData = Nothing, message = "Error getting weather data. reae" }, Cmd.none )
+                    ( { model | weatherData = Nothing, message = "Error getting weather data" }, Cmd.none )
 
         -- DATA
         GotKeyValueStore keyValueStore ->

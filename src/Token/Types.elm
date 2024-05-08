@@ -25,6 +25,8 @@ type LoginForm
 
 type SignInStatus
     = NotSignedIn
+    | ErrorNotRegistered String
+    | SuccessfulRegistration String
     | SigningUp
     | SignedIn
 

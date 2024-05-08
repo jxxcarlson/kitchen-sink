@@ -83,11 +83,6 @@ header model route config =
             , Element.link
                 (linkStyle route Purchase)
                 { url = Route.encode Purchase, label = Element.text "Purchase" }
-
-            --.url = Route.encode DataStore, label = Element.text "View Data" }
-            --, Element.link
-            --    (linkStyle route EditData)
-            --    { url = Route.encode EditData, label = Element.text "Edit Data" }
             , case model.currentUserData of
                 Just currentUserData_ ->
                     View.Button.signOut currentUserData_.username

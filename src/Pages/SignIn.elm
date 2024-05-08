@@ -21,12 +21,27 @@ testInput =
 
 view : LoadedModel -> Element FrontendMsg
 view model =
-    case model.currentUserData of
-        Nothing ->
+    case model.signInStatus of
+        Token.Types.NotSignedIn ->
             signInView model
 
-        Just _ ->
+        Token.Types.SignedIn ->
             signedInView model
+
+        Token.Types.SigningUp ->
+            signUp model
+
+        Token.Types.SuccessfulRegistration username ->
+            Element.column []
+                [ signInAfterRegisteringView model
+                , Element.el [ Element.Font.color (Element.rgb 0 0 1) ] (Element.text <| username ++ ", you are now registered")
+                ]
+
+        Token.Types.ErrorNotRegistered message ->
+            Element.column []
+                [ signUp model
+                , Element.el [ Element.Font.color (Element.rgb 1 0 0) ] (Element.text message)
+                ]
 
 
 signedInView : LoadedModel -> Element FrontendMsg
@@ -45,20 +60,20 @@ signInView model =
         [ Element.el [ Element.Font.semiBold, Element.Font.size 24 ] (Element.text "Sign in")
         , Token.LoginForm.view model model.loginForm
 
-        --, Element.el [ Element.paddingXY 8 12 ] View.Button.openSignUp
-        , case model.signInStatus of
-            Token.Types.NotSignedIn ->
-                Element.row
-                    [ Element.spacing 12
-                    , Element.paddingEach { left = 18, right = 0, top = 0, bottom = 0 }
-                    ]
-                    [ Element.el [] (Element.text "Need to sign up?  "), View.Button.openSignUp ]
+        --, Element.paragraph [ Element.Font.color (Element.rgb 1 0 0) ] [ Element.text (model.loginErrorMessage |> Maybe.withDefault "") ]
+        , Element.row
+            [ Element.spacing 12
+            , Element.paddingEach { left = 18, right = 0, top = 0, bottom = 0 }
+            ]
+            [ Element.el [] (Element.text "Need to sign up?  "), View.Button.openSignUp ]
+        ]
 
-            Token.Types.SigningUp ->
-                signUp model
 
-            _ ->
-                Element.none
+signInAfterRegisteringView : LoadedModel -> Element FrontendMsg
+signInAfterRegisteringView model =
+    Element.column []
+        [ Element.el [ Element.Font.semiBold, Element.Font.size 24 ] (Element.text "Sign in")
+        , Token.LoginForm.view model model.loginForm
         ]
 
 

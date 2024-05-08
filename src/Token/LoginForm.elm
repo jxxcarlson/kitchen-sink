@@ -124,14 +124,15 @@ view model loginForm =
 
             EnterLoginCode enterLoginCode ->
                 enterLoginCodeView enterLoginCode
-        , case model.loginErrorMessage of
-            Just errorMessage ->
-                Element.paragraph
-                    [ Element.Font.center ]
-                    [ errorView errorMessage ]
 
-            Nothing ->
-                Element.none
+        --, case model.loginErrorMessage of
+        --    Just errorMessage ->
+        --        Element.paragraph
+        --            [ Element.Font.center ]
+        --            [ errorView errorMessage ]
+        --
+        --    Nothing ->
+        --        Element.none
         , Element.paragraph
             [ Element.Font.center ]
             [ Element.text "If you're having trouble logging in, we can be reached at "
