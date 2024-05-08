@@ -219,8 +219,8 @@ updateLoaded msg model =
         SubmitEmailForToken ->
             Token.Frontend.submitEmailForToken model
 
-        TypedLoginFormEmail loginCode ->
-            Token.Frontend.enterEmail model loginCode
+        TypedEmailInSignInForm email ->
+            Token.Frontend.enterEmail model (Debug.log "@##" email)
 
         PressedCancelLogin ->
             ( { model | route = HomepageRoute }, Cmd.none )

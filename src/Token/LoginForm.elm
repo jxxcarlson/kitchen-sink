@@ -241,7 +241,7 @@ enterEmailView model =
         [ Element.spacing 16 ]
         [ emailInput
             Types.SubmitEmailForToken
-            Types.TypedLoginFormEmail
+            Types.TypedEmailInSignInForm
             model.email
             "Enter your email address"
             (case ( model.pressedSubmitEmail, validateEmail model.email ) of

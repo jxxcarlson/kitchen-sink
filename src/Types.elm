@@ -169,7 +169,7 @@ type FrontendMsg
       -- TOKEN
     | SubmitEmailForToken
     | PressedCancelLogin
-    | TypedLoginFormEmail String
+    | TypedEmailInSignInForm String
     | UseReceivedCodetoSignIn String
     | SignOut
       -- STRIPE
