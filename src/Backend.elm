@@ -7,7 +7,6 @@ import BiDict
 import Dict
 import Duration
 import Email
-import EmailAddress exposing (EmailAddress)
 import HttpHelpers
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
@@ -423,17 +422,23 @@ updateFromFrontend sessionId clientId msg model =
             ( model, Lamdera.sendToFrontend clientId (GotBackendModel model) )
 
         -- TOKEN
+        AddUser realname username email ->
+            Token.Backend.addUser model clientId email realname username
+
         CheckLoginRequest ->
             Token.Backend.checkLogin model clientId sessionId
 
-        LoginWithTokenRequest loginCode ->
-            Token.Backend.loginWithToken model.time sessionId clientId loginCode model
-
-        GetLoginTokenRequest email ->
+        GetSignInTokenRequest email ->
             Token.Backend.sendLoginEmail model clientId sessionId email
 
-        LogOutRequest userData ->
-            Token.Backend.logout model clientId userData
+        RequestSignup realname username email ->
+            Token.Backend.requestSignUp model clientId realname username email
+
+        SigInWithTokenRequest loginCode ->
+            Token.Backend.loginWithToken model.time sessionId clientId loginCode model
+
+        SignOutRequest userData ->
+            Token.Backend.signOut model clientId userData
 
         -- STRIPE
         RenewPrices ->
@@ -474,55 +479,6 @@ updateFromFrontend sessionId clientId msg model =
 
                 _ ->
                     ( model, Cmd.none )
-
-        -- USER
-        AddUser realname username email ->
-            Token.Backend.addUser model clientId email realname username
-
-        SignInRequest username _ ->
-            -- TODO: this code is a placeholder pendig using Martin's code
-            case Dict.get username model.userDictionary of
-                Nothing ->
-                    ( model, Lamdera.sendToFrontend clientId (GotMessage "No such user ") )
-
-                Just _ ->
-                    ( model, Lamdera.sendToFrontend clientId (GotMessage "Signed in") )
-
-        SignOutRequest username ->
-            ( model |> Backend.Session.removeSession username
-            , Lamdera.sendToFrontend clientId (UserSignedIn Nothing |> Debug.log "@## SignOutRequest (3)")
-            )
-
-        RequestSignup realname username email password ->
-            case model.localUuidData of
-                Nothing ->
-                    ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing |> Debug.log "@## SignUpRequest (4)") )
-
-                -- TODO, need to signal & handle error
-                Just uuidData ->
-                    case EmailAddress.fromString email of
-                        Nothing ->
-                            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing |> Debug.log "@## SignUpRequest (5)") )
-
-                        Just validEmail ->
-                            let
-                                user =
-                                    { realname = realname
-                                    , username = username
-                                    , email = validEmail
-                                    , created_at = model.time
-                                    , updated_at = model.time
-                                    , id = LocalUUID.extractUUIDAsString uuidData
-                                    , role = User.UserRole
-                                    , recentLoginEmails = []
-                                    }
-                            in
-                            ( { model
-                                | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
-                                , userDictionary = Dict.insert username user model.userDictionary
-                              }
-                            , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
-                            )
 
         -- STRIPE
         CancelPurchaseRequest ->

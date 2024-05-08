@@ -217,16 +217,14 @@ type ToBackend
     | GetBackendModel
       -- TOKEN
     | CheckLoginRequest
-    | LoginWithTokenRequest Int
-    | GetLoginTokenRequest EmailAddress
-    | LogOutRequest (Maybe User.LoginData)
+    | SigInWithTokenRequest Int
+    | GetSignInTokenRequest EmailAddress
+    | SignOutRequest (Maybe User.LoginData)
       -- STRIPE
     | RenewPrices
       -- USER
     | AddUser String String String -- realname, username, email
-    | SignInRequest String String
-    | SignOutRequest String
-    | RequestSignup String String String String -- realname, username, email, password
+    | RequestSignup String String String -- realname, username, email
       -- EXAMPLES
     | GetWeatherData String
       -- DATA (JC)

@@ -2,8 +2,9 @@ module Token.Backend exposing
     ( addUser
     , checkLogin
     , loginWithToken
-    , logout
+    , requestSignUp
     , sendLoginEmail
+    , signOut
     )
 
 import AssocList
@@ -30,6 +31,38 @@ import Token.LoginForm
 import Token.Types
 import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
 import User
+
+
+requestSignUp model clientId realname username email =
+    case model.localUuidData of
+        Nothing ->
+            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing |> Debug.log "@## SignUpRequest (4)") )
+
+        -- TODO, need to signal & handle error
+        Just uuidData ->
+            case EmailAddress.fromString email of
+                Nothing ->
+                    ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing |> Debug.log "@## SignUpRequest (5)") )
+
+                Just validEmail ->
+                    let
+                        user =
+                            { realname = realname
+                            , username = username
+                            , email = validEmail
+                            , created_at = model.time
+                            , updated_at = model.time
+                            , id = LocalUUID.extractUUIDAsString uuidData
+                            , role = User.UserRole
+                            , recentLoginEmails = []
+                            }
+                    in
+                    ( { model
+                        | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
+                        , userDictionary = Dict.insert username user model.userDictionary
+                      }
+                    , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
+                    )
 
 
 checkLogin model clientId sessionId =
@@ -179,7 +212,7 @@ addUser2 model clientId email realname username =
             )
 
 
-logout model clientId userData =
+signOut model clientId userData =
     case userData of
         Just user ->
             ( { model | sessionDict = model.sessionDict |> AssocList.filter (\_ name -> name /= user.username) }

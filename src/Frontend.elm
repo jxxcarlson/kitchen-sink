@@ -227,7 +227,7 @@ updateLoaded msg model =
                         case EmailAddress.fromString loginForm.email of
                             Just email ->
                                 ( { model | loginForm = EnterLoginCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
-                                , Lamdera.sendToBackend (GetLoginTokenRequest email)
+                                , Lamdera.sendToBackend (GetSignInTokenRequest email)
                                 )
 
                             Nothing ->
@@ -285,7 +285,7 @@ updateLoaded msg model =
                                                     Dict.insert loginCode Token.Types.Checking enterLoginCode.attempts
                                             }
                                   }
-                                , Lamdera.sendToBackend (LoginWithTokenRequest loginCode)
+                                , Lamdera.sendToBackend (SigInWithTokenRequest loginCode)
                                 )
 
                         Err _ ->
@@ -360,7 +360,7 @@ updateLoaded msg model =
                 , kvViewType = KeyValueStore.KVVSummary
                 , kvVerbosity = KeyValueStore.KVQuiet
               }
-            , Lamdera.sendToBackend (LogOutRequest model.currentUserData)
+            , Lamdera.sendToBackend (SignOutRequest model.currentUserData)
             )
 
         InputRealname str ->
