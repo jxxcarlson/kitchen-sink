@@ -1,9 +1,10 @@
-module Token.Lib exposing (addUser, sendLoginEmail)
+module Token.Lib exposing (addUser, loginWithToken, sendLoginEmail)
 
 import AssocList
 import BackendHelper
 import Config
 import Dict
+import Duration
 import Email.Html
 import Email.Html.Attributes
 import EmailAddress exposing (EmailAddress)
@@ -15,6 +16,7 @@ import List.Extra
 import List.Nonempty
 import LocalUUID
 import Postmark
+import Quantity
 import Sha256
 import String.Nonempty exposing (NonemptyString)
 import Time
@@ -22,6 +24,71 @@ import Token.LoginForm
 import Token.Types
 import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
 import User
+
+
+loginWithToken :
+    Time.Posix
+    -> SessionId
+    -> ClientId
+    -> Int
+    -> BackendModel
+    -> ( BackendModel, Cmd BackendMsg )
+loginWithToken time sessionId clientId loginCode model =
+    case AssocList.get sessionId model.sessionDict of
+        Just username ->
+            case Dict.get username model.userDictionary of
+                Just user ->
+                    ( model, Lamdera.sendToFrontend sessionId (LoginWithTokenResponse <| Ok <| User.loginDataOfUser user) )
+
+                Nothing ->
+                    ( model, Lamdera.sendToFrontend clientId (LoginWithTokenResponse (Err loginCode)) )
+
+        Nothing ->
+            case AssocList.get sessionId model.pendingLogins of
+                Just pendingLogin ->
+                    if
+                        (pendingLogin.loginAttempts < Token.LoginForm.maxLoginAttempts)
+                            && (Duration.from pendingLogin.creationTime time |> Quantity.lessThan Duration.hour)
+                    then
+                        if loginCode == pendingLogin.loginCode then
+                            case
+                                Dict.toList model.userDictionary
+                                    |> List.Extra.find (\( _, user ) -> user.email == pendingLogin.emailAddress)
+                            of
+                                Just ( userId, user ) ->
+                                    ( { model
+                                        | sessionDict = AssocList.insert sessionId userId model.sessionDict |> Debug.log "@##! Update sesssionDict (2)"
+                                        , pendingLogins = AssocList.remove sessionId model.pendingLogins
+                                      }
+                                    , User.loginDataOfUser user
+                                        |> Ok
+                                        |> LoginWithTokenResponse
+                                        |> Lamdera.sendToFrontend sessionId
+                                    )
+
+                                Nothing ->
+                                    ( model
+                                    , Err loginCode
+                                        |> LoginWithTokenResponse
+                                        |> Lamdera.sendToFrontend clientId
+                                    )
+
+                        else
+                            ( { model
+                                | pendingLogins =
+                                    AssocList.insert
+                                        sessionId
+                                        { pendingLogin | loginAttempts = pendingLogin.loginAttempts + 1 }
+                                        model.pendingLogins
+                              }
+                            , Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId
+                            )
+
+                    else
+                        ( model, Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId )
+
+                Nothing ->
+                    ( model, Err loginCode |> LoginWithTokenResponse |> Lamdera.sendToFrontend clientId )
 
 
 addUser model clientId email realname username =
