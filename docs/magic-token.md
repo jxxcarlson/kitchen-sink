@@ -4,7 +4,8 @@
 
 This document describes an authorization system using "magic-tokens"
 and gives directions for the needed copy-paste work that needs to be
-done to take the code from the demo app [elm-kitchen-sink.lamdera.app](https://elm-kitchen-sink.lamdera.app) and implant it in your app.  The code for the 
+done to take the code from the demo app [elm-kitchen-sink.lamdera.app](https://elm-kitchen-sink.lamdera.app) 
+and implant it in your app.  The code for the 
 demo app is at [github.com/jxxcarlson/kitchen-sink](https://github.com/jxxcarlson/kitchen-sink).
 
 ## Operation
