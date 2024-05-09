@@ -1,9 +1,13 @@
-# Kitchen Sink Manual
+# Authentication Using Magic Tokens
 
-## Authentication Using Magic Tokens
+(D R A F T)
 
+This document describes an authorization system using "magic-tokens"
+and gives directions for the needed copy-paste work that needs to be
+done to take the code from the demo app [elm-kitchen-sink.lamdera.app](https://elm-kitchen-sink.lamdera.app) and implant it in your app.  The code for the 
+demo app is at [github.com/jxxcarlson/kitchen-sink](https://github.com/jxxcarlson/kitchen-sink).
 
-### Operation
+## Operation
 
 The magic token authentication system works as follows. First, a user must 
 register with the system by providing an email address, full name, and a
@@ -25,7 +29,7 @@ period.  If you do not seem to be siged in, refresh your browser.
 If you wish to "disconnect" your access to the app for a while, click
 on the **Sign out** button.
 
-### Pros and Cons
+## Pros and Cons
 
 An advantage of the magic token system is its security.  An app which 
 uses it stores no confidential data, e.g., passwords.  The only things
@@ -36,13 +40,13 @@ the bad people will not be in a position to do much harm.
 A disadvantage is that the user has to occasionally refresh access to the
 app by providing his email address, as described above.
 
-## Implementing the Magic Token system in another app
+# Implementing the Magic Token system in another app
 
 The following additions must be made:
 
-### Types
+## Types
 
-#### FrontendMsg
+### FrontendMsg
 
 ```
 | SubmitEmailForToken
@@ -52,7 +56,7 @@ The following additions must be made:
 | SignOut
 ```    
 
-#### BackendMsg
+### BackendMsg
 
 ```
 | AutoLogin SessionId User.LoginData
@@ -61,7 +65,7 @@ The following additions must be made:
 | AuthenticationConfirmationEmailSent (Result Http.Error Postmark.PostmarkSendResponse)
 ```
 
-#### ToBackend
+### ToBackend
 
 ```
     | CheckLoginRequest
@@ -70,7 +74,7 @@ The following additions must be made:
     | SignOutRequest (Maybe User.LoginData)
 ```
 
-#### ToFrontend
+### ToFrontend
 
 ```
 | CheckSignInResponse (Result BackendDataStatus User.LoginData)
@@ -82,7 +86,7 @@ The following additions must be made:
 ```
 
 
-#### LoadedModel
+### LoadedModel
 
 ```
 , loginForm : Token.Types.LoginForm
@@ -91,7 +95,7 @@ The following additions must be made:
 , currentUserData : Maybe User.LoginData
 ```
 
-#### BackendModel
+### BackendModel
 
 ```
 , secretCounter : Int
@@ -110,7 +114,7 @@ The following additions must be made:
 , sessionInfo : Session.SessionInfo
 ```
 
-### Modules to add
+## Modules to add
 
 ```
 Token.Types
@@ -120,7 +124,7 @@ Token.LoginForm
 Pages.SignIn -- attach this to your routing/page system
 ```
 
-### Add to Backend.updateFromFrontend
+## Add to Backend.updateFromFrontend
 
 ```
  AddUser realname username email ->
@@ -142,7 +146,7 @@ SignOutRequest userData ->
     Token.Backend.signOut model clientId userData
 ```
 
-### Add to Frontend.updateFromBackendLoaded
+## Add to Frontend.updateFromBackendLoaded
 
 ```
 SignInError message ->
