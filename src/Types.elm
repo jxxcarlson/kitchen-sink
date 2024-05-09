@@ -66,8 +66,6 @@ type alias LoadedModel =
     , loginForm : Token.Types.LoginForm
     , loginErrorMessage : Maybe String
     , signInStatus : Token.Types.SignInStatus
-
-    -- User
     , currentUserData : Maybe User.LoginData
 
     -- STRIPE
@@ -139,9 +137,6 @@ type alias BackendModel =
             , loginCode : Int
             }
     , log : Token.Types.Log
-
-    -- logs here
-    -- USER
     , userDictionary : Dict.Dict String User.User
     , sessions : Session.Sessions
     , sessionInfo : Session.SessionInfo
@@ -278,11 +273,6 @@ type ToFrontend
       -- DATA (JC)
     | GotKeyValueStore (Dict.Dict String KeyValueStore.KVDatum)
     | GotBackendModel BackendModel
-
-
-
--- STRIPE
--- TOKEN
 
 
 type BackendDataStatus

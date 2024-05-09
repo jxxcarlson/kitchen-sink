@@ -262,10 +262,10 @@ enterEmailView model =
         , Element.row
             [ Element.spacing 16 ]
             [ MyElement.secondaryButton [ Martin.elementId cancelButtonId ] Types.CancelSignIn "Cancel"
-            , MyElement.primaryButton submitEmailButtonId Types.SubmitEmailForToken "Login"
+            , MyElement.primaryButton submitEmailButtonId Types.SubmitEmailForToken "Sign in"
             ]
         , if model.rateLimited then
-            errorView "Too many login attempts have been made. Please try again later."
+            errorView "Too many sign in attempts have been made. Please try again later."
 
           else
             Element.none

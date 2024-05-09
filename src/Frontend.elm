@@ -430,6 +430,9 @@ updateFromBackendLoaded msg model =
         UserRegistered user ->
             Token.Frontend.userRegistered model user
 
+        UserSignedIn maybeUser ->
+            ( { model | signInStatus = Token.Types.NotSignedIn }, Cmd.none )
+
         -- STRIPE
         InitData { prices, productInfo } ->
             ( { model | prices = prices, productInfoDict = productInfo }, Cmd.none )
@@ -453,11 +456,6 @@ updateFromBackendLoaded msg model =
 
         AdminInspectResponse backendModel ->
             ( { model | backendModel = Just backendModel }, Cmd.none )
-
-        -- USER
-        UserSignedIn maybeUser ->
-            -- TODO: use or remove
-            ( { model | signInStatus = Token.Types.NotSignedIn }, Cmd.none )
 
         ReceivedWeatherData result ->
             case result of

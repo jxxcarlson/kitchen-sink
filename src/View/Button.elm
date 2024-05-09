@@ -49,7 +49,7 @@ cancelSignUp =
 
 
 openSignUp =
-    button Types.OpenSignUp "Sign Up"
+    button Types.OpenSignUp "Sign up"
 
 
 setAdminDisplay : Types.AdminDisplay -> Types.AdminDisplay -> String -> Element.Element Types.FrontendMsg
