@@ -305,6 +305,7 @@ update msg model =
                 ]
             )
 
+        -- STRIPE
         CreatedCheckoutSession sessionId clientId priceId purchaseForm result ->
             case result of
                 Ok ( stripeSessionId, submitTime ) ->
