@@ -4,11 +4,14 @@ module Token.Backend exposing
     , loginWithToken
     , requestSignUp
     , sendLoginEmail
+    , sentLoginEmail
     , signOut
     )
 
 import AssocList
+import Backend.Session
 import BackendHelper
+import BiDict
 import Config
 import Dict
 import Duration
@@ -23,14 +26,66 @@ import List.Extra
 import List.Nonempty
 import LocalUUID
 import Postmark
+import Process
 import Quantity
 import Sha256
 import String.Nonempty exposing (NonemptyString)
+import Task
 import Time
 import Token.LoginForm
 import Token.Types
 import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
 import User
+
+
+sentLoginEmail : BackendModel -> SessionId -> ClientId -> ( BackendModel, Cmd BackendMsg )
+sentLoginEmail model sessionId clientId =
+    let
+        _ =
+            Debug.log "@##!OnConnected (1)" ( sessionId, clientId )
+
+        maybeUsername : Maybe String
+        maybeUsername =
+            BiDict.get sessionId model.sessions
+
+        maybeUserData : Maybe User.LoginData
+        maybeUserData =
+            Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername
+                |> Maybe.map User.loginDataOfUser
+                |> Debug.log "@##! OnConnected, loginDataOfUser (2)"
+    in
+    ( model
+    , Cmd.batch
+        [ BackendHelper.getAtmosphericRandomNumbers
+        , Backend.Session.reconnect model sessionId clientId
+        , Lamdera.sendToFrontend clientId (GotKeyValueStore model.keyValueStore)
+
+        ---, Lamdera.sendToFrontend sessionId (GotMessage "Connected")
+        , Lamdera.sendToFrontend
+            clientId
+            (InitData
+                { prices = model.prices
+                , productInfo = model.products
+                }
+            )
+        , case AssocList.get sessionId model.sessionDict of
+            Just username ->
+                case Dict.get username model.userDictionary of
+                    Just user ->
+                        -- Lamdera.sendToFrontend sessionId (LoginWithTokenResponse <| Ok <| Debug.log "@##! send loginDATA" <| User.loginDataOfUser user)
+                        Process.sleep 60 |> Task.perform (always (AutoLogin sessionId (User.loginDataOfUser user)))
+
+                    Nothing ->
+                        Lamdera.sendToFrontend clientId (SignInWithTokenResponse (Err 0))
+
+            Nothing ->
+                Lamdera.sendToFrontend clientId (SignInWithTokenResponse (Err 1))
+        ]
+    )
+
+
+
+-- requestSignUp : BackendModel -> ClientId -> g -> comparable -> String -> ( { a | localUuidData : Maybe LocalUUID.Data, time : b, userDictionary : Dict.Dict comparable { realname : c, username : d, email : EmailAddress, created_at : e, updated_at : e, id : String, role : User.Role, recentLoginEmails : List f } }, Cmd backendMsg )
 
 
 requestSignUp model clientId realname username email =
