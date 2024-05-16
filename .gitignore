@@ -6,3 +6,7 @@ cloc.txt
 
 data/*
 token-code/
+
+
+# TEMPORARY
+src/Config.elm
