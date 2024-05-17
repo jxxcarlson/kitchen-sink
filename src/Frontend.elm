@@ -229,7 +229,7 @@ updateLoaded msg model =
             Token.Frontend.submitEmailForToken model
 
         TypedEmailInSignInForm email ->
-            Token.Frontend.enterEmail model (Debug.log "@##" email)
+            Token.Frontend.enterEmail model email
 
         UseReceivedCodetoSignIn loginCode ->
             Token.Frontend.signInWithCode model loginCode

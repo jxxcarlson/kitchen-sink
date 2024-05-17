@@ -264,7 +264,7 @@ update msg model =
         OnConnected sessionId clientId ->
             let
                 _ =
-                    Debug.log "@##!OnConnected (1)" ( sessionId, clientId )
+                    ( sessionId, clientId )
 
                 maybeUsername : Maybe String
                 maybeUsername =
@@ -274,7 +274,6 @@ update msg model =
                 maybeUserData =
                     Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername
                         |> Maybe.map User.loginDataOfUser
-                        |> Debug.log "@##! OnConnected, loginDataOfUser (2)"
             in
             ( model
             , Cmd.batch

@@ -185,14 +185,14 @@ signInWithTokenResponse model result =
         Err code ->
             let
                 _ =
-                    Debug.log "@## SignInWithTokenResponse, Err" code
+                    code
             in
             ( { model | loginErrorMessage = Just "Invalid login code" }, Cmd.none )
 
         Ok signInData ->
             let
                 _ =
-                    Debug.log "@## in, Ok" signInData
+                    signInData
             in
             let
                 adminCommand =

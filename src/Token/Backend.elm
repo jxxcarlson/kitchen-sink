@@ -42,7 +42,7 @@ sentLoginEmail : BackendModel -> SessionId -> ClientId -> ( BackendModel, Cmd Ba
 sentLoginEmail model sessionId clientId =
     let
         _ =
-            Debug.log "@##!OnConnected (1)" ( sessionId, clientId )
+            ( sessionId, clientId )
 
         maybeUsername : Maybe String
         maybeUsername =
@@ -52,7 +52,6 @@ sentLoginEmail model sessionId clientId =
         maybeUserData =
             Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername
                 |> Maybe.map User.loginDataOfUser
-                |> Debug.log "@##! OnConnected, loginDataOfUser (2)"
     in
     ( model
     , Cmd.batch
@@ -91,13 +90,13 @@ sentLoginEmail model sessionId clientId =
 requestSignUp model clientId realname username email =
     case model.localUuidData of
         Nothing ->
-            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing |> Debug.log "@## SignUpRequest (4)") )
+            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
 
         -- TODO, need to signal & handle error
         Just uuidData ->
             case EmailAddress.fromString email of
                 Nothing ->
-                    ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing |> Debug.log "@## SignUpRequest (5)") )
+                    ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
 
                 Just validEmail ->
                     let
@@ -181,7 +180,7 @@ loginWithToken time sessionId clientId loginCode model =
                             of
                                 Just ( userId, user ) ->
                                     ( { model
-                                        | sessionDict = AssocList.insert sessionId userId model.sessionDict |> Debug.log "@##! Update sesssionDict (2)"
+                                        | sessionDict = AssocList.insert sessionId userId model.sessionDict
                                         , pendingLogins = AssocList.remove sessionId model.pendingLogins
                                       }
                                     , User.loginDataOfUser user
@@ -242,7 +241,7 @@ addUser2 model clientId email realname username =
         Nothing ->
             let
                 _ =
-                    Debug.log "@## AddUser (1)" Nothing
+                    Nothing
             in
             ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
 
@@ -280,7 +279,7 @@ signOut model clientId userData =
 
 emailNotRegistered : EmailAddress -> Dict.Dict String User.User -> Bool
 emailNotRegistered email userDictionary =
-    Dict.filter (\_ user -> user.email == email) userDictionary |> Debug.log "@## DICT" |> Dict.isEmpty
+    Dict.filter (\_ user -> user.email == email) userDictionary |> Dict.isEmpty
 
 
 userNameNotFound : String -> Dict.Dict String User.User -> Bool
@@ -298,14 +297,14 @@ sendLoginEmail model clientId sessionId email =
     if emailNotRegistered email model.userDictionary then
         let
             _ =
-                Debug.log "@## REGISTERED" False
+                False
         in
         ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
 
     else
         let
             _ =
-                Debug.log "@## REGISTERED" True
+                True
         in
         sendLoginEmail2 model clientId sessionId email
 
@@ -321,7 +320,7 @@ sendLoginEmail2 model clientId sessionId email =
             if BackendHelper.shouldRateLimit model.time user then
                 let
                     _ =
-                        Debug.log "@## BRANCH" 1
+                        1
 
                     ( model3, cmd ) =
                         addLog model.time (Token.Types.LoginsRateLimited userId) model
@@ -333,7 +332,7 @@ sendLoginEmail2 model clientId sessionId email =
             else
                 let
                     _ =
-                        Debug.log "@## BRANCH" 2
+                        2
                 in
                 ( { model2
                     | pendingLogins =
@@ -341,13 +340,11 @@ sendLoginEmail2 model clientId sessionId email =
                             sessionId
                             { creationTime = model.time, emailAddress = email, loginAttempts = 0, loginCode = loginCode }
                             model2.pendingLogins
-                            |> Debug.log "@## pendingLogins"
                     , userDictionary =
                         Dict.insert
                             userId
                             { user | recentLoginEmails = model.time :: List.take 100 user.recentLoginEmails }
                             model.userDictionary
-                            |> Debug.log "@## userDictionary"
                   }
                 , sendLoginEmail_ (SentLoginEmail model.time email) email loginCode
                 )
@@ -355,14 +352,14 @@ sendLoginEmail2 model clientId sessionId email =
         ( Nothing, Ok _ ) ->
             let
                 _ =
-                    Debug.log "@## BRANCH" 3
+                    3
             in
-            ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account" |> Debug.log "@## AddUser (2)") )
+            ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
 
         ( _, Err () ) ->
             let
                 _ =
-                    Debug.log "@## BRANCH" 4
+                    4
             in
             addLog model.time (Token.Types.FailedToCreateLoginCode model.secretCounter) model
 
