@@ -39,7 +39,7 @@ reconnect : Types.BackendModel -> Lamdera.SessionId -> Lamdera.ClientId -> Cmd b
 reconnect model sessionId clientId =
     let
         maybeUsername =
-            BiDict.get sessionId model.sessions |> Debug.log "@@ OnConnected maybeUsername"
+            BiDict.get sessionId model.sessions
 
         maybeUser =
             Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername

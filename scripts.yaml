@@ -1,15 +1,14 @@
 scripts:
+  review: npx elm-review --ignore-dirs vendor,src/Evergreen/
 
-  review: npx elm-review --ignore-dirs src/Evergreen/
+  review-fix: npx elm-review --ignore-dirs vendor,src/Evergreen/ --fix
 
-  review-fix: npx elm-review --ignore-dirs src/Evergreen/ --fix
+  review-fix-all: npx elm-review --ignore-dirs vendor,src/Evergreen/ --fix-all
 
-  review-fix-all: npx elm-review --ignore-dirs src/Evergreen/ --fix-all
+  review-debug: npx elm-review --ignore-dirs vendor,src/Evergreen/ --fix-all --rules NoDebug.Log
 
-  review-debug: npx elm-review --ignore-dirs src/Evergreen/ --fix-all --rules NoDebug.Log
-
-  review-x: npx elm-review  --rules NoUnused.CustomTypeConstructors
+  review-x: npx elm-review  --rules NoUnused.CustomTypeConstructors --ignore-dirs vendor,src/Evergreen/
 
   cloc: cloc --by-file --exclude-dir=Evergreen,Pages src/
-  
+
   cgraph: npx elm-review --template miniBill/elm-review-call-graph/example --extract --report=json | jq ".extracts.ExtractCallGraph" > call-graph.json

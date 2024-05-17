@@ -153,7 +153,6 @@ viewSessions window backendModel =
         , spacing 12
         ]
         (backendModel.sessionDict
-            |> Debug.log "@##! SESSIONS"
             |> AssocList.toList
             |> List.map viewSession
         )

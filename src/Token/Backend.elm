@@ -409,7 +409,7 @@ sendLoginEmail_ :
 sendLoginEmail_ msg emailAddress loginCode =
     let
         _ =
-            Debug.log "@## sendLoginEmail" loginCode
+            loginCode
     in
     { from = { name = "", email = noReplyEmailAddress }
     , to = List.Nonempty.fromElement { name = "", email = emailAddress }
