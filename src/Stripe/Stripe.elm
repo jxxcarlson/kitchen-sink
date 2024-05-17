@@ -18,10 +18,10 @@ module Stripe.Stripe exposing
     )
 
 import AssocList
+import Auth.HttpHelpers
 import EmailAddress exposing (EmailAddress)
 import Env
 import Http
-import HttpHelpers exposing (expectJson_, jsonResolver)
 import Id exposing (Id)
 import Json.Decode as D
 import Json.Decode.Pipeline exposing (optional, required)
@@ -88,7 +88,7 @@ getPrices toMsg =
         , headers = headers
         , url = "https://api.stripe.com/v1/prices"
         , body = Http.emptyBody
-        , expect = expectJson_ toMsg decodePrices
+        , expect = Auth.HttpHelpers.expectJson toMsg decodePrices
         , timeout = Nothing
         , tracker = Nothing
         }
@@ -166,7 +166,7 @@ createCheckoutSession { priceId, emailAddress, now, expiresInMinutes } =
         , headers = headers
         , url = "https://api.stripe.com/v1/checkout/sessions"
         , body = body
-        , resolver = jsonResolver decodeSession
+        , resolver = Auth.HttpHelpers.jsonResolver decodeSession
         , timeout = Nothing
         }
 
@@ -202,7 +202,7 @@ expireSession stripeSessionId =
                 [ "v1", "checkout", "sessions", Id.toString stripeSessionId, "expire" ]
                 []
         , body = Http.emptyBody
-        , resolver = jsonResolver (D.succeed ())
+        , resolver = Auth.HttpHelpers.jsonResolver (D.succeed ())
         , timeout = Nothing
         }
 

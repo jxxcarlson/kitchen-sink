@@ -1,13 +1,13 @@
 module Backend exposing (app)
 
 import AssocList
+import Auth.HttpHelpers
 import Backend.Session
 import BackendHelper
 import BiDict
 import Dict
 import Duration
 import Email
-import HttpHelpers
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
 import LocalUUID
@@ -219,7 +219,7 @@ update msg model =
                     )
 
                 Err error ->
-                    ( model, BackendHelper.errorEmail ("GotPrices failed: " ++ HttpHelpers.httpErrorToString error) )
+                    ( model, BackendHelper.errorEmail ("GotPrices failed: " ++ Auth.HttpHelpers.httpErrorToString error) )
 
         GotPrices2 clientId result ->
             case result of
@@ -247,7 +247,7 @@ update msg model =
                     )
 
                 Err error ->
-                    ( model, BackendHelper.errorEmail ("GotPrices failed: " ++ HttpHelpers.httpErrorToString error) )
+                    ( model, BackendHelper.errorEmail ("GotPrices failed: " ++ Auth.HttpHelpers.httpErrorToString error) )
 
         -- TOKEN
         SentLoginEmail _ _ _ ->
@@ -341,7 +341,7 @@ update msg model =
                 Err error ->
                     let
                         err =
-                            "CreatedCheckoutSession failed: " ++ HttpHelpers.httpErrorToString error
+                            "CreatedCheckoutSession failed: " ++ Auth.HttpHelpers.httpErrorToString error
                     in
                     ( model
                     , Cmd.batch
@@ -367,7 +367,7 @@ update msg model =
                             ( model, Cmd.none )
 
                 Err error ->
-                    ( model, BackendHelper.errorEmail ("ExpiredStripeSession failed: " ++ HttpHelpers.httpErrorToString error ++ " stripeSessionId: " ++ Id.toString stripeSessionId) )
+                    ( model, BackendHelper.errorEmail ("ExpiredStripeSession failed: " ++ Auth.HttpHelpers.httpErrorToString error ++ " stripeSessionId: " ++ Id.toString stripeSessionId) )
 
         ConfirmationEmailSent stripeSessionId result ->
             case AssocList.get stripeSessionId model.orders of
@@ -392,7 +392,7 @@ update msg model =
                                         { order | emailResult = Email.EmailFailed error }
                                         model.orders
                               }
-                            , BackendHelper.errorEmail ("Confirmation email failed: " ++ HttpHelpers.httpErrorToString error)
+                            , BackendHelper.errorEmail ("Confirmation email failed: " ++ Auth.HttpHelpers.httpErrorToString error)
                             )
 
                 Nothing ->
