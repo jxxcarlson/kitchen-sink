@@ -1,7 +1,5 @@
 module Untrusted exposing
     ( Untrusted(..)
-    , emailAddress
-    , name
     , purchaseForm
     , untrust
     )

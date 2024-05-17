@@ -1,4 +1,4 @@
-module Martin exposing (HtmlId(..), elementId, elementId_, emailInputId, idToString, noAttr, noPointerEvents)
+module Martin exposing (HtmlId(..), elementId, elementId_, idToString, noAttr)
 
 import Element
 import Html.Attributes

@@ -3,7 +3,7 @@ scripts:
 
   review-fix: npx elm-review --ignore-dirs vendor,src/Evergreen/ --fix
 
-  review-fix-all: npx elm-review --ignore-dirs vendor,src/Evergreen/ --fix-all
+  review-fix-all: npx elm-review --ignore-dirs vendor,src/Evergreen/ --ignore-files src/LamderaRPC --fix-all
 
   review-debug: npx elm-review --ignore-dirs vendor,src/Evergreen/ --fix-all --rules NoDebug.Log
 

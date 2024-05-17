@@ -1,6 +1,5 @@
 port module Ports exposing
     ( playSound
-    , stripe_from_js
     , stripe_to_js
     , supermario_copy_to_clipboard_to_js
     )

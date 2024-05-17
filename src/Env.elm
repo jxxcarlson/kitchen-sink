@@ -3,7 +3,6 @@ module Env exposing
     , dataSource
     , developerEmails
     , domain
-    , isProduction
     , mode
     , postmarkApiKey
     , stripePrivateApiKey

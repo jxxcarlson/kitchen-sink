@@ -14,7 +14,6 @@ module Stripe.Stripe exposing
     , expireSession
     , getPrices
     , loadCheckout
-    , stripeSessionIdParameter
     , successPath
     )
 

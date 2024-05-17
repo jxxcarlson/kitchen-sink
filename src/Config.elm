@@ -1,7 +1,6 @@
 module Config exposing
     ( contactEmail
     , postmarkApiKey
-    , postmarkNoReplyEmail
     , secretKey
     )
 

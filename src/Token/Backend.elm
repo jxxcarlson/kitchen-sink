@@ -4,7 +4,6 @@ module Token.Backend exposing
     , loginWithToken
     , requestSignUp
     , sendLoginEmail
-    , sentLoginEmail
     , signOut
     )
 

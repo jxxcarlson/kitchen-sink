@@ -1,6 +1,5 @@
 module View.Input exposing
     ( multilineTemplateWithAttr
-    , passwordTemplateWithAttr
     , template
     , templateWithAttr
     )

@@ -1,4 +1,4 @@
-module Backend.Session exposing (reconnect, removeSession, updateSession)
+module Backend.Session exposing (reconnect)
 
 import BiDict
 import Dict

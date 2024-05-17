@@ -1,4 +1,4 @@
-module MarkdownThemed exposing (bulletPoint, heading1, lightTheme, renderFull)
+module MarkdownThemed exposing (lightTheme, renderFull)
 
 import Element exposing (Element, centerX, el, fill, html, image, maximum, padding, px, width)
 import Element.Border

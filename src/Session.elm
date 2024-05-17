@@ -5,7 +5,6 @@ module Session exposing
     , Username
     , add
     , remove
-    , removeStaleSessions
     )
 
 import BiDict

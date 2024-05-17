@@ -1,4 +1,4 @@
-module LamderaRPC exposing (Body(..), RPC(..), RPCArgs, RPCResult(..), argsDecoder, asTask, asTaskJson, asTaskString, bodyTypeToString, customResolver, fail, handleEndpoint, handleEndpointJson, handleEndpointString, httpErrorToString, process)
+module LamderaRPC exposing (Body(..), RPC(..), RPCArgs, RPCResult(..), asTask, handleEndpoint, handleEndpointJson, process)
 
 import Env
 import Http exposing (Error(..), Response(..))

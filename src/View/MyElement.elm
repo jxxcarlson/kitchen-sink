@@ -2,10 +2,8 @@ module View.MyElement exposing
     ( Label
     , emailAddressLink
     , errorColor
-    , gray
     , label
     , onEnter
-    , onKey
     , primaryButton
     , routeLinkNewTab
     , secondaryButton

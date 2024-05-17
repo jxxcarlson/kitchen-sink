@@ -1,11 +1,9 @@
 module Name exposing
     ( Error(..)
     , Name(..)
-    , anonymous
     , codec
     , errorToString
     , fromString
-    , maxLength
     , nameToString
     , toString
     )
