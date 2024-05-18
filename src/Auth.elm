@@ -2,19 +2,13 @@ module Auth exposing (..)
 
 import Auth.Common exposing (Method(..), UserInfo)
 import Auth.Flow exposing (signInRequested)
-import Auth.Method.OAuthGoogle
+import Auth.Method.EmailMagicLink
 import Dict exposing (Dict)
 import Dict.Extra as Dict
 import Env
 import Lamdera exposing (ClientId, SessionId)
 import Time
 import Types exposing (..)
-
-
-oauthConfig =
-    { googleAppClientId = Env.googleAppClientId
-    , googleAppClientSecret = Env.googleAppClientSecret
-    }
 
 
 config : Auth.Common.Config FrontendMsg ToBackend BackendMsg ToFrontend FrontendModel BackendModel
@@ -26,7 +20,7 @@ config =
     , sendToBackend = Lamdera.sendToBackend
     , renewSession = renewSession
     , methods =
-        [ Auth.Method.OAuthGoogle.configuration oauthConfig.googleAppClientId oauthConfig.googleAppClientSecret
+        [ Auth.Method.EmailMagicLink.configuration
         ]
     }
 
