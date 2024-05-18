@@ -1,4 +1,4 @@
-module Auth exposing (..)
+module Auth exposing (backendConfig, config, handleAuthSuccess, logout, renewSession, signin, updateFromBackend)
 
 import Auth.Common exposing (Method(..), UserInfo)
 import Auth.Flow exposing (signInRequested)
@@ -20,9 +20,59 @@ config =
     , sendToBackend = Lamdera.sendToBackend
     , renewSession = renewSession
     , methods =
-        [ Auth.Method.EmailMagicLink.configuration
+        [-- Auth.Method.EmailMagicLink.configuration placeHolder
         ]
     }
+
+
+placeHolder =
+    { initiateSignin = Debug.todo "initiateSignin", onAuthCallbackReceived = Debug.todo "onAuthCallbackReceived" }
+
+
+yada =
+    Debug.todo "foobar"
+
+
+
+--onAuthCallbackReceived :
+--        SessionId
+--        -> ClientId
+--        -> Url
+--        -> AuthCode
+--        -> State
+--        -> Time.Posix
+--        -> (BackendMsg -> backendMsg)
+--        -> backendModel
+--        -> ( backendModel, Cmd backendMsg )
+--    }
+--    ->
+--        Method
+--            frontendMsg
+--            backendMsg
+--            { frontendModel | authFlow : Flow, authRedirectBaseUrl : Url }
+--            backendModel
+----onAuthCallbackReceived sessionId clientId url authCode state time toBackendMsg { authFlow, authRedirectBaseUrl } backendModel =
+----    case authFlow of
+----        AuthFlowEmailMagicLink ->
+----            Auth.Method.EmailMagicLink.onAuthCallbackReceived sessionId clientId url authCode state time toBackendMsg authRedirectBaseUrl backendModel
+
+
+initiateSignin :
+    SessionId
+    -> ClientId
+    -> backendModel
+    -> { username : Maybe String }
+    -> Time.Posix
+    -> ( backendModel, Cmd backendMsg )
+initiateSignin sessionId clientId model { username } _ =
+    case username of
+        -- TODO: this is a placeholder
+        Just email ->
+            ( model, Cmd.none )
+
+        Nothing ->
+            --  ( model, Auth.Flow.setError model "No email provided" )
+            ( model, Cmd.none )
 
 
 backendConfig : BackendModel -> Auth.Flow.BackendUpdateConfig FrontendMsg BackendMsg ToFrontend FrontendModel BackendModel

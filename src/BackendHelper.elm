@@ -31,7 +31,7 @@ import Weather
 
 
 
--- TOKEN
+-- MAGICLINK
 -- TODO: this is a hack based on a lack of understanding of what is going on.
 -- in Martin's code.
 -- OTHER

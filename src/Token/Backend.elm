@@ -45,7 +45,7 @@ sentLoginEmail model sessionId clientId =
 
         maybeUsername : Maybe String
         maybeUsername =
-            BiDict.get sessionId model.sessions
+            Dict.get sessionId model.sessions |> Maybe.andThen .username
 
         maybeUserData : Maybe User.LoginData
         maybeUserData =

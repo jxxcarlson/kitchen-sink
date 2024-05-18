@@ -137,7 +137,7 @@ tryLoading loadingModel =
                             , country = ""
                             }
 
-                        -- TOKEN
+                        -- MAGICLINK
                         , loginForm = Token.LoginForm.init
                         , loginErrorMessage = Nothing
                         , signInStatus = Token.Types.NotSignedIn
@@ -215,7 +215,7 @@ updateLoaded msg model =
         MouseDown ->
             ( { model | showTooltip = False }, Cmd.none )
 
-        -- TOKEN
+        -- MAGICLINK
         CancelSignIn ->
             ( { model | route = HomepageRoute }, Cmd.none )
 
@@ -408,7 +408,16 @@ updateFromBackendLoaded msg model =
         GotBackendModel beModel ->
             ( { model | backendModel = Just beModel }, Cmd.none )
 
-        -- TOKEN
+        -- MAGICLINK
+        AuthToFrontend _ ->
+            ( model, Cmd.none )
+
+        AuthSuccess _ ->
+            ( model, Cmd.none )
+
+        UserInfoMsg _ ->
+            ( model, Cmd.none )
+
         SignInError message ->
             Token.Frontend.handleSignInError model message
 

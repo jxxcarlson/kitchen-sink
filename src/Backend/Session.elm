@@ -1,5 +1,6 @@
 module Backend.Session exposing (reconnect)
 
+import Auth.Common
 import BiDict
 import Dict
 import Lamdera
@@ -38,10 +39,21 @@ removeSession username model =
 reconnect : Types.BackendModel -> Lamdera.SessionId -> Lamdera.ClientId -> Cmd backendMsg
 reconnect model sessionId clientId =
     let
-        maybeUsername =
-            BiDict.get sessionId model.sessions
+        userInfo : Maybe Auth.Common.UserInfo
+        userInfo =
+            Dict.get sessionId model.sessions
 
         maybeUser =
-            Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername
+            case Maybe.map .username userInfo of
+                Just mu ->
+                    case mu of
+                        Just username ->
+                            Dict.get username model.userDictionary
+
+                        Nothing ->
+                            Nothing
+
+                Nothing ->
+                    Nothing
     in
     Lamdera.sendToFrontend clientId (Types.UserSignedIn maybeUser)

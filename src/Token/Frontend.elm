@@ -141,7 +141,7 @@ signOut model =
             , country = ""
             }
 
-        -- TOKEN
+        -- MAGICLINK
         , loginForm = Token.LoginForm.init
         , loginErrorMessage = Nothing
         , signInStatus = Token.Types.NotSignedIn

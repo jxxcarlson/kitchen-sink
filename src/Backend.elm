@@ -1,6 +1,8 @@
 module Backend exposing (app)
 
 import AssocList
+import Auth
+import Auth.Flow
 import Auth.HttpHelpers
 import Backend.Session
 import BackendHelper
@@ -35,13 +37,14 @@ app =
 init : ( BackendModel, Cmd BackendMsg )
 init =
     ( { userDictionary = Dict.empty
-      , sessions = BiDict.empty
+      , sessions = Dict.empty
       , sessionInfo = Dict.empty
       , time = Time.millisToPosix 0
 
-      -- TOKEN
+      -- MAGICLINK
       , secretCounter = 0
       , sessionDict = AssocList.empty
+      , pendingAuths = Dict.empty
       , pendingLogins = AssocList.empty
       , log = []
 
@@ -249,7 +252,12 @@ update msg model =
                 Err error ->
                     ( model, BackendHelper.errorEmail ("GotPrices failed: " ++ Auth.HttpHelpers.httpErrorToString error) )
 
-        -- TOKEN
+        -- MAGICLINK
+        AuthBackendMsg authMsg ->
+            --Auth.Flow.update authMsg model
+            -- TODO placeholder
+            ( model, Cmd.none )
+
         SentLoginEmail _ _ _ ->
             -- TODO
             ( model, Cmd.none )
@@ -268,7 +276,7 @@ update msg model =
 
                 maybeUsername : Maybe String
                 maybeUsername =
-                    BiDict.get sessionId model.sessions
+                    Dict.get sessionId model.sessions |> Maybe.andThen .username
 
                 maybeUserData : Maybe User.LoginData
                 maybeUserData =
@@ -409,7 +417,7 @@ update msg model =
 
 
 
--- TOKEN STUFF BELOW
+-- MAGICLINK STUFF BELOW
 
 
 updateFromFrontend : SessionId -> ClientId -> ToBackend -> BackendModel -> ( BackendModel, Cmd BackendMsg )
@@ -421,7 +429,10 @@ updateFromFrontend sessionId clientId msg model =
         GetBackendModel ->
             ( model, Lamdera.sendToFrontend clientId (GotBackendModel model) )
 
-        -- TOKEN
+        -- MAGICLINK
+        AuthToBackend authMsg ->
+            Auth.Flow.updateFromFrontend (Auth.backendConfig model) clientId sessionId authMsg model
+
         AddUser realname username email ->
             Token.Backend.addUser model clientId email realname username
 

@@ -14,6 +14,7 @@ module Types exposing
     )
 
 import AssocList
+import Auth.Common
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
@@ -62,7 +63,7 @@ type alias LoadedModel =
     , window : { width : Int, height : Int }
     , showTooltip : Bool
 
-    -- TOKEN
+    -- MAGICLINK
     , loginForm : Token.Types.LoginForm
     , loginErrorMessage : Maybe String
     , signInStatus : Token.Types.SignInStatus
@@ -125,7 +126,9 @@ type alias BackendModel =
     , localUuidData : Maybe LocalUUID.Data
     , time : Time.Posix
 
-    -- TOKEN
+    -- MAGICLINK
+    , pendingAuths : Dict Lamdera.SessionId Auth.Common.PendingAuth
+    , sessions : Dict SessionId Auth.Common.UserInfo
     , secretCounter : Int
     , sessionDict : AssocList.Dict SessionId String -- Dict sessionId usernames
     , pendingLogins :
@@ -138,7 +141,6 @@ type alias BackendModel =
             }
     , log : Token.Types.Log
     , userDictionary : Dict.Dict String User.User
-    , sessions : Session.Sessions
     , sessionInfo : Session.SessionInfo
 
     --STRIPE
@@ -161,7 +163,7 @@ type FrontendMsg
     | GotWindowSize Int Int
     | PressedShowTooltip
     | MouseDown
-      -- TOKEN
+      -- MAGICLINK
     | SubmitEmailForToken
     | CancelSignIn
     | TypedEmailInSignInForm String
@@ -210,7 +212,8 @@ type ToBackend
     | CancelPurchaseRequest
     | AdminInspect (Maybe User.User)
     | GetBackendModel
-      -- TOKEN
+      -- MAGICLINK
+    | AuthToBackend Auth.Common.ToBackend
     | CheckLoginRequest
     | SigInWithTokenRequest Int
     | GetSignInTokenRequest EmailAddress
@@ -231,7 +234,8 @@ type BackendMsg
     | GotFastTick Time.Posix
     | OnConnected SessionId ClientId
     | GotAtmosphericRandomNumbers (Result Http.Error String)
-      -- TOKEN
+      -- MAGICLINK
+    | AuthBackendMsg Auth.Common.BackendMsg
     | AutoLogin SessionId User.LoginData
     | BackendGotTime SessionId ClientId ToBackend Time.Posix
     | SentLoginEmail Time.Posix EmailAddress (Result Http.Error Postmark.PostmarkSendResponse)
@@ -258,7 +262,10 @@ type ToFrontend
     | GotMessage String
     | SubmitFormResponse (Result String (Id StripeSessionId))
     | AdminInspectResponse BackendModel
-      -- TOKEN
+      -- MAGICLINK
+    | AuthToFrontend Auth.Common.ToFrontend
+    | AuthSuccess Auth.Common.UserInfo
+    | UserInfoMsg (Maybe Auth.Common.UserInfo)
     | CheckSignInResponse (Result BackendDataStatus User.LoginData)
     | SignInWithTokenResponse (Result Int User.LoginData)
     | GetLoginTokenRateLimited

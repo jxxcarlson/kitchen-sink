@@ -15,7 +15,7 @@ import User
 
 
 
--- TOKEN
+-- MAGICLINK
 
 
 type LoginForm

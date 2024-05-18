@@ -7,15 +7,12 @@ module Session exposing
     , remove
     )
 
+import Auth.Common
 import BiDict
-import Dict
+import Dict exposing (Dict)
 import Lamdera exposing (SessionId)
 import Set
 import Time
-
-
-type alias Sessions =
-    BiDict.BiDict SessionId Username
 
 
 type alias SessionInfo =
@@ -34,26 +31,40 @@ type alias Username =
 
 add : SessionId -> Username -> Interaction -> ( Sessions, SessionInfo ) -> ( Sessions, SessionInfo )
 add sessionId username interaction ( sessions, sessionInfo ) =
-    ( BiDict.insert sessionId username sessions, Dict.insert sessionId interaction sessionInfo )
+    case Dict.get sessionId sessions of
+        Just userInfo ->
+            let
+                newUserInfo =
+                    { userInfo | username = Just username }
+            in
+            ( Dict.insert sessionId newUserInfo sessions, Dict.insert sessionId interaction sessionInfo )
+
+        Nothing ->
+            ( sessions, sessionInfo )
+
+
+type alias Sessions =
+    Dict SessionId Auth.Common.UserInfo
+
+
+filterSessions : Username -> Sessions -> Sessions
+filterSessions username sessions =
+    let
+        isGood : Username -> Auth.Common.UserInfo -> Bool
+        isGood name userInfo =
+            case userInfo.username of
+                Just username_ ->
+                    username_ /= name
+
+                Nothing ->
+                    True
+    in
+    Dict.filter (\k v -> isGood username v) sessions
 
 
 remove : Username -> ( Sessions, SessionInfo ) -> ( Sessions, SessionInfo )
 remove username ( sessions, sessionInfo ) =
     let
-        activeSessions : List SessionId
-        activeSessions =
-            BiDict.getReverse username sessions
-                |> Set.toList
-
-        removeSessions : List SessionId -> Sessions -> Sessions
-        removeSessions activeSessions_ sessions_ =
-            List.foldl
-                (\sessionId_ sessions__ ->
-                    BiDict.remove sessionId_ sessions__
-                )
-                sessions_
-                activeSessions_
-
         filterSessionInfo : List SessionId -> SessionInfo -> SessionInfo
         filterSessionInfo activeSessions_ sessionInfo_ =
             Dict.filter
@@ -62,8 +73,8 @@ remove username ( sessions, sessionInfo ) =
                 )
                 sessionInfo_
     in
-    ( removeSessions activeSessions sessions
-    , filterSessionInfo activeSessions sessionInfo
+    ( filterSessions username sessions
+    , filterSessionInfo (Dict.keys sessions) sessionInfo
     )
 
 
@@ -100,7 +111,7 @@ removeStaleSessions currentTime ( sessions, sessionInfo ) =
     in
     ( List.foldl
         (\sessionId sessions_ ->
-            BiDict.remove sessionId sessions_
+            Dict.remove sessionId sessions_
         )
         sessions
         staleSessions
