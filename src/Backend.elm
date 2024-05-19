@@ -132,6 +132,9 @@ update : BackendMsg -> BackendModel -> ( BackendModel, Cmd BackendMsg )
 update msg model =
     -- Replace existing randomAtmosphericNumber with a new one if possible
     (case msg of
+        NoOpBackendMsg ->
+            ( model, Cmd.none )
+
         Types.BackendGotTime sessionId clientId toBackend time ->
             -- TODO
             -- updateFromFrontendWithTime time sessionId clientId toBackend model
@@ -447,7 +450,7 @@ updateFromFrontend sessionId clientId msg model =
             MagicToken.Backend.requestSignUp model clientId realname username email
 
         SigInWithTokenRequest loginCode ->
-            MagicToken.Backend.loginWithToken model.time sessionId clientId loginCode model
+            MagicToken.Backend.signInWithMagicToken model.time sessionId clientId loginCode model
 
         SignOutRequest userData ->
             MagicToken.Backend.signOut model clientId userData

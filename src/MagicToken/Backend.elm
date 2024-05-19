@@ -126,7 +126,7 @@ sendLoginEmail model clientId sessionId email =
         registerAndSendLoginEmail model clientId sessionId email
 
 
-signOut : BackendModel -> ClientId -> Maybe User.User -> ( BackendModel, Cmd BackendMsg )
+signOut : BackendModel -> ClientId -> Maybe User.LoginData -> ( BackendModel, Cmd BackendMsg )
 signOut model clientId userData =
     case userData of
         Just user ->

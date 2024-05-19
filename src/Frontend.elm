@@ -409,6 +409,10 @@ updateFromBackendLoaded msg model =
             ( { model | backendModel = Just beModel }, Cmd.none )
 
         -- MAGICLINK
+        UserAuthResponse _ ->
+            -- TODO (placholder)
+            ( model, Cmd.none )
+
         AuthToFrontend _ ->
             -- TODO (placholder)
             ( model, Cmd.none )

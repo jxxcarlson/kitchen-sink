@@ -80,8 +80,8 @@ initiateEmailSignin sessionId clientId model login now =
                       }
                     , Cmd.batch
                         [ -- TODO: replace 1234 by the actual loginCode
-                          MagicToken.Backend.sendLoginEmail_ (SentLoginEmail model.time user.email) user.email 1234
-                        , loginResponse clientId
+                          -- MagicToken.Backend.sendLoginEmail_ (SentLoginEmail model.time user.email) user.email 1234
+                          loginResponse clientId
                         ]
                     )
 
