@@ -291,55 +291,13 @@ userNameNotFound username users =
             False
 
 
-sendLoginEmail1 : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
-sendLoginEmail1 model clientId sessionId email =
+sendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
+sendLoginEmail model clientId sessionId email =
     if emailNotRegistered email model.users then
         ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
 
     else
         registerAndSendLoginEmail model clientId sessionId email
-
-
-sendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
-sendLoginEmail model clientId sessionId email =
-    case List.Extra.find (\( _, user ) -> user.email == email) (Dict.toList model.users) of
-        Nothing ->
-            ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
-
-        Just ( user_id, user ) ->
-            if BackendHelper.shouldRateLimit model.time user then
-                let
-                    ( model2, cmd ) =
-                        addLog model.time (Token.Types.LoginsRateLimited user_id) model
-                in
-                ( model2
-                , Cmd.batch [ cmd, Lamdera.sendToFrontend clientId GetLoginTokenRateLimited ]
-                )
-
-            else
-                let
-                    ( model2, result ) =
-                        getLoginCode model.time model
-                in
-                case result of
-                    Ok loginCode ->
-                        ( { model2
-                            | pendingLogins =
-                                AssocList.insert
-                                    sessionId
-                                    { creationTime = model.time, emailAddress = email, loginAttempts = 0, loginCode = loginCode }
-                                    model2.pendingLogins
-                            , users =
-                                Dict.insert
-                                    user_id
-                                    { user | recentLoginEmails = model.time :: List.take 100 user.recentLoginEmails }
-                                    model.users
-                          }
-                        , sendLoginEmail_ (SentLoginEmail model.time email) email loginCode
-                        )
-
-                    Err () ->
-                        addLog model.time (Token.Types.FailedToCreateLoginCode model.secretCounter) model
 
 
 registerAndSendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
@@ -498,24 +456,3 @@ noReplyEmailAddress =
 addLog : Time.Posix -> Token.Types.LogItem -> Types.BackendModel -> ( Types.BackendModel, Cmd msg )
 addLog time logItem model =
     ( { model | log = model.log ++ [ ( time, logItem ) ] }, Cmd.none )
-
-
-composeUpdateFunctions : (model -> ( model, Cmd msg )) -> (model -> ( model, Cmd msg )) -> model -> ( model, Cmd msg )
-composeUpdateFunctions f g model =
-    let
-        ( model1, cmd1 ) =
-            f model
-
-        ( model2, cmd2 ) =
-            g model1
-    in
-    ( model2, Cmd.batch [ cmd1, cmd2 ] )
-
-
-applyUpdateFunction : (model -> ( model, Cmd msg )) -> ( model, Cmd msg ) -> ( model, Cmd msg )
-applyUpdateFunction f ( model, cmd ) =
-    let
-        ( model2, cmd2 ) =
-            f model
-    in
-    ( model2, Cmd.batch [ cmd, cmd2 ] )
