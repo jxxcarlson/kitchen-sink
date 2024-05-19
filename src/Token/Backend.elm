@@ -351,43 +351,43 @@ registerAndSendLoginEmail model clientId sessionId email =
     case ( List.Extra.find (\( _, user ) -> user.email == email) (Dict.toList model.users), result ) of
         ( Just ( userId, user ), Ok loginCode ) ->
             if BackendHelper.shouldRateLimit model.time user then
-                let
-                    ( model3, cmd ) =
-                        addLog model.time (Token.Types.LoginsRateLimited userId) model
-                in
-                ( model3
-                , Cmd.batch [ cmd, Lamdera.sendToFrontend clientId GetLoginTokenRateLimited ]
-                )
+                handleWithRateLimit model2 userId clientId
 
             else
-                ( { model2
-                    | pendingLogins =
-                        AssocList.insert
-                            sessionId
-                            { creationTime = model.time, emailAddress = email, loginAttempts = 0, loginCode = loginCode }
-                            model2.pendingLogins
-                    , users =
-                        Dict.insert
-                            userId
-                            { user | recentLoginEmails = model.time :: List.take 100 user.recentLoginEmails }
-                            model.users
-                  }
-                , sendLoginEmail_ (SentLoginEmail model.time email) email loginCode
-                )
+                handleWithoutRateLimit model2 user userId email sessionId loginCode
 
         ( Nothing, Ok _ ) ->
-            let
-                _ =
-                    3
-            in
             ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
 
         ( _, Err () ) ->
-            let
-                _ =
-                    4
-            in
             addLog model.time (Token.Types.FailedToCreateLoginCode model.secretCounter) model
+
+
+handleWithoutRateLimit model user userId email sessionId loginCode =
+    ( { model
+        | pendingLogins =
+            AssocList.insert
+                sessionId
+                { creationTime = model.time, emailAddress = email, loginAttempts = 0, loginCode = loginCode }
+                model.pendingLogins
+        , users =
+            Dict.insert
+                userId
+                { user | recentLoginEmails = model.time :: List.take 100 user.recentLoginEmails }
+                model.users
+      }
+    , sendLoginEmail_ (SentLoginEmail model.time email) email loginCode
+    )
+
+
+handleWithRateLimit model2 userId clientId =
+    let
+        ( model3, cmd ) =
+            addLog model2.time (Token.Types.LoginsRateLimited userId) model2
+    in
+    ( model3
+    , Cmd.batch [ cmd, Lamdera.sendToFrontend clientId GetLoginTokenRateLimited ]
+    )
 
 
 getLoginCode : Time.Posix -> { a | secretCounter : Int } -> ( { a | secretCounter : Int }, Result () Int )
