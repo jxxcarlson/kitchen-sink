@@ -294,22 +294,14 @@ userNameNotFound username userDictionary =
 sendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
 sendLoginEmail model clientId sessionId email =
     if emailNotRegistered email model.userDictionary then
-        let
-            _ =
-                False
-        in
         ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
 
     else
-        let
-            _ =
-                True
-        in
-        sendLoginEmail2 model clientId sessionId email
+        registerAndSendLoginEmail model clientId sessionId email
 
 
-sendLoginEmail2 : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
-sendLoginEmail2 model clientId sessionId email =
+registerAndSendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
+registerAndSendLoginEmail model clientId sessionId email =
     let
         ( model2, result ) =
             getLoginCode model.time model
@@ -318,9 +310,6 @@ sendLoginEmail2 model clientId sessionId email =
         ( Just ( userId, user ), Ok loginCode ) ->
             if BackendHelper.shouldRateLimit model.time user then
                 let
-                    _ =
-                        1
-
                     ( model3, cmd ) =
                         addLog model.time (Token.Types.LoginsRateLimited userId) model
                 in
@@ -365,12 +354,14 @@ sendLoginEmail2 model clientId sessionId email =
 
 getLoginCode : Time.Posix -> { a | secretCounter : Int } -> ( { a | secretCounter : Int }, Result () Int )
 getLoginCode time model =
-    let
-        ( model2, id ) =
-            getUniqueId time model
-    in
-    ( model2
-    , case Id.toString id |> String.left Token.LoginForm.loginCodeLength |> Hex.fromString of
+    case getUniqueId time model of
+        ( model2, id ) ->
+            ( model2, loginCodeFromId id )
+
+
+loginCodeFromId : Id String -> Result () Int
+loginCodeFromId id =
+    case Id.toString id |> String.left Token.LoginForm.loginCodeLength |> Hex.fromString of
         Ok int ->
             case String.fromInt int |> String.left Token.LoginForm.loginCodeLength |> String.toInt of
                 Just int2 ->
@@ -381,10 +372,9 @@ getLoginCode time model =
 
         Err _ ->
             Err ()
-    )
 
 
-getUniqueId : Time.Posix -> { a | secretCounter : Int } -> ( { a | secretCounter : Int }, Id b )
+getUniqueId : Time.Posix -> { a | secretCounter : Int } -> ( { a | secretCounter : Int }, Id String )
 getUniqueId time model =
     ( { model | secretCounter = model.secretCounter + 1 }
     , Config.secretKey
@@ -474,3 +464,15 @@ noReplyEmailAddress =
 addLog : Time.Posix -> Token.Types.LogItem -> Types.BackendModel -> ( Types.BackendModel, Cmd msg )
 addLog time logItem model =
     ( { model | log = model.log ++ [ ( time, logItem ) ] }, Cmd.none )
+
+
+composeUpdateFunctions : (model -> ( model, Cmd msg )) -> (model -> ( model, Cmd msg )) -> model -> ( model, Cmd msg )
+composeUpdateFunctions f g model =
+    let
+        ( model1, cmd1 ) =
+            f model
+
+        ( model2, cmd2 ) =
+            g model1
+    in
+    ( model2, Cmd.batch [ cmd1, cmd2 ] )
