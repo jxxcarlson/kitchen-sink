@@ -110,7 +110,7 @@ The following additions must be made:
         , loginCode : Int
         }
 , log : Token.Types.Log
-, userDictionary : Dict.Dict String User.User
+, users : Dict.Dict String User.User
 , sessions : Session.Sessions
 , sessionInfo : Session.SessionInfo
 ```
@@ -166,7 +166,7 @@ SentLoginEmail _ _ _ ->
 
                 maybeUserData : Maybe User.LoginData
                 maybeUserData =
-                    Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername
+                    Maybe.andThen (\username -> Dict.get username model.users) maybeUsername
                         |> Maybe.map User.loginDataOfUser
                         |> Debug.log "@##! OnConnected, loginDataOfUser (2)"
             in
@@ -186,7 +186,7 @@ SentLoginEmail _ _ _ ->
                     )
                 , case AssocList.get sessionId model.sessionDict of
                     Just username ->
-                        case Dict.get username model.userDictionary of
+                        case Dict.get username model.users of
                             Just user ->
                                 -- Lamdera.sendToFrontend sessionId (LoginWithTokenResponse <| Ok <| Debug.log "@##! send loginDATA" <| User.loginDataOfUser user)
                                 Process.sleep 60 |> Task.perform (always (AutoLogin sessionId (User.loginDataOfUser user)))

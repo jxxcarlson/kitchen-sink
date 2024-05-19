@@ -77,7 +77,7 @@ type alias BackendModel =
             , loginCode : Int
             }
     , log : Evergreen.V143.Token.Types.Log
-    , userDictionary : Dict.Dict String Evergreen.V143.User.User
+    , users : Dict.Dict String Evergreen.V143.User.User
     , sessions : Evergreen.V143.Session.Sessions
     , sessionInfo : Evergreen.V143.Session.SessionInfo
     , orders : AssocList.Dict (Evergreen.V143.Id.Id Evergreen.V143.Stripe.Stripe.StripeSessionId) Evergreen.V143.Stripe.Codec.Order

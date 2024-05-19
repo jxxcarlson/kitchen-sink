@@ -118,11 +118,11 @@ viewUserData window backendModel =
 
 
 viewUserDictionary : Window -> Dict.Dict String User.User -> Element msg
-viewUserDictionary window userDictionary =
+viewUserDictionary window users_ =
     let
         users : List User.User
         users =
-            Dict.values userDictionary
+            Dict.values users_
     in
     column
         [ width fill

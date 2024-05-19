@@ -83,7 +83,7 @@ sentLoginEmail model sessionId clientId =
 
 
 
--- requestSignUp : BackendModel -> ClientId -> g -> comparable -> String -> ( { a | localUuidData : Maybe LocalUUID.Data, time : b, userDictionary : Dict.Dict comparable { realname : c, username : d, email : EmailAddress, created_at : e, updated_at : e, id : String, role : User.Role, recentLoginEmails : List f } }, Cmd backendMsg )
+-- requestSignUp : BackendModel -> ClientId -> g -> comparable -> String -> ( { a | localUuidData : Maybe LocalUUID.Data, time : b, users : Dict.Dict comparable { realname : c, username : d, email : EmailAddress, created_at : e, updated_at : e, id : String, role : User.Role, recentLoginEmails : List f } }, Cmd backendMsg )
 
 
 requestSignUp model clientId realname username email =
@@ -112,7 +112,7 @@ requestSignUp model clientId realname username email =
                     in
                     ( { model
                         | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
-                        , userDictionary = Dict.insert username user model.userDictionary
+                        , users = Dict.insert username user model.users
                       }
                     , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
                     )
@@ -223,8 +223,8 @@ addUser model clientId email realname username =
 
 
 addUser1 model clientId email realname username =
-    if emailNotRegistered email model.userDictionary then
-        case Dict.get username model.userDictionary of
+    if emailNotRegistered email model.users then
+        case Dict.get username model.users of
             Just _ ->
                 ( model, Lamdera.sendToFrontend clientId (RegistrationError "That username is already registered") )
 
@@ -259,7 +259,7 @@ addUser2 model clientId email realname username =
             in
             ( { model
                 | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
-                , userDictionary = Dict.insert username user model.userDictionary
+                , users = Dict.insert username user model.users
               }
             , Lamdera.sendToFrontend clientId (UserRegistered user)
             )
@@ -277,13 +277,13 @@ signOut model clientId userData =
 
 
 emailNotRegistered : EmailAddress -> Dict.Dict String User.User -> Bool
-emailNotRegistered email userDictionary =
-    Dict.filter (\_ user -> user.email == email) userDictionary |> Dict.isEmpty
+emailNotRegistered email users =
+    Dict.filter (\_ user -> user.email == email) users |> Dict.isEmpty
 
 
 userNameNotFound : String -> Dict.Dict String User.User -> Bool
-userNameNotFound username userDictionary =
-    case Dict.get username userDictionary of
+userNameNotFound username users =
+    case Dict.get username users of
         Nothing ->
             True
 
@@ -291,13 +291,55 @@ userNameNotFound username userDictionary =
             False
 
 
-sendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
-sendLoginEmail model clientId sessionId email =
+sendLoginEmail1 : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
+sendLoginEmail1 model clientId sessionId email =
     if emailNotRegistered email model.users then
         ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
 
     else
         registerAndSendLoginEmail model clientId sessionId email
+
+
+sendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
+sendLoginEmail model clientId sessionId email =
+    case List.Extra.find (\( _, user ) -> user.email == email) (Dict.toList model.users) of
+        Nothing ->
+            ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
+
+        Just ( user_id, user ) ->
+            if BackendHelper.shouldRateLimit model.time user then
+                let
+                    ( model2, cmd ) =
+                        addLog model.time (Token.Types.LoginsRateLimited user_id) model
+                in
+                ( model2
+                , Cmd.batch [ cmd, Lamdera.sendToFrontend clientId GetLoginTokenRateLimited ]
+                )
+
+            else
+                let
+                    ( model2, result ) =
+                        getLoginCode model.time model
+                in
+                case result of
+                    Ok loginCode ->
+                        ( { model2
+                            | pendingLogins =
+                                AssocList.insert
+                                    sessionId
+                                    { creationTime = model.time, emailAddress = email, loginAttempts = 0, loginCode = loginCode }
+                                    model2.pendingLogins
+                            , users =
+                                Dict.insert
+                                    user_id
+                                    { user | recentLoginEmails = model.time :: List.take 100 user.recentLoginEmails }
+                                    model.users
+                          }
+                        , sendLoginEmail_ (SentLoginEmail model.time email) email loginCode
+                        )
+
+                    Err () ->
+                        addLog model.time (Token.Types.FailedToCreateLoginCode model.secretCounter) model
 
 
 registerAndSendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
@@ -389,10 +431,6 @@ sendLoginEmail_ :
     -> Int
     -> Cmd backendMsg
 sendLoginEmail_ msg emailAddress loginCode =
-    let
-        _ =
-            loginCode
-    in
     { from = { name = "", email = noReplyEmailAddress }
     , to = List.Nonempty.fromElement { name = "", email = emailAddress }
     , subject = loginEmailSubject
@@ -472,3 +510,12 @@ composeUpdateFunctions f g model =
             g model1
     in
     ( model2, Cmd.batch [ cmd1, cmd2 ] )
+
+
+applyUpdateFunction : (model -> ( model, Cmd msg )) -> ( model, Cmd msg ) -> ( model, Cmd msg )
+applyUpdateFunction f ( model, cmd ) =
+    let
+        ( model2, cmd2 ) =
+            f model
+    in
+    ( model2, Cmd.batch [ cmd, cmd2 ] )
