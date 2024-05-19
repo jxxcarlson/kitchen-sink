@@ -14,7 +14,7 @@ updateSession sessionId username model =
     let
         maybeUser : Maybe User.User
         maybeUser =
-            Dict.get username model.userDictionary
+            Dict.get username model.users
 
         ( newSessions_, newSessionInfo_ ) =
             case maybeUser of
@@ -48,7 +48,7 @@ reconnect model sessionId clientId =
                 Just mu ->
                     case mu of
                         Just username ->
-                            Dict.get username model.userDictionary
+                            Dict.get username model.users
 
                         Nothing ->
                             Nothing

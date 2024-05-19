@@ -8,6 +8,7 @@ import Evergreen.V144.EmailAddress
 import Evergreen.V144.Id
 import Evergreen.V144.KeyValueStore
 import Evergreen.V144.LocalUUID
+import Evergreen.V144.MagicToken.Types
 import Evergreen.V144.Postmark
 import Evergreen.V144.Route
 import Evergreen.V144.Session
@@ -15,7 +16,6 @@ import Evergreen.V144.Stripe.Codec
 import Evergreen.V144.Stripe.Product
 import Evergreen.V144.Stripe.PurchaseForm
 import Evergreen.V144.Stripe.Stripe
-import Evergreen.V144.Token.Types
 import Evergreen.V144.Untrusted
 import Evergreen.V144.User
 import Evergreen.V144.Weather
@@ -76,7 +76,7 @@ type alias BackendModel =
             , creationTime : Time.Posix
             , loginCode : Int
             }
-    , log : Evergreen.V144.Token.Types.Log
+    , log : Evergreen.V144.MagicToken.Types.Log
     , userDictionary : Dict.Dict String Evergreen.V144.User.User
     , sessions : Evergreen.V144.Session.Sessions
     , sessionInfo : Evergreen.V144.Session.SessionInfo
@@ -97,9 +97,9 @@ type alias LoadedModel =
         , height : Int
         }
     , showTooltip : Bool
-    , loginForm : Evergreen.V144.Token.Types.LoginForm
+    , loginForm : Evergreen.V144.MagicToken.Types.LoginForm
     , loginErrorMessage : Maybe String
-    , signInStatus : Evergreen.V144.Token.Types.SignInStatus
+    , signInStatus : Evergreen.V144.MagicToken.Types.SignInStatus
     , currentUserData : Maybe Evergreen.V144.User.LoginData
     , prices :
         AssocList.Dict

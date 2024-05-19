@@ -12,6 +12,9 @@ import Json.Decode
 import Json.Encode
 import KeyValueStore
 import Lamdera
+import MagicToken.Frontend
+import MagicToken.LoginForm
+import MagicToken.Types exposing (LoginForm(..))
 import Ports
 import RPC
 import Route exposing (Route(..))
@@ -27,9 +30,6 @@ import Stripe.Stripe as Stripe
 import Stripe.View
 import Task
 import Time
-import Token.Frontend
-import Token.LoginForm
-import Token.Types exposing (LoginForm(..))
 import Types
     exposing
         ( AdminDisplay(..)
@@ -138,9 +138,9 @@ tryLoading loadingModel =
                             }
 
                         -- MAGICLINK
-                        , loginForm = Token.LoginForm.init
+                        , loginForm = MagicToken.LoginForm.init
                         , loginErrorMessage = Nothing
-                        , signInStatus = Token.Types.NotSignedIn
+                        , signInStatus = MagicToken.Types.NotSignedIn
 
                         -- USER
                         , currentUserData = Nothing
@@ -220,25 +220,25 @@ updateLoaded msg model =
             ( { model | route = HomepageRoute }, Cmd.none )
 
         CancelSignUp ->
-            ( { model | signInStatus = Token.Types.NotSignedIn }, Cmd.none )
+            ( { model | signInStatus = MagicToken.Types.NotSignedIn }, Cmd.none )
 
         OpenSignUp ->
-            ( { model | signInStatus = Token.Types.SigningUp }, Cmd.none )
+            ( { model | signInStatus = MagicToken.Types.SigningUp }, Cmd.none )
 
         SubmitEmailForToken ->
-            Token.Frontend.submitEmailForToken model
+            MagicToken.Frontend.submitEmailForToken model
 
         TypedEmailInSignInForm email ->
-            Token.Frontend.enterEmail model email
+            MagicToken.Frontend.enterEmail model email
 
         UseReceivedCodetoSignIn loginCode ->
-            Token.Frontend.signInWithCode model loginCode
+            MagicToken.Frontend.signInWithCode model loginCode
 
         SubmitSignUp ->
-            Token.Frontend.submitSignUp model
+            MagicToken.Frontend.submitSignUp model
 
         SignOut ->
-            Token.Frontend.signOut model
+            MagicToken.Frontend.signOut model
 
         InputRealname str ->
             ( { model | realname = str }, Cmd.none )
@@ -410,25 +410,28 @@ updateFromBackendLoaded msg model =
 
         -- MAGICLINK
         AuthToFrontend _ ->
+            -- TODO (placholder)
             ( model, Cmd.none )
 
         AuthSuccess _ ->
+            -- TODO (placholder)
             ( model, Cmd.none )
 
         UserInfoMsg _ ->
+            -- TODO (placholder)
             ( model, Cmd.none )
 
         SignInError message ->
-            Token.Frontend.handleSignInError model message
+            MagicToken.Frontend.handleSignInError model message
 
         RegistrationError str ->
-            Token.Frontend.handleRegistrationError model str
+            MagicToken.Frontend.handleRegistrationError model str
 
         CheckSignInResponse _ ->
             ( model, Cmd.none )
 
         SignInWithTokenResponse result ->
-            Token.Frontend.signInWithTokenResponse model result
+            MagicToken.Frontend.signInWithTokenResponse model result
 
         GetLoginTokenRateLimited ->
             ( model, Cmd.none )
@@ -437,10 +440,10 @@ updateFromBackendLoaded msg model =
             ( model, Cmd.none )
 
         UserRegistered user ->
-            Token.Frontend.userRegistered model user
+            MagicToken.Frontend.userRegistered model user
 
         UserSignedIn maybeUser ->
-            ( { model | signInStatus = Token.Types.NotSignedIn }, Cmd.none )
+            ( { model | signInStatus = MagicToken.Types.NotSignedIn }, Cmd.none )
 
         -- STRIPE
         InitData { prices, productInfo } ->

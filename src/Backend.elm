@@ -1,7 +1,6 @@
 module Backend exposing (app)
 
 import AssocList
-import Auth
 import Auth.Flow
 import Auth.HttpHelpers
 import Backend.Session
@@ -13,13 +12,14 @@ import Email
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
 import LocalUUID
+import MagicToken.Auth
+import MagicToken.Backend
 import Process
 import Quantity
 import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
 import Task
 import Time
-import Token.Backend
 import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
 import Untrusted
 import User
@@ -36,15 +36,16 @@ app =
 
 init : ( BackendModel, Cmd BackendMsg )
 init =
-    ( { userDictionary = Dict.empty
+    ( { users = Dict.empty
       , sessions = Dict.empty
       , sessionInfo = Dict.empty
       , time = Time.millisToPosix 0
 
       -- MAGICLINK
+      , pendingAuths = Dict.empty
+      , pendingEmailAuths = Dict.empty
       , secretCounter = 0
       , sessionDict = AssocList.empty
-      , pendingAuths = Dict.empty
       , pendingLogins = AssocList.empty
       , log = []
 
@@ -159,12 +160,12 @@ update msg model =
             ( { model
                 | randomAtmosphericNumbers = numbers
                 , localUuidData = data_
-                , userDictionary =
-                    if Dict.isEmpty model.userDictionary then
+                , users =
+                    if Dict.isEmpty model.users then
                         BackendHelper.testUserDictionary
 
                     else
-                        model.userDictionary
+                        model.users
               }
             , Cmd.none
             )
@@ -280,7 +281,7 @@ update msg model =
 
                 maybeUserData : Maybe User.LoginData
                 maybeUserData =
-                    Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername
+                    Maybe.andThen (\username -> Dict.get username model.users) maybeUsername
                         |> Maybe.map User.loginDataOfUser
             in
             ( model
@@ -299,7 +300,7 @@ update msg model =
                     )
                 , case AssocList.get sessionId model.sessionDict of
                     Just username ->
-                        case Dict.get username model.userDictionary of
+                        case Dict.get username model.users of
                             Just user ->
                                 -- Lamdera.sendToFrontend sessionId (LoginWithTokenResponse <| Ok <| Debug.log "@##! send loginDATA" <| User.loginDataOfUser user)
                                 Process.sleep 60 |> Task.perform (always (AutoLogin sessionId (User.loginDataOfUser user)))
@@ -431,25 +432,25 @@ updateFromFrontend sessionId clientId msg model =
 
         -- MAGICLINK
         AuthToBackend authMsg ->
-            Auth.Flow.updateFromFrontend (Auth.backendConfig model) clientId sessionId authMsg model
+            Auth.Flow.updateFromFrontend (MagicToken.Auth.backendConfig model) clientId sessionId authMsg model
 
         AddUser realname username email ->
-            Token.Backend.addUser model clientId email realname username
+            MagicToken.Backend.addUser model clientId email realname username
 
         CheckLoginRequest ->
-            Token.Backend.checkLogin model clientId sessionId
+            MagicToken.Backend.checkLogin model clientId sessionId
 
         GetSignInTokenRequest email ->
-            Token.Backend.sendLoginEmail model clientId sessionId email
+            MagicToken.Backend.sendLoginEmail model clientId sessionId email
 
         RequestSignup realname username email ->
-            Token.Backend.requestSignUp model clientId realname username email
+            MagicToken.Backend.requestSignUp model clientId realname username email
 
         SigInWithTokenRequest loginCode ->
-            Token.Backend.loginWithToken model.time sessionId clientId loginCode model
+            MagicToken.Backend.loginWithToken model.time sessionId clientId loginCode model
 
         SignOutRequest userData ->
-            Token.Backend.signOut model clientId userData
+            MagicToken.Backend.signOut model clientId userData
 
         -- STRIPE
         RenewPrices ->

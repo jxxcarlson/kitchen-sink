@@ -25,6 +25,7 @@ import Evergreen.V137.Email
 import Evergreen.V137.EmailAddress
 import Evergreen.V137.Id
 import Evergreen.V137.KeyValueStore
+import Evergreen.V137.MagicToken.Types
 import Evergreen.V137.Name
 import Evergreen.V137.Route
 import Evergreen.V137.Session
@@ -32,13 +33,13 @@ import Evergreen.V137.Stripe.Codec
 import Evergreen.V137.Stripe.Product
 import Evergreen.V137.Stripe.PurchaseForm
 import Evergreen.V137.Stripe.Stripe
-import Evergreen.V137.Token.Types
 import Evergreen.V137.Types
 import Evergreen.V137.User
 import Evergreen.V138.Email
 import Evergreen.V138.EmailAddress
 import Evergreen.V138.Id
 import Evergreen.V138.KeyValueStore
+import Evergreen.V138.MagicToken.Types
 import Evergreen.V138.Name
 import Evergreen.V138.Route
 import Evergreen.V138.Session
@@ -46,7 +47,6 @@ import Evergreen.V138.Stripe.Codec
 import Evergreen.V138.Stripe.Product
 import Evergreen.V138.Stripe.PurchaseForm
 import Evergreen.V138.Stripe.Stripe
-import Evergreen.V138.Token.Types
 import Evergreen.V138.Types
 import Evergreen.V138.User
 import Lamdera.Migrations exposing (..)
@@ -327,12 +327,12 @@ migrate_Stripe_Stripe_StripeSessionId old =
             Evergreen.V138.Stripe.Stripe.StripeSessionId p0
 
 
-migrate_Token_Types_EnterEmail2 : Evergreen.V137.Token.Types.EnterEmail2 -> Evergreen.V138.Token.Types.EnterEmail2
+migrate_Token_Types_EnterEmail2 : Evergreen.V137.MagicToken.Types.EnterEmail2 -> Evergreen.V138.MagicToken.Types.EnterEmail2
 migrate_Token_Types_EnterEmail2 old =
     old
 
 
-migrate_Token_Types_EnterLoginCode2 : Evergreen.V137.Token.Types.EnterLoginCode2 -> Evergreen.V138.Token.Types.EnterLoginCode2
+migrate_Token_Types_EnterLoginCode2 : Evergreen.V137.MagicToken.Types.EnterLoginCode2 -> Evergreen.V138.MagicToken.Types.EnterLoginCode2
 migrate_Token_Types_EnterLoginCode2 old =
     { sentTo = old.sentTo |> migrate_EmailAddress_EmailAddress
     , loginCode = old.loginCode
@@ -340,52 +340,52 @@ migrate_Token_Types_EnterLoginCode2 old =
     }
 
 
-migrate_Token_Types_Log : Evergreen.V137.Token.Types.Log -> Evergreen.V138.Token.Types.Log
+migrate_Token_Types_Log : Evergreen.V137.MagicToken.Types.Log -> Evergreen.V138.MagicToken.Types.Log
 migrate_Token_Types_Log old =
     old |> List.map (Tuple.mapSecond migrate_Token_Types_LogItem)
 
 
-migrate_Token_Types_LogItem : Evergreen.V137.Token.Types.LogItem -> Evergreen.V138.Token.Types.LogItem
+migrate_Token_Types_LogItem : Evergreen.V137.MagicToken.Types.LogItem -> Evergreen.V138.MagicToken.Types.LogItem
 migrate_Token_Types_LogItem old =
     case old of
-        Evergreen.V137.Token.Types.LoginsRateLimited p0 ->
-            Evergreen.V138.Token.Types.LoginsRateLimited p0
+        Evergreen.V137.MagicToken.Types.LoginsRateLimited p0 ->
+            Evergreen.V138.MagicToken.Types.LoginsRateLimited p0
 
-        Evergreen.V137.Token.Types.FailedToCreateLoginCode p0 ->
-            Evergreen.V138.Token.Types.FailedToCreateLoginCode p0
+        Evergreen.V137.MagicToken.Types.FailedToCreateLoginCode p0 ->
+            Evergreen.V138.MagicToken.Types.FailedToCreateLoginCode p0
 
 
-migrate_Token_Types_LoginCodeStatus : Evergreen.V137.Token.Types.LoginCodeStatus -> Evergreen.V138.Token.Types.LoginCodeStatus
+migrate_Token_Types_LoginCodeStatus : Evergreen.V137.MagicToken.Types.LoginCodeStatus -> Evergreen.V138.MagicToken.Types.LoginCodeStatus
 migrate_Token_Types_LoginCodeStatus old =
     case old of
-        Evergreen.V137.Token.Types.Checking ->
-            Evergreen.V138.Token.Types.Checking
+        Evergreen.V137.MagicToken.Types.Checking ->
+            Evergreen.V138.MagicToken.Types.Checking
 
-        Evergreen.V137.Token.Types.NotValid ->
-            Evergreen.V138.Token.Types.NotValid
+        Evergreen.V137.MagicToken.Types.NotValid ->
+            Evergreen.V138.MagicToken.Types.NotValid
 
 
-migrate_Token_Types_LoginForm : Evergreen.V137.Token.Types.LoginForm -> Evergreen.V138.Token.Types.LoginForm
+migrate_Token_Types_LoginForm : Evergreen.V137.MagicToken.Types.LoginForm -> Evergreen.V138.MagicToken.Types.LoginForm
 migrate_Token_Types_LoginForm old =
     case old of
-        Evergreen.V137.Token.Types.EnterEmail p0 ->
-            Evergreen.V138.Token.Types.EnterEmail (p0 |> migrate_Token_Types_EnterEmail2)
+        Evergreen.V137.MagicToken.Types.EnterEmail p0 ->
+            Evergreen.V138.MagicToken.Types.EnterEmail (p0 |> migrate_Token_Types_EnterEmail2)
 
-        Evergreen.V137.Token.Types.EnterLoginCode p0 ->
-            Evergreen.V138.Token.Types.EnterLoginCode (p0 |> migrate_Token_Types_EnterLoginCode2)
+        Evergreen.V137.MagicToken.Types.EnterLoginCode p0 ->
+            Evergreen.V138.MagicToken.Types.EnterLoginCode (p0 |> migrate_Token_Types_EnterLoginCode2)
 
 
-migrate_Token_Types_SignInStatus : Evergreen.V137.Token.Types.SignInStatus -> Evergreen.V138.Token.Types.SignInStatus
+migrate_Token_Types_SignInStatus : Evergreen.V137.MagicToken.Types.SignInStatus -> Evergreen.V138.MagicToken.Types.SignInStatus
 migrate_Token_Types_SignInStatus old =
     case old of
-        Evergreen.V137.Token.Types.NotSignedIn ->
-            Evergreen.V138.Token.Types.NotSignedIn
+        Evergreen.V137.MagicToken.Types.NotSignedIn ->
+            Evergreen.V138.MagicToken.Types.NotSignedIn
 
-        Evergreen.V137.Token.Types.SigningUp ->
-            Evergreen.V138.Token.Types.SigningUp
+        Evergreen.V137.MagicToken.Types.SigningUp ->
+            Evergreen.V138.MagicToken.Types.SigningUp
 
-        Evergreen.V137.Token.Types.SignedIn ->
-            Evergreen.V138.Token.Types.SignedIn
+        Evergreen.V137.MagicToken.Types.SignedIn ->
+            Evergreen.V138.MagicToken.Types.SignedIn
 
 
 migrate_Types_AdminDisplay : Evergreen.V137.Types.AdminDisplay -> Evergreen.V138.Types.AdminDisplay

@@ -24,6 +24,7 @@ import Id exposing (Id)
 import KeyValueStore
 import Lamdera exposing (ClientId, SessionId)
 import LocalUUID
+import MagicToken.Types
 import Postmark exposing (PostmarkSendResponse)
 import Route exposing (Route)
 import Session
@@ -32,7 +33,6 @@ import Stripe.Product
 import Stripe.PurchaseForm exposing (PurchaseForm, PurchaseFormValidated)
 import Stripe.Stripe exposing (Price, PriceData, PriceId, ProductId, StripeSessionId)
 import Time
-import Token.Types
 import Untrusted exposing (Untrusted)
 import Url exposing (Url)
 import User
@@ -64,9 +64,9 @@ type alias LoadedModel =
     , showTooltip : Bool
 
     -- MAGICLINK
-    , loginForm : Token.Types.LoginForm
+    , loginForm : MagicToken.Types.LoginForm
     , loginErrorMessage : Maybe String
-    , signInStatus : Token.Types.SignInStatus
+    , signInStatus : MagicToken.Types.SignInStatus
     , currentUserData : Maybe User.LoginData
 
     -- STRIPE
@@ -128,6 +128,7 @@ type alias BackendModel =
 
     -- MAGICLINK
     , pendingAuths : Dict Lamdera.SessionId Auth.Common.PendingAuth
+    , pendingEmailAuths : Dict Lamdera.SessionId Auth.Common.PendingEmailAuth
     , sessions : Dict SessionId Auth.Common.UserInfo
     , secretCounter : Int
     , sessionDict : AssocList.Dict SessionId String -- Dict sessionId usernames
@@ -139,8 +140,8 @@ type alias BackendModel =
             , creationTime : Time.Posix
             , loginCode : Int
             }
-    , log : Token.Types.Log
-    , userDictionary : Dict.Dict String User.User
+    , log : MagicToken.Types.Log
+    , users : Dict.Dict String User.User
     , sessionInfo : Session.SessionInfo
 
     --STRIPE
@@ -230,7 +231,8 @@ type ToBackend
 
 
 type BackendMsg
-    = GotSlowTick Time.Posix
+    = NoOpBackendMsg
+    | GotSlowTick Time.Posix
     | GotFastTick Time.Posix
     | OnConnected SessionId ClientId
     | GotAtmosphericRandomNumbers (Result Http.Error String)
@@ -273,6 +275,7 @@ type ToFrontend
     | RegistrationError String
     | SignInError String
       -- USER
+    | UserAuthResponse (Result String String) -- MAGICLINK
     | UserSignedIn (Maybe User.User)
     | UserRegistered User.User
       -- EXAMPLE

@@ -1,4 +1,4 @@
-module Token.Frontend exposing
+module MagicToken.Frontend exposing
     ( enterEmail
     , handleRegistrationError
     , handleSignInError
@@ -22,6 +22,8 @@ import Json.Decode
 import Json.Encode
 import KeyValueStore
 import Lamdera
+import MagicToken.LoginForm
+import MagicToken.Types exposing (LoginForm(..))
 import Ports
 import RPC
 import Route exposing (Route(..))
@@ -37,8 +39,6 @@ import Stripe.Stripe as Stripe
 import Stripe.View
 import Task
 import Time
-import Token.LoginForm
-import Token.Types exposing (LoginForm(..))
 import Types
     exposing
         ( AdminDisplay(..)
@@ -91,19 +91,20 @@ enterEmail model email =
             ( model, Cmd.none )
 
 
+signInWithCode : LoadedModel -> String -> ( LoadedModel, Cmd msg )
 signInWithCode model signInCode =
     case model.loginForm of
-        Token.Types.EnterEmail _ ->
+        MagicToken.Types.EnterEmail _ ->
             ( model, Cmd.none )
 
         EnterLoginCode enterLoginCode ->
-            case Token.LoginForm.validateLoginCode signInCode of
+            case MagicToken.LoginForm.validateLoginCode signInCode of
                 Ok loginCode ->
                     if Dict.member loginCode enterLoginCode.attempts then
                         ( { model
                             | loginForm =
                                 EnterLoginCode
-                                    { enterLoginCode | loginCode = String.left Token.LoginForm.loginCodeLength signInCode }
+                                    { enterLoginCode | loginCode = String.left MagicToken.LoginForm.loginCodeLength signInCode }
                           }
                         , Cmd.none
                         )
@@ -113,16 +114,16 @@ signInWithCode model signInCode =
                             | loginForm =
                                 EnterLoginCode
                                     { enterLoginCode
-                                        | loginCode = String.left Token.LoginForm.loginCodeLength signInCode
+                                        | loginCode = String.left MagicToken.LoginForm.loginCodeLength signInCode
                                         , attempts =
-                                            Dict.insert loginCode Token.Types.Checking enterLoginCode.attempts
+                                            Dict.insert loginCode MagicToken.Types.Checking enterLoginCode.attempts
                                     }
                           }
                         , Lamdera.sendToBackend (SigInWithTokenRequest loginCode)
                         )
 
                 Err _ ->
-                    ( { model | loginForm = EnterLoginCode { enterLoginCode | loginCode = String.left Token.LoginForm.loginCodeLength signInCode } }
+                    ( { model | loginForm = EnterLoginCode { enterLoginCode | loginCode = String.left MagicToken.LoginForm.loginCodeLength signInCode } }
                     , Cmd.none
                     )
 
@@ -142,9 +143,9 @@ signOut model =
             }
 
         -- MAGICLINK
-        , loginForm = Token.LoginForm.init
+        , loginForm = MagicToken.LoginForm.init
         , loginErrorMessage = Nothing
-        , signInStatus = Token.Types.NotSignedIn
+        , signInStatus = MagicToken.Types.NotSignedIn
 
         -- USER
         , currentUserData = Nothing
@@ -207,17 +208,17 @@ signInWithTokenResponse model result =
 
 
 handleSignInError model message =
-    ( { model | loginErrorMessage = Just message, signInStatus = Token.Types.ErrorNotRegistered message }, Cmd.none )
+    ( { model | loginErrorMessage = Just message, signInStatus = MagicToken.Types.ErrorNotRegistered message }, Cmd.none )
 
 
 handleRegistrationError model str =
-    ( { model | signInStatus = Token.Types.ErrorNotRegistered str }, Cmd.none )
+    ( { model | signInStatus = MagicToken.Types.ErrorNotRegistered str }, Cmd.none )
 
 
 userRegistered model user =
     ( { model
         | currentUser = Just user
-        , signInStatus = Token.Types.SuccessfulRegistration user.username (EmailAddress.toString user.email)
+        , signInStatus = MagicToken.Types.SuccessfulRegistration user.username (EmailAddress.toString user.email)
       }
     , Cmd.none
     )

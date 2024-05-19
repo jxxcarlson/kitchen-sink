@@ -1,9 +1,10 @@
-module Token.Backend exposing
+module MagicToken.Backend exposing
     ( addUser
     , checkLogin
     , loginWithToken
     , requestSignUp
     , sendLoginEmail
+    , sendLoginEmail_
     , signOut
     )
 
@@ -24,6 +25,8 @@ import Lamdera exposing (ClientId, SessionId)
 import List.Extra
 import List.Nonempty
 import LocalUUID
+import MagicToken.LoginForm
+import MagicToken.Types
 import Postmark
 import Process
 import Quantity
@@ -31,8 +34,6 @@ import Sha256
 import String.Nonempty exposing (NonemptyString)
 import Task
 import Time
-import Token.LoginForm
-import Token.Types
 import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
 import User
 
@@ -49,7 +50,7 @@ sentLoginEmail model sessionId clientId =
 
         maybeUserData : Maybe User.LoginData
         maybeUserData =
-            Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername
+            Maybe.andThen (\username -> Dict.get username model.users) maybeUsername
                 |> Maybe.map User.loginDataOfUser
     in
     ( model
@@ -68,7 +69,7 @@ sentLoginEmail model sessionId clientId =
             )
         , case AssocList.get sessionId model.sessionDict of
             Just username ->
-                case Dict.get username model.userDictionary of
+                case Dict.get username model.users of
                     Just user ->
                         -- Lamdera.sendToFrontend sessionId (LoginWithTokenResponse <| Ok <| Debug.log "@##! send loginDATA" <| User.loginDataOfUser user)
                         Process.sleep 60 |> Task.perform (always (AutoLogin sessionId (User.loginDataOfUser user)))
@@ -100,7 +101,7 @@ requestSignUp model clientId realname username email =
                 Just validEmail ->
                     let
                         user =
-                            { realname = realname
+                            { fullname = realname
                             , username = username
                             , email = validEmail
                             , created_at = model.time
@@ -120,7 +121,7 @@ requestSignUp model clientId realname username email =
 
 checkLogin model clientId sessionId =
     ( model
-    , if Dict.isEmpty model.userDictionary then
+    , if Dict.isEmpty model.users then
         Cmd.batch
             [ Err Types.Sunny |> CheckSignInResponse |> Lamdera.sendToFrontend clientId
             ]
@@ -145,7 +146,7 @@ getLoginData userId user_ model =
 getUserFromSessionId : SessionId -> BackendModel -> Maybe ( User.Id, User.User )
 getUserFromSessionId sessionId model =
     AssocList.get sessionId model.sessionDict
-        |> Maybe.andThen (\userId -> Dict.get userId model.userDictionary |> Maybe.map (Tuple.pair userId))
+        |> Maybe.andThen (\userId -> Dict.get userId model.users |> Maybe.map (Tuple.pair userId))
 
 
 loginWithToken :
@@ -158,7 +159,7 @@ loginWithToken :
 loginWithToken time sessionId clientId loginCode model =
     case AssocList.get sessionId model.sessionDict of
         Just username ->
-            case Dict.get username model.userDictionary of
+            case Dict.get username model.users of
                 Just user ->
                     ( model, Lamdera.sendToFrontend sessionId (SignInWithTokenResponse <| Ok <| User.loginDataOfUser user) )
 
@@ -169,12 +170,12 @@ loginWithToken time sessionId clientId loginCode model =
             case AssocList.get sessionId model.pendingLogins of
                 Just pendingLogin ->
                     if
-                        (pendingLogin.loginAttempts < Token.LoginForm.maxLoginAttempts)
+                        (pendingLogin.loginAttempts < MagicToken.LoginForm.maxLoginAttempts)
                             && (Duration.from pendingLogin.creationTime time |> Quantity.lessThan Duration.hour)
                     then
                         if loginCode == pendingLogin.loginCode then
                             case
-                                Dict.toList model.userDictionary
+                                Dict.toList model.users
                                     |> List.Extra.find (\( _, user ) -> user.email == pendingLogin.emailAddress)
                             of
                                 Just ( userId, user ) ->
@@ -247,7 +248,7 @@ addUser2 model clientId email realname username =
         Just uuidData ->
             let
                 user =
-                    { realname = realname
+                    { fullname = realname
                     , username = username
                     , email = email
                     , created_at = model.time
@@ -293,7 +294,7 @@ userNameNotFound username userDictionary =
 
 sendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
 sendLoginEmail model clientId sessionId email =
-    if emailNotRegistered email model.userDictionary then
+    if emailNotRegistered email model.users then
         let
             _ =
                 False
@@ -314,7 +315,7 @@ sendLoginEmail2 model clientId sessionId email =
         ( model2, result ) =
             getLoginCode model.time model
     in
-    case ( List.Extra.find (\( _, user ) -> user.email == email) (Dict.toList model.userDictionary), result ) of
+    case ( List.Extra.find (\( _, user ) -> user.email == email) (Dict.toList model.users), result ) of
         ( Just ( userId, user ), Ok loginCode ) ->
             if BackendHelper.shouldRateLimit model.time user then
                 let
@@ -322,7 +323,7 @@ sendLoginEmail2 model clientId sessionId email =
                         1
 
                     ( model3, cmd ) =
-                        addLog model.time (Token.Types.LoginsRateLimited userId) model
+                        addLog model.time (MagicToken.Types.LoginsRateLimited userId) model
                 in
                 ( model3
                 , Cmd.batch [ cmd, Lamdera.sendToFrontend clientId GetLoginTokenRateLimited ]
@@ -339,11 +340,11 @@ sendLoginEmail2 model clientId sessionId email =
                             sessionId
                             { creationTime = model.time, emailAddress = email, loginAttempts = 0, loginCode = loginCode }
                             model2.pendingLogins
-                    , userDictionary =
+                    , users =
                         Dict.insert
                             userId
                             { user | recentLoginEmails = model.time :: List.take 100 user.recentLoginEmails }
-                            model.userDictionary
+                            model.users
                   }
                 , sendLoginEmail_ (SentLoginEmail model.time email) email loginCode
                 )
@@ -360,7 +361,7 @@ sendLoginEmail2 model clientId sessionId email =
                 _ =
                     4
             in
-            addLog model.time (Token.Types.FailedToCreateLoginCode model.secretCounter) model
+            addLog model.time (MagicToken.Types.FailedToCreateLoginCode model.secretCounter) model
 
 
 getLoginCode : Time.Posix -> { a | secretCounter : Int } -> ( { a | secretCounter : Int }, Result () Int )
@@ -370,9 +371,9 @@ getLoginCode time model =
             getUniqueId time model
     in
     ( model2
-    , case Id.toString id |> String.left Token.LoginForm.loginCodeLength |> Hex.fromString of
+    , case Id.toString id |> String.left MagicToken.LoginForm.loginCodeLength |> Hex.fromString of
         Ok int ->
-            case String.fromInt int |> String.left Token.LoginForm.loginCodeLength |> String.toInt of
+            case String.fromInt int |> String.left MagicToken.LoginForm.loginCodeLength |> String.toInt of
                 Just int2 ->
                     Ok int2
 
@@ -403,10 +404,6 @@ sendLoginEmail_ :
     -> Int
     -> Cmd backendMsg
 sendLoginEmail_ msg emailAddress loginCode =
-    let
-        _ =
-            loginCode
-    in
     { from = { name = "", email = noReplyEmailAddress }
     , to = List.Nonempty.fromElement { name = "", email = emailAddress }
     , subject = loginEmailSubject
@@ -437,7 +434,7 @@ loginEmailContent loginCode =
                             [ Email.Html.text (String.fromChar char) ]
                     )
                 |> (\a ->
-                        List.take (Token.LoginForm.loginCodeLength // 2) a
+                        List.take (MagicToken.LoginForm.loginCodeLength // 2) a
                             ++ [ Email.Html.span
                                     [ Email.Html.Attributes.backgroundColor "black"
                                     , Email.Html.Attributes.padding "0px 4px 0px 5px"
@@ -446,7 +443,7 @@ loginEmailContent loginCode =
                                     ]
                                     []
                                ]
-                            ++ List.drop (Token.LoginForm.loginCodeLength // 2) a
+                            ++ List.drop (MagicToken.LoginForm.loginCodeLength // 2) a
                    )
             )
         , Email.Html.text "Please type it in the login page you were previously on."
@@ -471,6 +468,6 @@ noReplyEmailAddress =
         }
 
 
-addLog : Time.Posix -> Token.Types.LogItem -> Types.BackendModel -> ( Types.BackendModel, Cmd msg )
+addLog : Time.Posix -> MagicToken.Types.LogItem -> Types.BackendModel -> ( Types.BackendModel, Cmd msg )
 addLog time logItem model =
     ( { model | log = model.log ++ [ ( time, logItem ) ] }, Cmd.none )
