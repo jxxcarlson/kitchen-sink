@@ -37,7 +37,7 @@ import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(.
 import User
 
 
-addUser : BackendModel -> ClientId -> String -> Time.Posix -> String -> ( BackendModel, Cmd backendMsg )
+addUser : BackendModel -> ClientId -> String -> String -> String -> ( BackendModel, Cmd BackendMsg )
 addUser model clientId email realname username =
     case EmailAddress.fromString email of
         Nothing ->
@@ -130,7 +130,7 @@ sendLoginEmail model clientId sessionId email =
         registerAndSendLoginEmail model clientId sessionId email
 
 
-signOut : BackendModel -> ClientId -> Maybe User.User -> ( BackendModel, Cmd BackendMsg )
+signOut : BackendModel -> ClientId -> Maybe User.LoginData -> ( BackendModel, Cmd BackendMsg )
 signOut model clientId userData =
     case userData of
         Just user ->
@@ -218,8 +218,10 @@ getUserFromSessionId sessionId model =
 
 
 -- HELPERS FOR ADDUSER
+-- addUser1 model clientId validEmail realname username
 
 
+addUser1 : BackendModel -> ClientId -> EmailAddress -> String -> String -> ( BackendModel, Cmd BackendMsg )
 addUser1 model clientId email realname username =
     if emailNotRegistered email model.users then
         case Dict.get username model.users of
@@ -233,6 +235,7 @@ addUser1 model clientId email realname username =
         ( model, Lamdera.sendToFrontend clientId (RegistrationError "That email is already registered") )
 
 
+addUser2 : BackendModel -> ClientId -> EmailAddress -> String -> String -> ( BackendModel, Cmd BackendMsg )
 addUser2 model clientId email realname username =
     case model.localUuidData of
         Nothing ->
