@@ -435,7 +435,7 @@ updateFromFrontend sessionId clientId msg model =
             Token.Backend.requestSignUp model clientId realname username email
 
         SigInWithTokenRequest loginCode ->
-            Token.Backend.loginWithToken model.time sessionId clientId loginCode model
+            Token.Backend.signInWithMagicToken model.time sessionId clientId loginCode model
 
         SignOutRequest userData ->
             Token.Backend.signOut model clientId userData

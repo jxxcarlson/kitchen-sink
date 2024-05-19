@@ -1,9 +1,9 @@
 module Token.Backend exposing
     ( addUser
     , checkLogin
-    , loginWithToken
     , requestSignUp
     , sendLoginEmail
+    , signInWithMagicToken
     , signOut
     )
 
@@ -65,69 +65,82 @@ checkLogin model clientId sessionId =
     )
 
 
-loginWithToken :
+{-|
+
+    Use magicToken, an Int, to sign in a user.
+
+-}
+signInWithMagicToken :
     Time.Posix
     -> SessionId
     -> ClientId
     -> Int
     -> BackendModel
     -> ( BackendModel, Cmd BackendMsg )
-loginWithToken time sessionId clientId loginCode model =
+signInWithMagicToken time sessionId clientId magicToken model =
     case AssocList.get sessionId model.sessionDict of
         Just username ->
-            case Dict.get username model.users of
-                Just user ->
-                    ( model, Lamdera.sendToFrontend sessionId (SignInWithTokenResponse <| Ok <| User.loginDataOfUser user) )
-
-                Nothing ->
-                    ( model, Lamdera.sendToFrontend clientId (SignInWithTokenResponse (Err loginCode)) )
+            handleExistingSession model username sessionId clientId magicToken
 
         Nothing ->
-            case AssocList.get sessionId model.pendingLogins of
-                Just pendingLogin ->
-                    if
-                        (pendingLogin.loginAttempts < Token.LoginForm.maxLoginAttempts)
-                            && (Duration.from pendingLogin.creationTime time |> Quantity.lessThan Duration.hour)
-                    then
-                        if loginCode == pendingLogin.loginCode then
-                            case
-                                Dict.toList model.users
-                                    |> List.Extra.find (\( _, user ) -> user.email == pendingLogin.emailAddress)
-                            of
-                                Just ( userId, user ) ->
-                                    ( { model
-                                        | sessionDict = AssocList.insert sessionId userId model.sessionDict
-                                        , pendingLogins = AssocList.remove sessionId model.pendingLogins
-                                      }
-                                    , User.loginDataOfUser user
-                                        |> Ok
-                                        |> SignInWithTokenResponse
-                                        |> Lamdera.sendToFrontend sessionId
-                                    )
+            handleNoSession model time sessionId clientId magicToken
 
-                                Nothing ->
-                                    ( model
-                                    , Err loginCode
-                                        |> SignInWithTokenResponse
-                                        |> Lamdera.sendToFrontend clientId
-                                    )
 
-                        else
+handleExistingSession model username sessionId clientId magicToken =
+    case Dict.get username model.users of
+        Just user ->
+            ( model, Lamdera.sendToFrontend sessionId (SignInWithTokenResponse <| Ok <| User.loginDataOfUser user) )
+
+        Nothing ->
+            ( model, Lamdera.sendToFrontend clientId (SignInWithTokenResponse (Err magicToken)) )
+
+
+handleNoSession model time sessionId clientId magicToken =
+    case AssocList.get sessionId model.pendingLogins of
+        Just pendingLogin ->
+            if
+                (pendingLogin.loginAttempts < Token.LoginForm.maxLoginAttempts)
+                    && (Duration.from pendingLogin.creationTime time |> Quantity.lessThan Duration.hour)
+            then
+                if magicToken == pendingLogin.loginCode then
+                    case
+                        Dict.toList model.users
+                            |> List.Extra.find (\( _, user ) -> user.email == pendingLogin.emailAddress)
+                    of
+                        Just ( userId, user ) ->
                             ( { model
-                                | pendingLogins =
-                                    AssocList.insert
-                                        sessionId
-                                        { pendingLogin | loginAttempts = pendingLogin.loginAttempts + 1 }
-                                        model.pendingLogins
+                                | sessionDict = AssocList.insert sessionId userId model.sessionDict
+                                , pendingLogins = AssocList.remove sessionId model.pendingLogins
                               }
-                            , Err loginCode |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId
+                            , User.loginDataOfUser user
+                                |> Ok
+                                |> SignInWithTokenResponse
+                                |> Lamdera.sendToFrontend sessionId
                             )
 
-                    else
-                        ( model, Err loginCode |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId )
+                        Nothing ->
+                            ( model
+                            , Err magicToken
+                                |> SignInWithTokenResponse
+                                |> Lamdera.sendToFrontend clientId
+                            )
 
-                Nothing ->
-                    ( model, Err loginCode |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId )
+                else
+                    ( { model
+                        | pendingLogins =
+                            AssocList.insert
+                                sessionId
+                                { pendingLogin | loginAttempts = pendingLogin.loginAttempts + 1 }
+                                model.pendingLogins
+                      }
+                    , Err magicToken |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId
+                    )
+
+            else
+                ( model, Err magicToken |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId )
+
+        Nothing ->
+            ( model, Err magicToken |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId )
 
 
 requestSignUp model clientId fullname username email =
