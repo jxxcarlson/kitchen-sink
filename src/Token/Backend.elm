@@ -37,6 +37,7 @@ import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(.
 import User
 
 
+addUser : BackendModel -> ClientId -> String -> Time.Posix -> String -> ( BackendModel, Cmd backendMsg )
 addUser model clientId email realname username =
     case EmailAddress.fromString email of
         Nothing ->
@@ -46,6 +47,7 @@ addUser model clientId email realname username =
             addUser1 model clientId validEmail realname username
 
 
+checkLogin : BackendModel -> ClientId -> SessionId -> ( BackendModel, Cmd BackendMsg )
 checkLogin model clientId sessionId =
     ( model
     , if Dict.isEmpty model.users then
@@ -86,6 +88,65 @@ signInWithMagicToken time sessionId clientId magicToken model =
             handleNoSession model time sessionId clientId magicToken
 
 
+requestSignUp : BackendModel -> ClientId -> String -> String -> String -> ( BackendModel, Cmd BackendMsg )
+requestSignUp model clientId fullname username email =
+    case model.localUuidData of
+        Nothing ->
+            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
+
+        -- TODO, need to signal & handle error
+        Just uuidData ->
+            case EmailAddress.fromString email of
+                Nothing ->
+                    ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
+
+                Just validEmail ->
+                    let
+                        user =
+                            { fullname = fullname
+                            , username = username
+                            , email = validEmail
+                            , created_at = model.time
+                            , updated_at = model.time
+                            , id = LocalUUID.extractUUIDAsString uuidData
+                            , role = User.UserRole
+                            , recentLoginEmails = []
+                            }
+                    in
+                    ( { model
+                        | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
+                        , users = Dict.insert username user model.users
+                      }
+                    , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
+                    )
+
+
+sendLoginEmail : BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
+sendLoginEmail model clientId sessionId email =
+    if emailNotRegistered email model.users then
+        ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
+
+    else
+        registerAndSendLoginEmail model clientId sessionId email
+
+
+signOut : BackendModel -> ClientId -> Maybe User.User -> ( BackendModel, Cmd BackendMsg )
+signOut model clientId userData =
+    case userData of
+        Just user ->
+            ( { model | sessionDict = model.sessionDict |> AssocList.filter (\_ name -> name /= user.username) }
+            , Lamdera.sendToFrontend clientId (UserSignedIn Nothing)
+            )
+
+        Nothing ->
+            ( model, Cmd.none )
+
+
+
+-- HELPERS
+
+
+handleExistingSession : BackendModel -> String -> SessionId -> ClientId -> Int -> ( BackendModel, Cmd BackendMsg )
 handleExistingSession model username sessionId clientId magicToken =
     case Dict.get username model.users of
         Just user ->
@@ -95,6 +156,7 @@ handleExistingSession model username sessionId clientId magicToken =
             ( model, Lamdera.sendToFrontend clientId (SignInWithTokenResponse (Err magicToken)) )
 
 
+handleNoSession : BackendModel -> Time.Posix -> SessionId -> ClientId -> Int -> ( BackendModel, Cmd BackendMsg )
 handleNoSession model time sessionId clientId magicToken =
     case AssocList.get sessionId model.pendingLogins of
         Just pendingLogin ->
@@ -141,62 +203,6 @@ handleNoSession model time sessionId clientId magicToken =
 
         Nothing ->
             ( model, Err magicToken |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId )
-
-
-requestSignUp model clientId fullname username email =
-    case model.localUuidData of
-        Nothing ->
-            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
-
-        -- TODO, need to signal & handle error
-        Just uuidData ->
-            case EmailAddress.fromString email of
-                Nothing ->
-                    ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
-
-                Just validEmail ->
-                    let
-                        user =
-                            { fullname = fullname
-                            , username = username
-                            , email = validEmail
-                            , created_at = model.time
-                            , updated_at = model.time
-                            , id = LocalUUID.extractUUIDAsString uuidData
-                            , role = User.UserRole
-                            , recentLoginEmails = []
-                            }
-                    in
-                    ( { model
-                        | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
-                        , users = Dict.insert username user model.users
-                      }
-                    , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
-                    )
-
-
-sendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
-sendLoginEmail model clientId sessionId email =
-    if emailNotRegistered email model.users then
-        ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
-
-    else
-        registerAndSendLoginEmail model clientId sessionId email
-
-
-signOut model clientId userData =
-    case userData of
-        Just user ->
-            ( { model | sessionDict = model.sessionDict |> AssocList.filter (\_ name -> name /= user.username) }
-            , Lamdera.sendToFrontend clientId (UserSignedIn Nothing)
-            )
-
-        Nothing ->
-            ( model, Cmd.none )
-
-
-
--- HELPERS
 
 
 getLoginData : User.Id -> User.User -> Types.BackendModel -> Result Types.BackendDataStatus User.LoginData
