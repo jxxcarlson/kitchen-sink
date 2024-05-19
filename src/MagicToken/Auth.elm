@@ -40,32 +40,12 @@ config =
     , sendToBackend = Lamdera.sendToBackend
     , renewSession = renewSession
     , methods =
-        [ Auth.Method.EmailMagicLink.configuration
-            { initiateSignin = initiateEmailSignin
-            , onAuthCallbackReceived = onEmailAuthCallbackReceived
-            }
+        [--Auth.Method.EmailMagicLink.configuration
+         --    { initiateSignin = initiateEmailSignin
+         --    , onAuthCallbackReceived = onEmailAuthCallbackReceived
+         --    }
         ]
     }
-
-
-
---config : Auth.Common.Config FrontendMsg ToBackend BackendMsg ToFrontend FrontendModel BackendModel
---config =
---    { toBackend = AuthToBackend
---    , toFrontend = AuthToFrontend
---    , backendMsg = AuthBackendMsg
---    , sendToFrontend = Lamdera.sendToFrontend
---    , sendToBackend = Lamdera.sendToBackend
---    , methods =
---        [ Auth.Method.EmailMagicLink.configuration
---            { initiateSignin = initiateEmailSignin
---            , onAuthCallbackReceived = onEmailAuthCallbackReceived
---            }
---        , Auth.Method.OAuthGithub.configuration Config.githubAppClientId Config.githubAppClientSecret
---        , Auth.Method.OAuthGoogle.configuration Env.googleAppClientId Env.googleAppClientSecret
---        ]
---    , renewSession = renewSession
---    }
 
 
 loginResponse : ClientId -> Cmd backendMsg
@@ -149,83 +129,84 @@ findOrRegisterUser :
     }
     -> BackendModel
     -> ( BackendModel, Cmd BackendMsg )
-findOrRegisterUser { currentClientId, requestingSessionId, username, fullname, authTokenM, now } model =
-    case model.users |> Dict.get username of
-        Just user ->
-            let
-                newSession : Session
-                newSession =
-                    { id = requestingSessionId
-                    , created = now
-                    , username = user.username
-                    , masqueradedFrom = Nothing
-                    , focusedOwner = OwnerUser user.username
-                    , authToken = authTokenM
-                    }
-            in
-            ( { model
-                | sessions = Data.Session.updateSessions model (sessionIdFromString requestingSessionId) newSession
-              }
-            , Command.batch
-                [ sendAuthSuccessWithAccount (sessionIdFromString requestingSessionId) user newSession model
-                , bumpLastActive user
-                ]
-            )
-
-        Nothing ->
-            let
-                newUser : User.User
-                newUser =
-                    { created = now
-                    , lastActive = Time.millisToPosix 0
-                    , username = username
-                    , fullname = fullname
-                    , roles = []
-                    }
-
-                --type alias User =
-                --    { id : String
-                --    , fullname : String
-                --    , username : String
-                --    , email : EmailAddress
-                --    , created_at : Time.Posix
-                --    , updated_at : Time.Posix
-                --    , role : Role
-                --    , recentLoginEmails : List Time.Posix
-                --    }
-                newSession : Session
-                newSession =
-                    { id = requestingSessionId
-                    , created = now
-                    , username = newUser.username
-                    , masqueradedFrom = Nothing
-                    , focusedOwner = OwnerUser newUser.username
-                    , authToken = authTokenM
-                    }
-            in
-            ( { model
-                | sessions = Data.Session.updateSessions model (sessionIdFromString requestingSessionId) newSession
-                , users = upsert newUser.username newUser model.users
-              }
-            , Command.batch
-                [ sendAuthSuccessWithAccount (sessionIdFromString requestingSessionId) newUser newSession model
-                , bumpLastActive newUser
-                ]
-            )
+findOrRegisterUser =
+    Debug.todo "findOrRegisterUser"
 
 
 
--- Auth.Common.Config FrontendMsg ToBackend BackendMsg ToFrontend FrontendModel BackendModel
--- backendConfig : BackendModel -> Auth.Flow.BackendUpdateConfig FrontendMsg BackendMsg ToFrontend FrontendModel BackendModel
---type alias Config frontendMsg toBackend backendMsg toFrontend frontendModel backendModel =
---    { toBackend : ToBackend -> toBackend
---    , toFrontend : ToFrontend -> toFrontend
---    , backendMsg : BackendMsg -> backendMsg
---    , sendToFrontend : SessionId -> toFrontend -> Cmd backendMsg
---    , sendToBackend : toBackend -> Cmd frontendMsg
---    , methods : List (Method frontendMsg backendMsg frontendModel backendModel)
---    , renewSession : SessionId -> ClientId -> backendModel -> ( backendModel, Cmd backendMsg )
+--findOrRegisterUser :
+--    { currentClientId : Lamdera.ClientId
+--    , requestingSessionId : Lamdera.SessionId
+--    , username : String -- TODO: alias this
+--    , fullname : String -- TODO: alias this
+--    , authTokenM : Maybe Auth.Common.Token
+--    , now : Time.Posix
 --    }
+--    -> BackendModel
+--    -> ( BackendModel, Cmd BackendMsg )
+--findOrRegisterUser { currentClientId, requestingSessionId, username, fullname, authTokenM, now } model =
+--    case model.users |> Dict.get username of
+--        Just user ->
+--            let
+--                newSession : Session
+--                newSession =
+--                    { id = requestingSessionId
+--                    , created = now
+--                    , username = user.username
+--                    , masqueradedFrom = Nothing
+--                    , focusedOwner = OwnerUser user.username
+--                    , authToken = authTokenM
+--                    }
+--            in
+--            ( { model
+--                | sessions = Data.Session.updateSessions model (sessionIdFromString requestingSessionId) newSession
+--              }
+--            , Command.batch
+--                [ sendAuthSuccessWithAccount (sessionIdFromString requestingSessionId) user newSession model
+--                , bumpLastActive user
+--                ]
+--            )
+--
+--        Nothing ->
+--            let
+--                newUser : User.User
+--                newUser =
+--                    { created = now
+--                    , lastActive = Time.millisToPosix 0
+--                    , username = username
+--                    , fullname = fullname
+--                    , roles = []
+--                    }
+--
+--                --type alias User =
+--                --    { id : String
+--                --    , fullname : String
+--                --    , username : String
+--                --    , email : EmailAddress
+--                --    , created_at : Time.Posix
+--                --    , updated_at : Time.Posix
+--                --    , role : Role
+--                --    , recentLoginEmails : List Time.Posix
+--                --    }
+--                newSession : Session
+--                newSession =
+--                    { id = requestingSessionId
+--                    , created = now
+--                    , username = newUser.username
+--                    , masqueradedFrom = Nothing
+--                    , focusedOwner = OwnerUser newUser.username
+--                    , authToken = authTokenM
+--                    }
+--            in
+--            ( { model
+--                | sessions = Data.Session.updateSessions model (sessionIdFromString requestingSessionId) newSession
+--                , users = upsert newUser.username newUser model.users
+--              }
+--            , Cmd.batch
+--                [ sendAuthSuccessWithAccount (sessionIdFromString requestingSessionId) newUser newSession model
+--                , bumpLastActive newUser
+--                ]
+--            )
 
 
 backendConfig : BackendModel -> Auth.Flow.BackendUpdateConfig FrontendMsg BackendMsg ToFrontend FrontendModel BackendModel
