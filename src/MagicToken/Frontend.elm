@@ -59,23 +59,6 @@ import User
 import View.Main
 
 
-submitEmailForToken model =
-    case model.loginForm of
-        EnterEmail loginForm ->
-            case EmailAddress.fromString loginForm.email of
-                Just email ->
-                    ( { model | loginForm = EnterLoginCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
-                    , Lamdera.sendToBackend (GetSignInTokenRequest email)
-                    )
-
-                Nothing ->
-                    ( { model | loginForm = EnterEmail { loginForm | pressedSubmitEmail = True } }, Cmd.none )
-
-        EnterLoginCode _ ->
-            -- TODO: handle EnterLoginCode with parameter loginCode instead of _ ??
-            ( model, Cmd.none )
-
-
 enterEmail model email =
     case model.loginForm of
         EnterEmail loginForm_ ->
@@ -91,45 +74,30 @@ enterEmail model email =
             ( model, Cmd.none )
 
 
-signInWithCode : LoadedModel -> String -> ( LoadedModel, Cmd msg )
-signInWithCode model signInCode =
-    case model.loginForm of
-        MagicToken.Types.EnterEmail _ ->
-            ( model, Cmd.none )
-
-        EnterLoginCode enterLoginCode ->
-            case MagicToken.LoginForm.validateLoginCode signInCode of
-                Ok loginCode ->
-                    if Dict.member loginCode enterLoginCode.attempts then
-                        ( { model
-                            | loginForm =
-                                EnterLoginCode
-                                    { enterLoginCode | loginCode = String.left MagicToken.LoginForm.loginCodeLength signInCode }
-                          }
-                        , Cmd.none
-                        )
-
-                    else
-                        ( { model
-                            | loginForm =
-                                EnterLoginCode
-                                    { enterLoginCode
-                                        | loginCode = String.left MagicToken.LoginForm.loginCodeLength signInCode
-                                        , attempts =
-                                            Dict.insert loginCode MagicToken.Types.Checking enterLoginCode.attempts
-                                    }
-                          }
-                        , Lamdera.sendToBackend (SigInWithTokenRequest loginCode)
-                        )
-
-                Err _ ->
-                    ( { model | loginForm = EnterLoginCode { enterLoginCode | loginCode = String.left MagicToken.LoginForm.loginCodeLength signInCode } }
-                    , Cmd.none
-                    )
+handleRegistrationError model str =
+    ( { model | signInStatus = MagicToken.Types.ErrorNotRegistered str }, Cmd.none )
 
 
-submitSignUp model =
-    ( model, Lamdera.sendToBackend (AddUser model.realname model.username model.email) )
+handleSignInError model message =
+    ( { model | loginErrorMessage = Just message, signInStatus = MagicToken.Types.ErrorNotRegistered message }, Cmd.none )
+
+
+signInWithTokenResponse model result =
+    case result of
+        Err _ ->
+            ( { model | loginErrorMessage = Just "Invalid login code" }, Cmd.none )
+
+        Ok signInData ->
+            let
+                adminCommand =
+                    case signInData.role of
+                        User.AdminRole ->
+                            Lamdera.sendToBackend GetBackendModel
+
+                        User.UserRole ->
+                            Cmd.none
+            in
+            ( { model | currentUserData = Just signInData, route = HomepageRoute }, adminCommand )
 
 
 signOut model =
@@ -142,7 +110,7 @@ signOut model =
             , country = ""
             }
 
-        -- MAGICLINK
+        -- TOKEN
         , loginForm = MagicToken.LoginForm.init
         , loginErrorMessage = Nothing
         , signInStatus = MagicToken.Types.NotSignedIn
@@ -181,38 +149,8 @@ signOut model =
     )
 
 
-signInWithTokenResponse model result =
-    case result of
-        Err code ->
-            let
-                _ =
-                    code
-            in
-            ( { model | loginErrorMessage = Just "Invalid login code" }, Cmd.none )
-
-        Ok signInData ->
-            let
-                _ =
-                    signInData
-            in
-            let
-                adminCommand =
-                    case signInData.role of
-                        User.AdminRole ->
-                            Lamdera.sendToBackend GetBackendModel
-
-                        User.UserRole ->
-                            Cmd.none
-            in
-            ( { model | currentUserData = Just signInData, route = HomepageRoute }, adminCommand )
-
-
-handleSignInError model message =
-    ( { model | loginErrorMessage = Just message, signInStatus = MagicToken.Types.ErrorNotRegistered message }, Cmd.none )
-
-
-handleRegistrationError model str =
-    ( { model | signInStatus = MagicToken.Types.ErrorNotRegistered str }, Cmd.none )
+submitSignUp model =
+    ( model, Lamdera.sendToBackend (AddUser model.realname model.username model.email) )
 
 
 userRegistered model user =
@@ -222,3 +160,60 @@ userRegistered model user =
       }
     , Cmd.none
     )
+
+
+submitEmailForToken model =
+    case model.loginForm of
+        EnterEmail loginForm ->
+            case EmailAddress.fromString loginForm.email of
+                Just email ->
+                    ( { model | loginForm = EnterLoginCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
+                    , Lamdera.sendToBackend (GetSignInTokenRequest email)
+                    )
+
+                Nothing ->
+                    ( { model | loginForm = EnterEmail { loginForm | pressedSubmitEmail = True } }, Cmd.none )
+
+        EnterLoginCode _ ->
+            -- TODO: handle EnterLoginCode with parameter loginCode instead of _ ??
+            ( model, Cmd.none )
+
+
+
+-- HELPERS
+
+
+signInWithCode model signInCode =
+    case model.loginForm of
+        MagicToken.Types.EnterEmail _ ->
+            ( model, Cmd.none )
+
+        EnterLoginCode enterLoginCode ->
+            case MagicToken.LoginForm.validateLoginCode signInCode of
+                Ok loginCode ->
+                    if Dict.member loginCode enterLoginCode.attempts then
+                        ( { model
+                            | loginForm =
+                                EnterLoginCode
+                                    { enterLoginCode | loginCode = String.left MagicToken.LoginForm.loginCodeLength signInCode }
+                          }
+                        , Cmd.none
+                        )
+
+                    else
+                        ( { model
+                            | loginForm =
+                                EnterLoginCode
+                                    { enterLoginCode
+                                        | loginCode = String.left MagicToken.LoginForm.loginCodeLength signInCode
+                                        , attempts =
+                                            Dict.insert loginCode MagicToken.Types.Checking enterLoginCode.attempts
+                                    }
+                          }
+                        , Lamdera.sendToBackend (SigInWithTokenRequest loginCode)
+                        )
+
+                Err _ ->
+                    ( { model | loginForm = EnterLoginCode { enterLoginCode | loginCode = String.left MagicToken.LoginForm.loginCodeLength signInCode } }
+                    , Cmd.none
+                    )

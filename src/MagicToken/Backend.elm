@@ -1,17 +1,14 @@
 module MagicToken.Backend exposing
     ( addUser
     , checkLogin
-    , loginWithToken
     , requestSignUp
     , sendLoginEmail
-    , sendLoginEmail_
+    , signInWithMagicToken
     , signOut
     )
 
 import AssocList
-import Backend.Session
 import BackendHelper
-import BiDict
 import Config
 import Dict
 import Duration
@@ -28,97 +25,25 @@ import LocalUUID
 import MagicToken.LoginForm
 import MagicToken.Types
 import Postmark
-import Process
 import Quantity
 import Sha256
 import String.Nonempty exposing (NonemptyString)
-import Task
 import Time
 import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
 import User
 
 
-sentLoginEmail : BackendModel -> SessionId -> ClientId -> ( BackendModel, Cmd BackendMsg )
-sentLoginEmail model sessionId clientId =
-    let
-        _ =
-            ( sessionId, clientId )
-
-        maybeUsername : Maybe String
-        maybeUsername =
-            Dict.get sessionId model.sessions |> Maybe.andThen .username
-
-        maybeUserData : Maybe User.LoginData
-        maybeUserData =
-            Maybe.andThen (\username -> Dict.get username model.users) maybeUsername
-                |> Maybe.map User.loginDataOfUser
-    in
-    ( model
-    , Cmd.batch
-        [ BackendHelper.getAtmosphericRandomNumbers
-        , Backend.Session.reconnect model sessionId clientId
-        , Lamdera.sendToFrontend clientId (GotKeyValueStore model.keyValueStore)
-
-        ---, Lamdera.sendToFrontend sessionId (GotMessage "Connected")
-        , Lamdera.sendToFrontend
-            clientId
-            (InitData
-                { prices = model.prices
-                , productInfo = model.products
-                }
-            )
-        , case AssocList.get sessionId model.sessionDict of
-            Just username ->
-                case Dict.get username model.users of
-                    Just user ->
-                        -- Lamdera.sendToFrontend sessionId (LoginWithTokenResponse <| Ok <| Debug.log "@##! send loginDATA" <| User.loginDataOfUser user)
-                        Process.sleep 60 |> Task.perform (always (AutoLogin sessionId (User.loginDataOfUser user)))
-
-                    Nothing ->
-                        Lamdera.sendToFrontend clientId (SignInWithTokenResponse (Err 0))
-
-            Nothing ->
-                Lamdera.sendToFrontend clientId (SignInWithTokenResponse (Err 1))
-        ]
-    )
-
-
-
--- requestSignUp : BackendModel -> ClientId -> g -> comparable -> String -> ( { a | localUuidData : Maybe LocalUUID.Data, time : b, userDictionary : Dict.Dict comparable { realname : c, username : d, email : EmailAddress, created_at : e, updated_at : e, id : String, role : User.Role, recentLoginEmails : List f } }, Cmd backendMsg )
-
-
-requestSignUp model clientId realname username email =
-    case model.localUuidData of
+addUser : BackendModel -> ClientId -> String -> Time.Posix -> String -> ( BackendModel, Cmd backendMsg )
+addUser model clientId email realname username =
+    case EmailAddress.fromString email of
         Nothing ->
-            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
+            ( model, Lamdera.sendToFrontend clientId (SignInError <| "Invalid email: " ++ email) )
 
-        -- TODO, need to signal & handle error
-        Just uuidData ->
-            case EmailAddress.fromString email of
-                Nothing ->
-                    ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
-
-                Just validEmail ->
-                    let
-                        user =
-                            { fullname = realname
-                            , username = username
-                            , email = validEmail
-                            , created_at = model.time
-                            , updated_at = model.time
-                            , id = LocalUUID.extractUUIDAsString uuidData
-                            , role = User.UserRole
-                            , recentLoginEmails = []
-                            }
-                    in
-                    ( { model
-                        | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
-                        , userDictionary = Dict.insert username user model.userDictionary
-                      }
-                    , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
-                    )
+        Just validEmail ->
+            addUser1 model clientId validEmail realname username
 
 
+checkLogin : BackendModel -> ClientId -> SessionId -> ( BackendModel, Cmd BackendMsg )
 checkLogin model clientId sessionId =
     ( model
     , if Dict.isEmpty model.users then
@@ -138,6 +63,144 @@ checkLogin model clientId sessionId =
     )
 
 
+{-|
+
+    Use magicToken, an Int, to sign in a user.
+
+-}
+signInWithMagicToken :
+    Time.Posix
+    -> SessionId
+    -> ClientId
+    -> Int
+    -> BackendModel
+    -> ( BackendModel, Cmd BackendMsg )
+signInWithMagicToken time sessionId clientId magicToken model =
+    case AssocList.get sessionId model.sessionDict of
+        Just username ->
+            handleExistingSession model username sessionId clientId magicToken
+
+        Nothing ->
+            handleNoSession model time sessionId clientId magicToken
+
+
+requestSignUp : BackendModel -> ClientId -> String -> String -> String -> ( BackendModel, Cmd BackendMsg )
+requestSignUp model clientId fullname username email =
+    case model.localUuidData of
+        Nothing ->
+            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
+
+        -- TODO, need to signal & handle error
+        Just uuidData ->
+            case EmailAddress.fromString email of
+                Nothing ->
+                    ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
+
+                Just validEmail ->
+                    let
+                        user =
+                            { fullname = fullname
+                            , username = username
+                            , email = validEmail
+                            , created_at = model.time
+                            , updated_at = model.time
+                            , id = LocalUUID.extractUUIDAsString uuidData
+                            , role = User.UserRole
+                            , recentLoginEmails = []
+                            }
+                    in
+                    ( { model
+                        | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
+                        , users = Dict.insert username user model.users
+                      }
+                    , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
+                    )
+
+
+sendLoginEmail : BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
+sendLoginEmail model clientId sessionId email =
+    if emailNotRegistered email model.users then
+        ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
+
+    else
+        registerAndSendLoginEmail model clientId sessionId email
+
+
+signOut : BackendModel -> ClientId -> Maybe User.User -> ( BackendModel, Cmd BackendMsg )
+signOut model clientId userData =
+    case userData of
+        Just user ->
+            ( { model | sessionDict = model.sessionDict |> AssocList.filter (\_ name -> name /= user.username) }
+            , Lamdera.sendToFrontend clientId (UserSignedIn Nothing)
+            )
+
+        Nothing ->
+            ( model, Cmd.none )
+
+
+
+-- HELPERS
+
+
+handleExistingSession : BackendModel -> String -> SessionId -> ClientId -> Int -> ( BackendModel, Cmd BackendMsg )
+handleExistingSession model username sessionId clientId magicToken =
+    case Dict.get username model.users of
+        Just user ->
+            ( model, Lamdera.sendToFrontend sessionId (SignInWithTokenResponse <| Ok <| User.loginDataOfUser user) )
+
+        Nothing ->
+            ( model, Lamdera.sendToFrontend clientId (SignInWithTokenResponse (Err magicToken)) )
+
+
+handleNoSession : BackendModel -> Time.Posix -> SessionId -> ClientId -> Int -> ( BackendModel, Cmd BackendMsg )
+handleNoSession model time sessionId clientId magicToken =
+    case AssocList.get sessionId model.pendingLogins of
+        Just pendingLogin ->
+            if
+                (pendingLogin.loginAttempts < MagicToken.LoginForm.maxLoginAttempts)
+                    && (Duration.from pendingLogin.creationTime time |> Quantity.lessThan Duration.hour)
+            then
+                if magicToken == pendingLogin.loginCode then
+                    case
+                        Dict.toList model.users
+                            |> List.Extra.find (\( _, user ) -> user.email == pendingLogin.emailAddress)
+                    of
+                        Just ( userId, user ) ->
+                            ( { model
+                                | sessionDict = AssocList.insert sessionId userId model.sessionDict
+                                , pendingLogins = AssocList.remove sessionId model.pendingLogins
+                              }
+                            , User.loginDataOfUser user
+                                |> Ok
+                                |> SignInWithTokenResponse
+                                |> Lamdera.sendToFrontend sessionId
+                            )
+
+                        Nothing ->
+                            ( model
+                            , Err magicToken
+                                |> SignInWithTokenResponse
+                                |> Lamdera.sendToFrontend clientId
+                            )
+
+                else
+                    ( { model
+                        | pendingLogins =
+                            AssocList.insert
+                                sessionId
+                                { pendingLogin | loginAttempts = pendingLogin.loginAttempts + 1 }
+                                model.pendingLogins
+                      }
+                    , Err magicToken |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId
+                    )
+
+            else
+                ( model, Err magicToken |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId )
+
+        Nothing ->
+            ( model, Err magicToken |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId )
+
+
 getLoginData : User.Id -> User.User -> Types.BackendModel -> Result Types.BackendDataStatus User.LoginData
 getLoginData userId user_ model =
     User.loginDataOfUser user_ |> Ok
@@ -149,83 +212,13 @@ getUserFromSessionId sessionId model =
         |> Maybe.andThen (\userId -> Dict.get userId model.users |> Maybe.map (Tuple.pair userId))
 
 
-loginWithToken :
-    Time.Posix
-    -> SessionId
-    -> ClientId
-    -> Int
-    -> BackendModel
-    -> ( BackendModel, Cmd BackendMsg )
-loginWithToken time sessionId clientId loginCode model =
-    case AssocList.get sessionId model.sessionDict of
-        Just username ->
-            case Dict.get username model.users of
-                Just user ->
-                    ( model, Lamdera.sendToFrontend sessionId (SignInWithTokenResponse <| Ok <| User.loginDataOfUser user) )
 
-                Nothing ->
-                    ( model, Lamdera.sendToFrontend clientId (SignInWithTokenResponse (Err loginCode)) )
-
-        Nothing ->
-            case AssocList.get sessionId model.pendingLogins of
-                Just pendingLogin ->
-                    if
-                        (pendingLogin.loginAttempts < MagicToken.LoginForm.maxLoginAttempts)
-                            && (Duration.from pendingLogin.creationTime time |> Quantity.lessThan Duration.hour)
-                    then
-                        if loginCode == pendingLogin.loginCode then
-                            case
-                                Dict.toList model.users
-                                    |> List.Extra.find (\( _, user ) -> user.email == pendingLogin.emailAddress)
-                            of
-                                Just ( userId, user ) ->
-                                    ( { model
-                                        | sessionDict = AssocList.insert sessionId userId model.sessionDict
-                                        , pendingLogins = AssocList.remove sessionId model.pendingLogins
-                                      }
-                                    , User.loginDataOfUser user
-                                        |> Ok
-                                        |> SignInWithTokenResponse
-                                        |> Lamdera.sendToFrontend sessionId
-                                    )
-
-                                Nothing ->
-                                    ( model
-                                    , Err loginCode
-                                        |> SignInWithTokenResponse
-                                        |> Lamdera.sendToFrontend clientId
-                                    )
-
-                        else
-                            ( { model
-                                | pendingLogins =
-                                    AssocList.insert
-                                        sessionId
-                                        { pendingLogin | loginAttempts = pendingLogin.loginAttempts + 1 }
-                                        model.pendingLogins
-                              }
-                            , Err loginCode |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId
-                            )
-
-                    else
-                        ( model, Err loginCode |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId )
-
-                Nothing ->
-                    ( model, Err loginCode |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId )
-
-
-addUser model clientId email realname username =
-    case EmailAddress.fromString email of
-        Nothing ->
-            ( model, Lamdera.sendToFrontend clientId (SignInError <| "Invalid email: " ++ email) )
-
-        Just validEmail ->
-            addUser1 model clientId validEmail realname username
+-- HELPERS FOR ADDUSER
 
 
 addUser1 model clientId email realname username =
-    if emailNotRegistered email model.userDictionary then
-        case Dict.get username model.userDictionary of
+    if emailNotRegistered email model.users then
+        case Dict.get username model.users of
             Just _ ->
                 ( model, Lamdera.sendToFrontend clientId (RegistrationError "That username is already registered") )
 
@@ -260,31 +253,24 @@ addUser2 model clientId email realname username =
             in
             ( { model
                 | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
-                , userDictionary = Dict.insert username user model.userDictionary
+                , users = Dict.insert username user model.users
               }
             , Lamdera.sendToFrontend clientId (UserRegistered user)
             )
 
 
-signOut model clientId userData =
-    case userData of
-        Just user ->
-            ( { model | sessionDict = model.sessionDict |> AssocList.filter (\_ name -> name /= user.username) }
-            , Lamdera.sendToFrontend clientId (UserSignedIn Nothing)
-            )
 
-        Nothing ->
-            ( model, Cmd.none )
+-- STUFF
 
 
 emailNotRegistered : EmailAddress -> Dict.Dict String User.User -> Bool
-emailNotRegistered email userDictionary =
-    Dict.filter (\_ user -> user.email == email) userDictionary |> Dict.isEmpty
+emailNotRegistered email users =
+    Dict.filter (\_ user -> user.email == email) users |> Dict.isEmpty
 
 
 userNameNotFound : String -> Dict.Dict String User.User -> Bool
-userNameNotFound username userDictionary =
-    case Dict.get username userDictionary of
+userNameNotFound username users =
+    case Dict.get username users of
         Nothing ->
             True
 
@@ -292,25 +278,8 @@ userNameNotFound username userDictionary =
             False
 
 
-sendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
-sendLoginEmail model clientId sessionId email =
-    if emailNotRegistered email model.users then
-        let
-            _ =
-                False
-        in
-        ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
-
-    else
-        let
-            _ =
-                True
-        in
-        sendLoginEmail2 model clientId sessionId email
-
-
-sendLoginEmail2 : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
-sendLoginEmail2 model clientId sessionId email =
+registerAndSendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
+registerAndSendLoginEmail model clientId sessionId email =
     let
         ( model2, result ) =
             getLoginCode model.time model
@@ -318,60 +287,55 @@ sendLoginEmail2 model clientId sessionId email =
     case ( List.Extra.find (\( _, user ) -> user.email == email) (Dict.toList model.users), result ) of
         ( Just ( userId, user ), Ok loginCode ) ->
             if BackendHelper.shouldRateLimit model.time user then
-                let
-                    _ =
-                        1
-
-                    ( model3, cmd ) =
-                        addLog model.time (MagicToken.Types.LoginsRateLimited userId) model
-                in
-                ( model3
-                , Cmd.batch [ cmd, Lamdera.sendToFrontend clientId GetLoginTokenRateLimited ]
-                )
+                handleWithRateLimit model2 userId clientId
 
             else
-                let
-                    _ =
-                        2
-                in
-                ( { model2
-                    | pendingLogins =
-                        AssocList.insert
-                            sessionId
-                            { creationTime = model.time, emailAddress = email, loginAttempts = 0, loginCode = loginCode }
-                            model2.pendingLogins
-                    , users =
-                        Dict.insert
-                            userId
-                            { user | recentLoginEmails = model.time :: List.take 100 user.recentLoginEmails }
-                            model.users
-                  }
-                , sendLoginEmail_ (SentLoginEmail model.time email) email loginCode
-                )
+                handleWithoutRateLimit model2 user userId email sessionId loginCode
 
         ( Nothing, Ok _ ) ->
-            let
-                _ =
-                    3
-            in
             ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
 
         ( _, Err () ) ->
-            let
-                _ =
-                    4
-            in
             addLog model.time (MagicToken.Types.FailedToCreateLoginCode model.secretCounter) model
+
+
+handleWithoutRateLimit model user userId email sessionId loginCode =
+    ( { model
+        | pendingLogins =
+            AssocList.insert
+                sessionId
+                { creationTime = model.time, emailAddress = email, loginAttempts = 0, loginCode = loginCode }
+                model.pendingLogins
+        , users =
+            Dict.insert
+                userId
+                { user | recentLoginEmails = model.time :: List.take 100 user.recentLoginEmails }
+                model.users
+      }
+    , sendLoginEmail_ (SentLoginEmail model.time email) email loginCode
+    )
+
+
+handleWithRateLimit model2 userId clientId =
+    let
+        ( model3, cmd ) =
+            addLog model2.time (MagicToken.Types.LoginsRateLimited userId) model2
+    in
+    ( model3
+    , Cmd.batch [ cmd, Lamdera.sendToFrontend clientId GetLoginTokenRateLimited ]
+    )
 
 
 getLoginCode : Time.Posix -> { a | secretCounter : Int } -> ( { a | secretCounter : Int }, Result () Int )
 getLoginCode time model =
-    let
-        ( model2, id ) =
-            getUniqueId time model
-    in
-    ( model2
-    , case Id.toString id |> String.left MagicToken.LoginForm.loginCodeLength |> Hex.fromString of
+    case getUniqueId time model of
+        ( model2, id ) ->
+            ( model2, loginCodeFromId id )
+
+
+loginCodeFromId : Id String -> Result () Int
+loginCodeFromId id =
+    case Id.toString id |> String.left MagicToken.LoginForm.loginCodeLength |> Hex.fromString of
         Ok int ->
             case String.fromInt int |> String.left MagicToken.LoginForm.loginCodeLength |> String.toInt of
                 Just int2 ->
@@ -382,10 +346,9 @@ getLoginCode time model =
 
         Err _ ->
             Err ()
-    )
 
 
-getUniqueId : Time.Posix -> { a | secretCounter : Int } -> ( { a | secretCounter : Int }, Id b )
+getUniqueId : Time.Posix -> { a | secretCounter : Int } -> ( { a | secretCounter : Int }, Id String )
 getUniqueId time model =
     ( { model | secretCounter = model.secretCounter + 1 }
     , Config.secretKey
