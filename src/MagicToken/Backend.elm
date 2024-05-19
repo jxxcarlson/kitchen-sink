@@ -33,7 +33,7 @@ import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(.
 import User
 
 
-addUser : BackendModel -> ClientId -> String -> Time.Posix -> String -> ( BackendModel, Cmd backendMsg )
+addUser : BackendModel -> ClientId -> String -> String -> String -> ( BackendModel, Cmd backendMsg )
 addUser model clientId email realname username =
     case EmailAddress.fromString email of
         Nothing ->
