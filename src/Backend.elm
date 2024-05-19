@@ -34,7 +34,7 @@ app =
 
 init : ( BackendModel, Cmd BackendMsg )
 init =
-    ( { userDictionary = Dict.empty
+    ( { users = Dict.empty
       , sessions = BiDict.empty
       , sessionInfo = Dict.empty
       , time = Time.millisToPosix 0
@@ -156,12 +156,12 @@ update msg model =
             ( { model
                 | randomAtmosphericNumbers = numbers
                 , localUuidData = data_
-                , userDictionary =
-                    if Dict.isEmpty model.userDictionary then
+                , users =
+                    if Dict.isEmpty model.users then
                         BackendHelper.testUserDictionary
 
                     else
-                        model.userDictionary
+                        model.users
               }
             , Cmd.none
             )
@@ -272,7 +272,7 @@ update msg model =
 
                 maybeUserData : Maybe User.LoginData
                 maybeUserData =
-                    Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername
+                    Maybe.andThen (\username -> Dict.get username model.users) maybeUsername
                         |> Maybe.map User.loginDataOfUser
             in
             ( model
@@ -291,7 +291,7 @@ update msg model =
                     )
                 , case AssocList.get sessionId model.sessionDict of
                     Just username ->
-                        case Dict.get username model.userDictionary of
+                        case Dict.get username model.users of
                             Just user ->
                                 -- Lamdera.sendToFrontend sessionId (LoginWithTokenResponse <| Ok <| Debug.log "@##! send loginDATA" <| User.loginDataOfUser user)
                                 Process.sleep 60 |> Task.perform (always (AutoLogin sessionId (User.loginDataOfUser user)))

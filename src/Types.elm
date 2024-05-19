@@ -137,7 +137,7 @@ type alias BackendModel =
             , loginCode : Int
             }
     , log : Token.Types.Log
-    , userDictionary : Dict.Dict String User.User
+    , users : Dict.Dict String User.User
     , sessions : Session.Sessions
     , sessionInfo : Session.SessionInfo
 

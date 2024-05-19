@@ -49,7 +49,7 @@ sentLoginEmail model sessionId clientId =
 
         maybeUserData : Maybe User.LoginData
         maybeUserData =
-            Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername
+            Maybe.andThen (\username -> Dict.get username model.users) maybeUsername
                 |> Maybe.map User.loginDataOfUser
     in
     ( model
@@ -68,7 +68,7 @@ sentLoginEmail model sessionId clientId =
             )
         , case AssocList.get sessionId model.sessionDict of
             Just username ->
-                case Dict.get username model.userDictionary of
+                case Dict.get username model.users of
                     Just user ->
                         -- Lamdera.sendToFrontend sessionId (LoginWithTokenResponse <| Ok <| Debug.log "@##! send loginDATA" <| User.loginDataOfUser user)
                         Process.sleep 60 |> Task.perform (always (AutoLogin sessionId (User.loginDataOfUser user)))
@@ -120,7 +120,7 @@ requestSignUp model clientId realname username email =
 
 checkLogin model clientId sessionId =
     ( model
-    , if Dict.isEmpty model.userDictionary then
+    , if Dict.isEmpty model.users then
         Cmd.batch
             [ Err Types.Sunny |> CheckSignInResponse |> Lamdera.sendToFrontend clientId
             ]
@@ -145,7 +145,7 @@ getLoginData userId user_ model =
 getUserFromSessionId : SessionId -> BackendModel -> Maybe ( User.Id, User.User )
 getUserFromSessionId sessionId model =
     AssocList.get sessionId model.sessionDict
-        |> Maybe.andThen (\userId -> Dict.get userId model.userDictionary |> Maybe.map (Tuple.pair userId))
+        |> Maybe.andThen (\userId -> Dict.get userId model.users |> Maybe.map (Tuple.pair userId))
 
 
 loginWithToken :
@@ -158,7 +158,7 @@ loginWithToken :
 loginWithToken time sessionId clientId loginCode model =
     case AssocList.get sessionId model.sessionDict of
         Just username ->
-            case Dict.get username model.userDictionary of
+            case Dict.get username model.users of
                 Just user ->
                     ( model, Lamdera.sendToFrontend sessionId (SignInWithTokenResponse <| Ok <| User.loginDataOfUser user) )
 
@@ -174,7 +174,7 @@ loginWithToken time sessionId clientId loginCode model =
                     then
                         if loginCode == pendingLogin.loginCode then
                             case
-                                Dict.toList model.userDictionary
+                                Dict.toList model.users
                                     |> List.Extra.find (\( _, user ) -> user.email == pendingLogin.emailAddress)
                             of
                                 Just ( userId, user ) ->
@@ -293,7 +293,7 @@ userNameNotFound username userDictionary =
 
 sendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
 sendLoginEmail model clientId sessionId email =
-    if emailNotRegistered email model.userDictionary then
+    if emailNotRegistered email model.users then
         ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
 
     else
@@ -306,7 +306,7 @@ registerAndSendLoginEmail model clientId sessionId email =
         ( model2, result ) =
             getLoginCode model.time model
     in
-    case ( List.Extra.find (\( _, user ) -> user.email == email) (Dict.toList model.userDictionary), result ) of
+    case ( List.Extra.find (\( _, user ) -> user.email == email) (Dict.toList model.users), result ) of
         ( Just ( userId, user ), Ok loginCode ) ->
             if BackendHelper.shouldRateLimit model.time user then
                 let
@@ -318,21 +318,17 @@ registerAndSendLoginEmail model clientId sessionId email =
                 )
 
             else
-                let
-                    _ =
-                        2
-                in
                 ( { model2
                     | pendingLogins =
                         AssocList.insert
                             sessionId
                             { creationTime = model.time, emailAddress = email, loginAttempts = 0, loginCode = loginCode }
                             model2.pendingLogins
-                    , userDictionary =
+                    , users =
                         Dict.insert
                             userId
                             { user | recentLoginEmails = model.time :: List.take 100 user.recentLoginEmails }
-                            model.userDictionary
+                            model.users
                   }
                 , sendLoginEmail_ (SentLoginEmail model.time email) email loginCode
                 )

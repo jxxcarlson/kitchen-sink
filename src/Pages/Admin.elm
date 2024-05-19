@@ -114,7 +114,7 @@ viewUserData window backendModel =
         [ width fill
         , spacing 12
         ]
-        [ viewUserDictionary window backendModel.userDictionary ]
+        [ viewUserDictionary window backendModel.users ]
 
 
 viewUserDictionary : Window -> Dict.Dict String User.User -> Element msg

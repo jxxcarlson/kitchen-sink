@@ -13,7 +13,7 @@ updateSession sessionId username model =
     let
         maybeUser : Maybe User.User
         maybeUser =
-            Dict.get username model.userDictionary
+            Dict.get username model.users
 
         ( newSessions_, newSessionInfo_ ) =
             case maybeUser of
@@ -42,6 +42,6 @@ reconnect model sessionId clientId =
             BiDict.get sessionId model.sessions
 
         maybeUser =
-            Maybe.andThen (\username -> Dict.get username model.userDictionary) maybeUsername
+            Maybe.andThen (\username -> Dict.get username model.users) maybeUsername
     in
     Lamdera.sendToFrontend clientId (Types.UserSignedIn maybeUser)
