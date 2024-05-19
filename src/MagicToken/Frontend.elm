@@ -168,7 +168,7 @@ submitEmailForToken model =
             case EmailAddress.fromString loginForm.email of
                 Just email ->
                     ( { model | loginForm = EnterLoginCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
-                    , Lamdera.sendToBackend (GetSignInTokenRequest email)
+                    , Lamdera.sendToBackend (RequestMagicToken email)
                     )
 
                 Nothing ->

@@ -443,8 +443,8 @@ updateFromFrontend sessionId clientId msg model =
         CheckLoginRequest ->
             MagicToken.Backend.checkLogin model clientId sessionId
 
-        GetSignInTokenRequest email ->
-            MagicToken.Backend.sendLoginEmail model clientId sessionId email
+        RequestMagicToken email ->
+            MagicToken.Backend.setMagicToken clientId sessionId email model
 
         RequestSignup realname username email ->
             MagicToken.Backend.requestSignUp model clientId realname username email

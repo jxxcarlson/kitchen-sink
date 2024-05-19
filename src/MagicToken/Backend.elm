@@ -2,7 +2,7 @@ module MagicToken.Backend exposing
     ( addUser
     , checkLogin
     , requestSignUp
-    , sendLoginEmail
+    , setMagicToken
     , signInWithMagicToken
     , signOut
     )
@@ -117,13 +117,13 @@ requestSignUp model clientId fullname username email =
                     )
 
 
-sendLoginEmail : BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
-sendLoginEmail model clientId sessionId email =
+setMagicToken : ClientId -> SessionId -> EmailAddress -> BackendModel -> ( BackendModel, Cmd BackendMsg )
+setMagicToken clientId sessionId email model =
     if emailNotRegistered email model.users then
         ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
 
     else
-        registerAndSendLoginEmail model clientId sessionId email
+        setMagicTokenAndSendEmailToUser model clientId sessionId email
 
 
 signOut : BackendModel -> ClientId -> Maybe User.LoginData -> ( BackendModel, Cmd BackendMsg )
@@ -278,8 +278,8 @@ userNameNotFound username users =
             False
 
 
-registerAndSendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
-registerAndSendLoginEmail model clientId sessionId email =
+setMagicTokenAndSendEmailToUser : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
+setMagicTokenAndSendEmailToUser model clientId sessionId email =
     let
         ( model2, result ) =
             getLoginCode model.time model
@@ -287,6 +287,7 @@ registerAndSendLoginEmail model clientId sessionId email =
     case ( List.Extra.find (\( _, user ) -> user.email == email) (Dict.toList model.users), result ) of
         ( Just ( userId, user ), Ok loginCode ) ->
             if BackendHelper.shouldRateLimit model.time user then
+                -- TODO: does this branch do what it should?
                 handleWithRateLimit model2 userId clientId
 
             else

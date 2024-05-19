@@ -217,7 +217,7 @@ type ToBackend
     | AuthToBackend Auth.Common.ToBackend
     | CheckLoginRequest
     | SigInWithTokenRequest Int
-    | GetSignInTokenRequest EmailAddress
+    | RequestMagicToken EmailAddress
     | SignOutRequest (Maybe User.LoginData)
       -- STRIPE
     | RenewPrices
