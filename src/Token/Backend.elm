@@ -37,36 +37,13 @@ import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(.
 import User
 
 
-requestSignUp model clientId realname username email =
-    case model.localUuidData of
+addUser model clientId email realname username =
+    case EmailAddress.fromString email of
         Nothing ->
-            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
+            ( model, Lamdera.sendToFrontend clientId (SignInError <| "Invalid email: " ++ email) )
 
-        -- TODO, need to signal & handle error
-        Just uuidData ->
-            case EmailAddress.fromString email of
-                Nothing ->
-                    ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
-
-                Just validEmail ->
-                    let
-                        user =
-                            { realname = realname
-                            , username = username
-                            , email = validEmail
-                            , created_at = model.time
-                            , updated_at = model.time
-                            , id = LocalUUID.extractUUIDAsString uuidData
-                            , role = User.UserRole
-                            , recentLoginEmails = []
-                            }
-                    in
-                    ( { model
-                        | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
-                        , users = Dict.insert username user model.users
-                      }
-                    , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
-                    )
+        Just validEmail ->
+            addUser1 model clientId validEmail realname username
 
 
 checkLogin model clientId sessionId =
@@ -86,17 +63,6 @@ checkLogin model clientId sessionId =
             Nothing ->
                 CheckSignInResponse (Err Types.LoadedBackendData) |> Lamdera.sendToFrontend clientId
     )
-
-
-getLoginData : User.Id -> User.User -> Types.BackendModel -> Result Types.BackendDataStatus User.LoginData
-getLoginData userId user_ model =
-    User.loginDataOfUser user_ |> Ok
-
-
-getUserFromSessionId : SessionId -> BackendModel -> Maybe ( User.Id, User.User )
-getUserFromSessionId sessionId model =
-    AssocList.get sessionId model.sessionDict
-        |> Maybe.andThen (\userId -> Dict.get userId model.users |> Maybe.map (Tuple.pair userId))
 
 
 loginWithToken :
@@ -164,13 +130,71 @@ loginWithToken time sessionId clientId loginCode model =
                     ( model, Err loginCode |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId )
 
 
-addUser model clientId email realname username =
-    case EmailAddress.fromString email of
+requestSignUp model clientId realname username email =
+    case model.localUuidData of
         Nothing ->
-            ( model, Lamdera.sendToFrontend clientId (SignInError <| "Invalid email: " ++ email) )
+            ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
 
-        Just validEmail ->
-            addUser1 model clientId validEmail realname username
+        -- TODO, need to signal & handle error
+        Just uuidData ->
+            case EmailAddress.fromString email of
+                Nothing ->
+                    ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
+
+                Just validEmail ->
+                    let
+                        user =
+                            { realname = realname
+                            , username = username
+                            , email = validEmail
+                            , created_at = model.time
+                            , updated_at = model.time
+                            , id = LocalUUID.extractUUIDAsString uuidData
+                            , role = User.UserRole
+                            , recentLoginEmails = []
+                            }
+                    in
+                    ( { model
+                        | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
+                        , users = Dict.insert username user model.users
+                      }
+                    , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
+                    )
+
+
+sendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
+sendLoginEmail model clientId sessionId email =
+    if emailNotRegistered email model.users then
+        ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
+
+    else
+        registerAndSendLoginEmail model clientId sessionId email
+
+
+signOut model clientId userData =
+    case userData of
+        Just user ->
+            ( { model | sessionDict = model.sessionDict |> AssocList.filter (\_ name -> name /= user.username) }
+            , Lamdera.sendToFrontend clientId (UserSignedIn Nothing)
+            )
+
+        Nothing ->
+            ( model, Cmd.none )
+
+
+
+-- HELPERS
+
+
+getLoginData : User.Id -> User.User -> Types.BackendModel -> Result Types.BackendDataStatus User.LoginData
+getLoginData userId user_ model =
+    User.loginDataOfUser user_ |> Ok
+
+
+getUserFromSessionId : SessionId -> BackendModel -> Maybe ( User.Id, User.User )
+getUserFromSessionId sessionId model =
+    AssocList.get sessionId model.sessionDict
+        |> Maybe.andThen (\userId -> Dict.get userId model.users |> Maybe.map (Tuple.pair userId))
 
 
 addUser1 model clientId email realname username =
@@ -216,17 +240,6 @@ addUser2 model clientId email realname username =
             )
 
 
-signOut model clientId userData =
-    case userData of
-        Just user ->
-            ( { model | sessionDict = model.sessionDict |> AssocList.filter (\_ name -> name /= user.username) }
-            , Lamdera.sendToFrontend clientId (UserSignedIn Nothing)
-            )
-
-        Nothing ->
-            ( model, Cmd.none )
-
-
 emailNotRegistered : EmailAddress -> Dict.Dict String User.User -> Bool
 emailNotRegistered email users =
     Dict.filter (\_ user -> user.email == email) users |> Dict.isEmpty
@@ -240,15 +253,6 @@ userNameNotFound username users =
 
         Just _ ->
             False
-
-
-sendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
-sendLoginEmail model clientId sessionId email =
-    if emailNotRegistered email model.users then
-        ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
-
-    else
-        registerAndSendLoginEmail model clientId sessionId email
 
 
 registerAndSendLoginEmail : Types.BackendModel -> ClientId -> SessionId -> EmailAddress -> ( BackendModel, Cmd BackendMsg )
