@@ -6,7 +6,7 @@ import Time
 
 type alias User =
     { id : String
-    , realname : String
+    , fullname : String
     , username : String
     , email : EmailAddress
     , created_at : Time.Posix

@@ -49,7 +49,7 @@ testUserDictionary : Dict.Dict String User.User
 testUserDictionary =
     Dict.fromList
         [ ( "jxxcarlson"
-          , { realname = "Jim Carlson"
+          , { fullname = "Jim Carlson"
             , username = "jxxcarlson"
             , email = EmailAddress.EmailAddress { domain = "gmail", localPart = "jxxcarlson", tags = [], tld = [ "com" ] }
             , id = "661b76d8-eee8-42fb-a28d-cf8ada73f869"
@@ -60,7 +60,7 @@ testUserDictionary =
             }
           )
         , ( "aristotle"
-          , { realname = "Aristotle"
+          , { fullname = "Aristotle"
             , username = "aristotle"
             , email = EmailAddress.EmailAddress { domain = "mac", localPart = "jxxcarlson", tags = [], tld = [ "com" ] }
             , id = "38952d62-9772-4e5d-a927-b8e41b6ef2ed"

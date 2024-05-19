@@ -130,7 +130,7 @@ loginWithToken time sessionId clientId loginCode model =
                     ( model, Err loginCode |> SignInWithTokenResponse |> Lamdera.sendToFrontend clientId )
 
 
-requestSignUp model clientId realname username email =
+requestSignUp model clientId fullname username email =
     case model.localUuidData of
         Nothing ->
             ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
@@ -144,7 +144,7 @@ requestSignUp model clientId realname username email =
                 Just validEmail ->
                     let
                         user =
-                            { realname = realname
+                            { fullname = fullname
                             , username = username
                             , email = validEmail
                             , created_at = model.time
@@ -197,6 +197,10 @@ getUserFromSessionId sessionId model =
         |> Maybe.andThen (\userId -> Dict.get userId model.users |> Maybe.map (Tuple.pair userId))
 
 
+
+-- HELPERS FOR ADDUSER
+
+
 addUser1 model clientId email realname username =
     if emailNotRegistered email model.users then
         case Dict.get username model.users of
@@ -222,7 +226,7 @@ addUser2 model clientId email realname username =
         Just uuidData ->
             let
                 user =
-                    { realname = realname
+                    { fullname = realname
                     , username = username
                     , email = email
                     , created_at = model.time
@@ -238,6 +242,10 @@ addUser2 model clientId email realname username =
               }
             , Lamdera.sendToFrontend clientId (UserRegistered user)
             )
+
+
+
+-- STUFF
 
 
 emailNotRegistered : EmailAddress -> Dict.Dict String User.User -> Bool
