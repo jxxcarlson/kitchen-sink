@@ -162,6 +162,7 @@ userRegistered model user =
     )
 
 
+submitEmailForToken : LoadedModel -> ( LoadedModel, Cmd FrontendMsg )
 submitEmailForToken model =
     case model.loginForm of
         EnterEmail loginForm ->
