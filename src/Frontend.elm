@@ -2,6 +2,7 @@ module Frontend exposing (app)
 
 import AssocList
 import Auth.Common
+import Auth.Flow
 import Browser exposing (UrlRequest(..))
 import Browser.Dom
 import Browser.Events
@@ -227,9 +228,8 @@ updateLoaded msg model =
 
         -- MAGICLINK
         AuthSigninRequested { methodId, username } ->
-            --Auth.Flow.signInRequested methodId model username
-            --    |> Tuple.mapSecond (AuthToBackend >> sendToBackend)
-            ( model, Cmd.none )
+            Auth.Flow.signInRequested methodId model username
+                |> Tuple.mapSecond (AuthToBackend >> Lamdera.sendToBackend)
 
         CancelSignIn ->
             ( { model | route = HomepageRoute }, Cmd.none )
