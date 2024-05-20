@@ -10,6 +10,7 @@ import Browser.Navigation
 import Dict
 import EmailAddress
 import Env
+import Helper
 import Json.Decode
 import Json.Encode
 import KeyValueStore
@@ -228,8 +229,26 @@ updateLoaded msg model =
 
         -- MAGICLINK
         SubmitEmailForToken ->
-            MagicToken.Frontend.submitEmailForToken model
+            -- MagicToken.Frontend.submitEmailForToken model
+            -- ( model, Helper.trigger <| AuthSigninRequested { methodId = "MagicLink", email = Just model.email } )
+            case model.loginForm of
+                EnterEmail loginForm ->
+                    case EmailAddress.fromString loginForm.email of
+                        Just email ->
+                            let
+                                model2 =
+                                    { model | loginForm = EnterLoginCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
+                            in
+                            ( model2, Helper.trigger <| AuthSigninRequested { methodId = "MagicLink", email = Just loginForm.email } )
 
+                        Nothing ->
+                            ( { model | loginForm = EnterEmail { loginForm | pressedSubmitEmail = True } }, Cmd.none )
+
+                EnterLoginCode _ ->
+                    ( model, Cmd.none )
+
+        -- TODO: handle EnterLoginCode with parameter loginCode instead of _ ??
+        --  ( model, Helper.trigger <| AuthSigninRequested { methodId = "MagicLink", email = Just model.email } )
         AuthSigninRequested { methodId, email } ->
             Auth.Flow.signInRequested methodId model email
                 |> Tuple.mapSecond (AuthToBackend >> Lamdera.sendToBackend)
