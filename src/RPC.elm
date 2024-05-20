@@ -7,7 +7,6 @@ module RPC exposing
 
 import AssocList
 import Backend
-import BackendHelper
 import Codec
 import Config
 import Dict
@@ -16,6 +15,7 @@ import Email.Html as Html
 import Email.Html.Attributes as Attributes
 import EmailAddress exposing (EmailAddress)
 import Env
+import Helper
 import Http
 import Id
 import Json.Decode
@@ -60,7 +60,7 @@ purchaseCompletedEndpoint _ model request =
                             let
                                 maybeTicket : Maybe Product_
                                 maybeTicket =
-                                    case BackendHelper.priceIdToProductId model order.priceId of
+                                    case Helper.priceIdToProductId model order.priceId of
                                         Just productId ->
                                             AssocList.get productId Tickets.dict
 
@@ -89,7 +89,7 @@ purchaseCompletedEndpoint _ model request =
                                     , Postmark.sendEmail
                                         (ConfirmationEmailSent stripeSessionId)
                                         Config.postmarkApiKey
-                                        { from = { name = "elm-camp", email = BackendHelper.purchaseSupportAddres }
+                                        { from = { name = "elm-camp", email = Helper.purchaseSupportAddres }
                                         , to =
                                             Nonempty
                                                 { name = PurchaseForm.purchaserName order.form |> Name.toString
@@ -110,7 +110,7 @@ purchaseCompletedEndpoint _ model request =
                                                 ++ ", stripeSessionId: "
                                                 ++ Id.toString stripeSessionId
                                     in
-                                    ( Err (Http.BadBody error), model, BackendHelper.errorEmail error )
+                                    ( Err (Http.BadBody error), model, Helper.errorEmail error )
 
                         Nothing ->
                             let
@@ -118,7 +118,7 @@ purchaseCompletedEndpoint _ model request =
                                     "Stripe session not found: stripeSessionId: "
                                         ++ Id.toString stripeSessionId
                             in
-                            ( Err (Http.BadBody error), model, BackendHelper.errorEmail error )
+                            ( Err (Http.BadBody error), model, Helper.errorEmail error )
 
         Err error ->
             let
@@ -126,7 +126,7 @@ purchaseCompletedEndpoint _ model request =
                     "Failed to decode webhook: "
                         ++ Json.Decode.errorToString error
             in
-            ( Err (Http.BadBody errorText), model, BackendHelper.errorEmail errorText )
+            ( Err (Http.BadBody errorText), model, Helper.errorEmail errorText )
 
 
 confirmationEmail : Product_ -> { subject : NonemptyString, textBody : String, htmlBody : Html.Html }
@@ -142,7 +142,7 @@ confirmationEmail product =
             ++ product.description
             ++ ").\n\n"
             ++ "If you have any questions, email us at "
-            ++ EmailAddress.toString BackendHelper.purchaseSupportAddres
+            ++ EmailAddress.toString Helper.purchaseSupportAddres
             ++ " (or just reply to this email)"
     , htmlBody =
         Html.div
@@ -156,8 +156,8 @@ confirmationEmail product =
             , Html.div []
                 [ Html.text "If you have any questions, email us at "
                 , Html.a
-                    [ Attributes.href ("mailto:" ++ EmailAddress.toString BackendHelper.purchaseSupportAddres) ]
-                    [ Html.text (EmailAddress.toString BackendHelper.purchaseSupportAddres) ]
+                    [ Attributes.href ("mailto:" ++ EmailAddress.toString Helper.purchaseSupportAddres) ]
+                    [ Html.text (EmailAddress.toString Helper.purchaseSupportAddres) ]
                 , Html.text " (or just reply to this email)"
                 ]
             ]

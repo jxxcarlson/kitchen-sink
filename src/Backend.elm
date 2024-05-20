@@ -4,11 +4,11 @@ import AssocList
 import Auth.Flow
 import Auth.HttpHelpers
 import Backend.Session
-import BackendHelper
 import BiDict
 import Dict
 import Duration
 import Email
+import Helper
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
 import LocalUUID
@@ -82,7 +82,7 @@ init =
         [ Time.now |> Task.perform GotSlowTick
         , Time.now |> Task.perform GotFastTick
         , Stripe.getPrices GotPrices
-        , BackendHelper.getAtmosphericRandomNumbers
+        , Helper.getAtmosphericRandomNumbers
         ]
     )
 
@@ -165,7 +165,7 @@ update msg model =
                 , localUuidData = data_
                 , users =
                     if Dict.isEmpty model.users then
-                        BackendHelper.testUserDictionary
+                        Helper.testUserDictionary
 
                     else
                         model.users
@@ -226,7 +226,7 @@ update msg model =
                     )
 
                 Err error ->
-                    ( model, BackendHelper.errorEmail ("GotPrices failed: " ++ Auth.HttpHelpers.httpErrorToString error) )
+                    ( model, Helper.errorEmail ("GotPrices failed: " ++ Auth.HttpHelpers.httpErrorToString error) )
 
         GotPrices2 clientId result ->
             case result of
@@ -254,7 +254,7 @@ update msg model =
                     )
 
                 Err error ->
-                    ( model, BackendHelper.errorEmail ("GotPrices failed: " ++ Auth.HttpHelpers.httpErrorToString error) )
+                    ( model, Helper.errorEmail ("GotPrices failed: " ++ Auth.HttpHelpers.httpErrorToString error) )
 
         -- MAGICLINK
         AuthBackendMsg authMsg ->
@@ -289,7 +289,7 @@ update msg model =
             in
             ( model
             , Cmd.batch
-                [ BackendHelper.getAtmosphericRandomNumbers
+                [ Helper.getAtmosphericRandomNumbers
                 , Backend.Session.reconnect model sessionId clientId
                 , Lamdera.sendToFrontend clientId (GotKeyValueStore model.keyValueStore)
 
@@ -358,7 +358,7 @@ update msg model =
                     ( model
                     , Cmd.batch
                         [ SubmitFormResponse (Err err) |> Lamdera.sendToFrontend clientId
-                        , BackendHelper.errorEmail err
+                        , Helper.errorEmail err
                         , Lamdera.sendToFrontend clientId (GotMessage err)
                         ]
                     )
@@ -379,7 +379,7 @@ update msg model =
                             ( model, Cmd.none )
 
                 Err error ->
-                    ( model, BackendHelper.errorEmail ("ExpiredStripeSession failed: " ++ Auth.HttpHelpers.httpErrorToString error ++ " stripeSessionId: " ++ Id.toString stripeSessionId) )
+                    ( model, Helper.errorEmail ("ExpiredStripeSession failed: " ++ Auth.HttpHelpers.httpErrorToString error ++ " stripeSessionId: " ++ Id.toString stripeSessionId) )
 
         ConfirmationEmailSent stripeSessionId result ->
             case AssocList.get stripeSessionId model.orders of
@@ -404,12 +404,12 @@ update msg model =
                                         { order | emailResult = Email.EmailFailed error }
                                         model.orders
                               }
-                            , BackendHelper.errorEmail ("Confirmation email failed: " ++ Auth.HttpHelpers.httpErrorToString error)
+                            , Helper.errorEmail ("Confirmation email failed: " ++ Auth.HttpHelpers.httpErrorToString error)
                             )
 
                 Nothing ->
                     ( model
-                    , BackendHelper.errorEmail ("StripeSessionId not found for confirmation email: " ++ Id.toString stripeSessionId)
+                    , Helper.errorEmail ("StripeSessionId not found for confirmation email: " ++ Id.toString stripeSessionId)
                     )
 
         ErrorEmailSent _ ->
@@ -462,7 +462,7 @@ updateFromFrontend sessionId clientId msg model =
         SubmitFormRequest priceId a ->
             case Untrusted.purchaseForm a of
                 Just purchaseForm ->
-                    case BackendHelper.priceIdToProductId model priceId of
+                    case Helper.priceIdToProductId model priceId of
                         Just _ ->
                             let
                                 validProductAndForm : Bool
@@ -497,7 +497,7 @@ updateFromFrontend sessionId clientId msg model =
 
         -- STRIPE
         CancelPurchaseRequest ->
-            case BackendHelper.sessionIdToStripeSessionId sessionId model of
+            case Helper.sessionIdToStripeSessionId sessionId model of
                 Just stripeSessionId ->
                     ( model
                     , Stripe.expireSession stripeSessionId |> Task.attempt (ExpiredStripeSession stripeSessionId)
@@ -516,7 +516,7 @@ updateFromFrontend sessionId clientId msg model =
 
         -- EXAMPLES
         GetWeatherData city ->
-            ( model, BackendHelper.getNewWeatherByCity clientId city )
+            ( model, Helper.getNewWeatherByCity clientId city )
 
         -- DATA
         GetKeyValueStore ->

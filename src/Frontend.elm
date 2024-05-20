@@ -227,8 +227,11 @@ updateLoaded msg model =
             ( { model | showTooltip = False }, Cmd.none )
 
         -- MAGICLINK
-        AuthSigninRequested { methodId, username } ->
-            Auth.Flow.signInRequested methodId model username
+        SubmitEmailForToken ->
+            MagicToken.Frontend.submitEmailForToken model
+
+        AuthSigninRequested { methodId, email } ->
+            Auth.Flow.signInRequested methodId model email
                 |> Tuple.mapSecond (AuthToBackend >> Lamdera.sendToBackend)
 
         CancelSignIn ->
@@ -239,9 +242,6 @@ updateLoaded msg model =
 
         OpenSignUp ->
             ( { model | signInStatus = MagicToken.Types.SigningUp }, Cmd.none )
-
-        SubmitEmailForToken ->
-            MagicToken.Frontend.submitEmailForToken model
 
         TypedEmailInSignInForm email ->
             MagicToken.Frontend.enterEmail model email

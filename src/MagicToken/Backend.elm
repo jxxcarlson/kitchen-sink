@@ -8,13 +8,13 @@ module MagicToken.Backend exposing
     )
 
 import AssocList
-import BackendHelper
 import Config
 import Dict
 import Duration
 import Email.Html
 import Email.Html.Attributes
 import EmailAddress exposing (EmailAddress)
+import Helper
 import Hex
 import Http
 import Id exposing (Id)
@@ -286,7 +286,7 @@ setMagicTokenAndSendEmailToUser model clientId sessionId email =
     in
     case ( List.Extra.find (\( _, user ) -> user.email == email) (Dict.toList model.users), result ) of
         ( Just ( userId, user ), Ok loginCode ) ->
-            if BackendHelper.shouldRateLimit model.time user then
+            if Helper.shouldRateLimit model.time user then
                 -- TODO: does this branch do what it should?
                 handleWithRateLimit model2 userId clientId
 

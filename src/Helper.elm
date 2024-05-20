@@ -1,4 +1,4 @@
-module BackendHelper exposing
+module Helper exposing
     ( errorEmail
     , getAtmosphericRandomNumbers
     , getNewWeatherByCity
@@ -7,6 +7,7 @@ module BackendHelper exposing
     , sessionIdToStripeSessionId
     , shouldRateLimit
     , testUserDictionary
+    , trigger
     )
 
 import AssocList
@@ -24,6 +25,7 @@ import MagicToken.Types
 import Postmark
 import String.Nonempty
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)
+import Task
 import Time
 import Types
 import User
@@ -35,6 +37,11 @@ import Weather
 -- TODO: this is a hack based on a lack of understanding of what is going on.
 -- in Martin's code.
 -- OTHER
+
+
+trigger : msg -> Cmd msg
+trigger msg =
+    Task.perform (always msg) Time.now
 
 
 getNewWeatherByCity : Lamdera.ClientId -> String -> Cmd Types.BackendMsg
