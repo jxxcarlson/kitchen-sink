@@ -1,4 +1,8 @@
-module Auth.Method.OAuthAuth0 exposing (configuration, getUserInfo, jwtErrorToString)
+module Auth.Method.OAuthAuth0 exposing
+    ( configuration
+    , getUserInfo
+    , jwtErrorToString
+    )
 
 import Auth.Common exposing (..)
 import Auth.HttpHelpers as HttpHelpers

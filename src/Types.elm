@@ -15,6 +15,7 @@ module Types exposing
 
 import AssocList
 import Auth.Common
+import Auth.Flow
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
@@ -50,6 +51,7 @@ type FrontendModel
 
 type alias LoadingModel =
     { key : Key
+    , initUrl : Url
     , now : Time.Posix
     , window : Maybe { width : Int, height : Int }
     , route : Route
@@ -64,6 +66,8 @@ type alias LoadedModel =
     , showTooltip : Bool
 
     -- MAGICLINK
+    , authFlow : Auth.Common.Flow
+    , authRedirectBaseUrl : Url
     , loginForm : MagicToken.Types.LoginForm
     , loginErrorMessage : Maybe String
     , signInStatus : MagicToken.Types.SignInStatus
@@ -165,6 +169,7 @@ type FrontendMsg
     | PressedShowTooltip
     | MouseDown
       -- MAGICLINK
+    | AuthSigninRequested { methodId : Auth.Common.MethodId, username : Maybe String }
     | SubmitEmailForToken
     | CancelSignIn
     | TypedEmailInSignInForm String

@@ -1,4 +1,14 @@
-module Auth.Protocol.OAuth exposing (accessTokenRequested, generateSigninUrl, initiateSignin, makeToken, onAuthCallbackReceived, onFrontendCallbackInit, parseAuthenticationResponse, parseAuthenticationResponseError, validateCallbackToken)
+module Auth.Protocol.OAuth exposing
+    ( accessTokenRequested
+    , generateSigninUrl
+    , initiateSignin
+    , makeToken
+    , onAuthCallbackReceived
+    , onFrontendCallbackInit
+    , parseAuthenticationResponse
+    , parseAuthenticationResponseError
+    , validateCallbackToken
+    )
 
 import Auth.Common exposing (..)
 import Auth.HttpHelpers as HttpHelpers

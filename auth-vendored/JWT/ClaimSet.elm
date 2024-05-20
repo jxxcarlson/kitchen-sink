@@ -1,4 +1,11 @@
-module JWT.ClaimSet exposing (ClaimSet, VerificationError(..), VerifyOptions, decoder, encoder, isValid)
+module JWT.ClaimSet exposing
+    ( ClaimSet
+    , VerificationError(..)
+    , VerifyOptions
+    , decoder
+    , encoder
+    , isValid
+    )
 
 import Dict exposing (Dict)
 import Json.Decode as Decode

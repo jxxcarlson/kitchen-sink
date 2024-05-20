@@ -1,4 +1,19 @@
-module Auth.Flow exposing (BackendUpdateConfig, backendUpdate, errorToString, findMethod, init, methodLoader, onFrontendLogoutCallback, setAuthFlow, setError, signInRequested, signOutRequested, startProviderSignin, updateFromFrontend, withCurrentTime)
+module Auth.Flow exposing
+    ( BackendUpdateConfig
+    , backendUpdate
+    , errorToString
+    , findMethod
+    , init
+    , methodLoader
+    , onFrontendLogoutCallback
+    , setAuthFlow
+    , setError
+    , signInRequested
+    , signOutRequested
+    , startProviderSignin
+    , updateFromFrontend
+    , withCurrentTime
+    )
 
 import Auth.Common exposing (LogoutEndpointConfig(..), MethodId, ToBackend(..))
 import Auth.Method.EmailMagicLink

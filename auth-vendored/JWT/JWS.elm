@@ -1,4 +1,12 @@
-module JWT.JWS exposing (DecodeError(..), Header, JWS, VerificationError(..), decode, fromParts, isValid)
+module JWT.JWS exposing
+    ( DecodeError(..)
+    , Header
+    , JWS
+    , VerificationError(..)
+    , decode
+    , fromParts
+    , isValid
+    )
 
 import Base64.Decode as B64Decode
 import Base64.Encode as B64Encode

@@ -1,4 +1,34 @@
-module Auth.Common exposing (AuthChallengeReason(..), AuthCode, BackendMsg(..), ClientId, Config, ConfigurationEmailMagicLink, ConfigurationOAuth, Error(..), Flow(..), FrontendMsg(..), LogoutEndpointConfig(..), Method(..), MethodId, PendingAuth, PendingEmailAuth, Provider(..), SessionId, SessionIdString, State, ToBackend(..), ToFrontend(..), Token, UserInfo, base64, convertBytes, defaultHttpsUrl, nothingIfEmpty, sleepTask, toBytes)
+module Auth.Common exposing
+    ( AuthChallengeReason(..)
+    , AuthCode
+    , BackendMsg(..)
+    , ClientId
+    , Config
+    , ConfigurationEmailMagicLink
+    , ConfigurationOAuth
+    , Error(..)
+    , Flow(..)
+    , FrontendMsg(..)
+    , LogoutEndpointConfig(..)
+    , Method(..)
+    , MethodId
+    , PendingAuth
+    , PendingEmailAuth
+    , Provider(..)
+    , SessionId
+    , SessionIdString
+    , State
+    , ToBackend(..)
+    , ToFrontend(..)
+    , Token
+    , UserInfo
+    , base64
+    , convertBytes
+    , defaultHttpsUrl
+    , nothingIfEmpty
+    , sleepTask
+    , toBytes
+    )
 
 import Base64.Encode as Base64
 import Browser.Navigation exposing (Key)

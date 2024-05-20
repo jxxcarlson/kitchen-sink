@@ -1,4 +1,12 @@
-module Auth.Method.OAuthGithub exposing (GithubEmail, configuration, decodeNonEmptyString, fallbackGetEmailFromEmails, getUserEmailsTask, getUserInfo, getUserInfoTask)
+module Auth.Method.OAuthGithub exposing
+    ( GithubEmail
+    , configuration
+    , decodeNonEmptyString
+    , fallbackGetEmailFromEmails
+    , getUserEmailsTask
+    , getUserInfo
+    , getUserInfoTask
+    )
 
 import Auth.Common exposing (..)
 import Auth.HttpHelpers as HttpHelpers

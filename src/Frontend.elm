@@ -1,6 +1,7 @@
 module Frontend exposing (app)
 
 import AssocList
+import Auth.Common
 import Browser exposing (UrlRequest(..))
 import Browser.Dom
 import Browser.Events
@@ -83,6 +84,7 @@ init url key =
     in
     ( Loading
         { key = key
+        , initUrl = url
         , now = Time.millisToPosix 0
         , window = Nothing
         , initData = Nothing
@@ -138,6 +140,13 @@ tryLoading loadingModel =
                             }
 
                         -- MAGICLINK
+                        , authFlow = Auth.Common.Idle
+                        , authRedirectBaseUrl =
+                            let
+                                initUrl =
+                                    loadingModel.initUrl
+                            in
+                            { initUrl | query = Nothing, fragment = Nothing }
                         , loginForm = MagicToken.LoginForm.init
                         , loginErrorMessage = Nothing
                         , signInStatus = MagicToken.Types.NotSignedIn
@@ -216,6 +225,11 @@ updateLoaded msg model =
             ( { model | showTooltip = False }, Cmd.none )
 
         -- MAGICLINK
+        AuthSigninRequested { methodId, username } ->
+            --Auth.Flow.signInRequested methodId model username
+            --    |> Tuple.mapSecond (AuthToBackend >> sendToBackend)
+            ( model, Cmd.none )
+
         CancelSignIn ->
             ( { model | route = HomepageRoute }, Cmd.none )
 
