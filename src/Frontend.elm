@@ -13,6 +13,7 @@ import Json.Decode
 import Json.Encode
 import KeyValueStore
 import Lamdera
+import MagicToken.Auth
 import MagicToken.Frontend
 import MagicToken.LoginForm
 import MagicToken.Types exposing (LoginForm(..))
@@ -419,15 +420,14 @@ updateFromBackend msg model =
 updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
 updateFromBackendLoaded msg model =
     case msg of
+        AuthToFrontend authToFrontendMsg ->
+            MagicToken.Auth.updateFromBackend authToFrontendMsg model
+
         GotBackendModel beModel ->
             ( { model | backendModel = Just beModel }, Cmd.none )
 
         -- MAGICLINK
         UserAuthResponse _ ->
-            -- TODO (placholder)
-            ( model, Cmd.none )
-
-        AuthToFrontend _ ->
             -- TODO (placholder)
             ( model, Cmd.none )
 
