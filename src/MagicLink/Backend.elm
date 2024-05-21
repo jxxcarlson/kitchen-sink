@@ -1,4 +1,4 @@
-module MagicToken.Backend exposing
+module MagicLink.Backend exposing
     ( addUser
     , checkLogin
     , requestSignUp
@@ -22,8 +22,8 @@ import Lamdera exposing (ClientId, SessionId)
 import List.Extra
 import List.Nonempty
 import LocalUUID
-import MagicToken.LoginForm
-import MagicToken.Types
+import MagicLink.LoginForm
+import MagicLink.Types
 import Postmark
 import Quantity
 import Sha256
@@ -157,7 +157,7 @@ handleNoSession model time sessionId clientId magicToken =
     case AssocList.get sessionId model.pendingLogins of
         Just pendingLogin ->
             if
-                (pendingLogin.loginAttempts < MagicToken.LoginForm.maxLoginAttempts)
+                (pendingLogin.loginAttempts < MagicLink.LoginForm.maxLoginAttempts)
                     && (Duration.from pendingLogin.creationTime time |> Quantity.lessThan Duration.hour)
             then
                 if magicToken == pendingLogin.loginCode then
@@ -297,7 +297,7 @@ setMagicTokenAndSendEmailToUser model clientId sessionId email =
             ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
 
         ( _, Err () ) ->
-            addLog model.time (MagicToken.Types.FailedToCreateLoginCode model.secretCounter) model
+            addLog model.time (MagicLink.Types.FailedToCreateLoginCode model.secretCounter) model
 
 
 handleWithoutRateLimit model user userId email sessionId loginCode =
@@ -320,7 +320,7 @@ handleWithoutRateLimit model user userId email sessionId loginCode =
 handleWithRateLimit model2 userId clientId =
     let
         ( model3, cmd ) =
-            addLog model2.time (MagicToken.Types.LoginsRateLimited userId) model2
+            addLog model2.time (MagicLink.Types.LoginsRateLimited userId) model2
     in
     ( model3
     , Cmd.batch [ cmd, Lamdera.sendToFrontend clientId GetLoginTokenRateLimited ]
@@ -336,9 +336,9 @@ getLoginCode time model =
 
 loginCodeFromId : Id String -> Result () Int
 loginCodeFromId id =
-    case Id.toString id |> String.left MagicToken.LoginForm.loginCodeLength |> Hex.fromString of
+    case Id.toString id |> String.left MagicLink.LoginForm.loginCodeLength |> Hex.fromString of
         Ok int ->
-            case String.fromInt int |> String.left MagicToken.LoginForm.loginCodeLength |> String.toInt of
+            case String.fromInt int |> String.left MagicLink.LoginForm.loginCodeLength |> String.toInt of
                 Just int2 ->
                     Ok int2
 
@@ -398,7 +398,7 @@ loginEmailContent loginCode =
                             [ Email.Html.text (String.fromChar char) ]
                     )
                 |> (\a ->
-                        List.take (MagicToken.LoginForm.loginCodeLength // 2) a
+                        List.take (MagicLink.LoginForm.loginCodeLength // 2) a
                             ++ [ Email.Html.span
                                     [ Email.Html.Attributes.backgroundColor "black"
                                     , Email.Html.Attributes.padding "0px 4px 0px 5px"
@@ -407,7 +407,7 @@ loginEmailContent loginCode =
                                     ]
                                     []
                                ]
-                            ++ List.drop (MagicToken.LoginForm.loginCodeLength // 2) a
+                            ++ List.drop (MagicLink.LoginForm.loginCodeLength // 2) a
                    )
             )
         , Email.Html.text "Please type it in the login page you were previously on."
@@ -432,6 +432,6 @@ noReplyEmailAddress =
         }
 
 
-addLog : Time.Posix -> MagicToken.Types.LogItem -> Types.BackendModel -> ( Types.BackendModel, Cmd msg )
+addLog : Time.Posix -> MagicLink.Types.LogItem -> Types.BackendModel -> ( Types.BackendModel, Cmd msg )
 addLog time logItem model =
     ( { model | log = model.log ++ [ ( time, logItem ) ] }, Cmd.none )

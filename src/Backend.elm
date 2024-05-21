@@ -14,8 +14,8 @@ import Helper
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
 import LocalUUID
-import MagicToken.Auth
-import MagicToken.Backend
+import MagicLink.Auth
+import MagicLink.Backend
 import Process
 import Quantity
 import Stripe.PurchaseForm as PurchaseForm exposing (PurchaseFormValidated(..))
@@ -446,7 +446,7 @@ updateFromFrontend sessionId clientId msg model =
                         Just email_ ->
                             case EmailAddress.fromString email_ of
                                 Just email ->
-                                    MagicToken.Backend.setMagicToken clientId sessionId email model
+                                    MagicLink.Backend.setMagicToken clientId sessionId email model
 
                                 Nothing ->
                                     ( model, Cmd.none )
@@ -458,22 +458,22 @@ updateFromFrontend sessionId clientId msg model =
                     ( model, Cmd.none )
 
         AddUser realname username email ->
-            MagicToken.Backend.addUser model clientId email realname username
+            MagicLink.Backend.addUser model clientId email realname username
 
         CheckLoginRequest ->
-            MagicToken.Backend.checkLogin model clientId sessionId
+            MagicLink.Backend.checkLogin model clientId sessionId
 
         RequestMagicToken email ->
-            MagicToken.Backend.setMagicToken clientId sessionId email model
+            MagicLink.Backend.setMagicToken clientId sessionId email model
 
         RequestSignup realname username email ->
-            MagicToken.Backend.requestSignUp model clientId realname username email
+            MagicLink.Backend.requestSignUp model clientId realname username email
 
         SigInWithTokenRequest loginCode ->
-            MagicToken.Backend.signInWithMagicToken model.time sessionId clientId loginCode model
+            MagicLink.Backend.signInWithMagicToken model.time sessionId clientId loginCode model
 
         SignOutRequest userData ->
-            MagicToken.Backend.signOut model clientId userData
+            MagicLink.Backend.signOut model clientId userData
 
         -- STRIPE
         RenewPrices ->

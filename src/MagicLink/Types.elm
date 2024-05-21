@@ -1,4 +1,4 @@
-module MagicToken.Types exposing
+module MagicLink.Types exposing
     ( EnterEmail2
     , EnterLoginCode2
     , Log

@@ -1,4 +1,4 @@
-module MagicToken.LoginForm exposing
+module MagicLink.LoginForm exposing
     ( init
     , loginCodeLength
     , maxLoginAttempts
@@ -17,7 +17,7 @@ import Element.Input
 import EmailAddress exposing (EmailAddress)
 import Env
 import Html.Attributes
-import MagicToken.Types exposing (EnterEmail2, EnterLoginCode2, LoginCodeStatus(..), LoginForm(..))
+import MagicLink.Types exposing (EnterEmail2, EnterLoginCode2, LoginCodeStatus(..), LoginForm(..))
 import Martin
 import Route exposing (Route)
 import Types exposing (FrontendMsg)

@@ -8,7 +8,7 @@ import Evergreen.V139.EmailAddress
 import Evergreen.V139.Id
 import Evergreen.V139.KeyValueStore
 import Evergreen.V139.LocalUUID
-import Evergreen.V139.MagicToken.Types
+import Evergreen.V139.MagicLink.Types
 import Evergreen.V139.Postmark
 import Evergreen.V139.Route
 import Evergreen.V139.Session
@@ -76,7 +76,7 @@ type alias BackendModel =
             , creationTime : Time.Posix
             , loginCode : Int
             }
-    , log : Evergreen.V139.MagicToken.Types.Log
+    , log : Evergreen.V139.MagicLink.Types.Log
     , userDictionary : Dict.Dict String Evergreen.V139.User.User
     , sessions : Evergreen.V139.Session.Sessions
     , sessionInfo : Evergreen.V139.Session.SessionInfo
@@ -97,9 +97,9 @@ type alias LoadedModel =
         , height : Int
         }
     , showTooltip : Bool
-    , loginForm : Evergreen.V139.MagicToken.Types.LoginForm
+    , loginForm : Evergreen.V139.MagicLink.Types.LoginForm
     , loginErrorMessage : Maybe String
-    , signInStatus : Evergreen.V139.MagicToken.Types.SignInStatus
+    , signInStatus : Evergreen.V139.MagicLink.Types.SignInStatus
     , currentUserData : Maybe Evergreen.V139.User.LoginData
     , prices :
         AssocList.Dict

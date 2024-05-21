@@ -1,4 +1,4 @@
-module MagicToken.Frontend exposing
+module MagicLink.Frontend exposing
     ( enterEmail
     , handleRegistrationError
     , handleSignInError
@@ -22,8 +22,8 @@ import Json.Decode
 import Json.Encode
 import KeyValueStore
 import Lamdera
-import MagicToken.LoginForm
-import MagicToken.Types exposing (LoginForm(..))
+import MagicLink.LoginForm
+import MagicLink.Types exposing (LoginForm(..))
 import Ports
 import RPC
 import Route exposing (Route(..))
@@ -75,11 +75,11 @@ enterEmail model email =
 
 
 handleRegistrationError model str =
-    ( { model | signInStatus = MagicToken.Types.ErrorNotRegistered str }, Cmd.none )
+    ( { model | signInStatus = MagicLink.Types.ErrorNotRegistered str }, Cmd.none )
 
 
 handleSignInError model message =
-    ( { model | loginErrorMessage = Just message, signInStatus = MagicToken.Types.ErrorNotRegistered message }, Cmd.none )
+    ( { model | loginErrorMessage = Just message, signInStatus = MagicLink.Types.ErrorNotRegistered message }, Cmd.none )
 
 
 signInWithTokenResponse model result =
@@ -111,9 +111,9 @@ signOut model =
             }
 
         -- TOKEN
-        , loginForm = MagicToken.LoginForm.init
+        , loginForm = MagicLink.LoginForm.init
         , loginErrorMessage = Nothing
-        , signInStatus = MagicToken.Types.NotSignedIn
+        , signInStatus = MagicLink.Types.NotSignedIn
 
         -- USER
         , currentUserData = Nothing
@@ -156,7 +156,7 @@ submitSignUp model =
 userRegistered model user =
     ( { model
         | currentUser = Just user
-        , signInStatus = MagicToken.Types.SuccessfulRegistration user.username (EmailAddress.toString user.email)
+        , signInStatus = MagicLink.Types.SuccessfulRegistration user.username (EmailAddress.toString user.email)
       }
     , Cmd.none
     )
@@ -186,17 +186,17 @@ submitEmailForToken model =
 
 signInWithCode model signInCode =
     case model.loginForm of
-        MagicToken.Types.EnterEmail _ ->
+        MagicLink.Types.EnterEmail _ ->
             ( model, Cmd.none )
 
         EnterLoginCode enterLoginCode ->
-            case MagicToken.LoginForm.validateLoginCode signInCode of
+            case MagicLink.LoginForm.validateLoginCode signInCode of
                 Ok loginCode ->
                     if Dict.member loginCode enterLoginCode.attempts then
                         ( { model
                             | loginForm =
                                 EnterLoginCode
-                                    { enterLoginCode | loginCode = String.left MagicToken.LoginForm.loginCodeLength signInCode }
+                                    { enterLoginCode | loginCode = String.left MagicLink.LoginForm.loginCodeLength signInCode }
                           }
                         , Cmd.none
                         )
@@ -206,15 +206,15 @@ signInWithCode model signInCode =
                             | loginForm =
                                 EnterLoginCode
                                     { enterLoginCode
-                                        | loginCode = String.left MagicToken.LoginForm.loginCodeLength signInCode
+                                        | loginCode = String.left MagicLink.LoginForm.loginCodeLength signInCode
                                         , attempts =
-                                            Dict.insert loginCode MagicToken.Types.Checking enterLoginCode.attempts
+                                            Dict.insert loginCode MagicLink.Types.Checking enterLoginCode.attempts
                                     }
                           }
                         , Lamdera.sendToBackend (SigInWithTokenRequest loginCode)
                         )
 
                 Err _ ->
-                    ( { model | loginForm = EnterLoginCode { enterLoginCode | loginCode = String.left MagicToken.LoginForm.loginCodeLength signInCode } }
+                    ( { model | loginForm = EnterLoginCode { enterLoginCode | loginCode = String.left MagicLink.LoginForm.loginCodeLength signInCode } }
                     , Cmd.none
                     )

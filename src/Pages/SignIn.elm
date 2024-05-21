@@ -2,8 +2,8 @@ module Pages.SignIn exposing (view)
 
 import Element exposing (Element)
 import Element.Font
-import MagicToken.LoginForm
-import MagicToken.Types
+import MagicLink.LoginForm
+import MagicLink.Types
 import Types exposing (FrontendMsg(..), LoadedModel, SignInState(..))
 import View.Button
 import View.Color
@@ -11,7 +11,7 @@ import View.Input
 import View.Utility
 
 
-testInput : MagicToken.Types.EnterEmail2
+testInput : MagicLink.Types.EnterEmail2
 testInput =
     { email = "jxxcarlson@gmail.com"
     , pressedSubmitEmail = False
@@ -22,22 +22,22 @@ testInput =
 view : LoadedModel -> Element FrontendMsg
 view model =
     case model.signInStatus of
-        MagicToken.Types.NotSignedIn ->
+        MagicLink.Types.NotSignedIn ->
             signInView model
 
-        MagicToken.Types.SignedIn ->
+        MagicLink.Types.SignedIn ->
             signedInView model
 
-        MagicToken.Types.SigningUp ->
+        MagicLink.Types.SigningUp ->
             signUp model
 
-        MagicToken.Types.SuccessfulRegistration username email ->
+        MagicLink.Types.SuccessfulRegistration username email ->
             Element.column []
                 [ signInAfterRegisteringView model
                 , Element.el [ Element.Font.color (Element.rgb 0 0 1) ] (Element.text <| username ++ ", you are now registered as " ++ email)
                 ]
 
-        MagicToken.Types.ErrorNotRegistered message ->
+        MagicLink.Types.ErrorNotRegistered message ->
             Element.column []
                 [ signUp model
                 , Element.el [ Element.Font.color (Element.rgb 1 0 0) ] (Element.text message)
@@ -58,7 +58,7 @@ signInView : LoadedModel -> Element FrontendMsg
 signInView model =
     Element.column []
         [ Element.el [ Element.Font.semiBold, Element.Font.size 24 ] (Element.text "Sign in")
-        , MagicToken.LoginForm.view model model.loginForm
+        , MagicLink.LoginForm.view model model.loginForm
 
         --, Element.paragraph [ Element.Font.color (Element.rgb 1 0 0) ] [ Element.text (model.loginErrorMessage |> Maybe.withDefault "") ]
         , Element.row
@@ -73,7 +73,7 @@ signInAfterRegisteringView : LoadedModel -> Element FrontendMsg
 signInAfterRegisteringView model =
     Element.column []
         [ Element.el [ Element.Font.semiBold, Element.Font.size 24 ] (Element.text "Sign in")
-        , MagicToken.LoginForm.view model model.loginForm
+        , MagicLink.LoginForm.view model model.loginForm
         ]
 
 

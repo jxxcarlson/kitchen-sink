@@ -21,7 +21,7 @@ import Lamdera
 import List.Extra
 import List.Nonempty
 import LocalUUID
-import MagicToken.Types
+import MagicLink.Types
 import Postmark
 import String.Nonempty
 import Stripe.Stripe as Stripe exposing (PriceId, ProductId(..), StripeSessionId)

@@ -90,9 +90,9 @@ The following additions must be made:
 ### LoadedModel
 
 ```
-, loginForm : MagicToken.Types.LoginForm
+, loginForm : MagicLink.Types.LoginForm
 , loginErrorMessage : Maybe String
-, signInStatus : MagicToken.Types.SignInStatus
+, signInStatus : MagicLink.Types.SignInStatus
 , currentUserData : Maybe User.LoginData
 ```
 
@@ -109,7 +109,7 @@ The following additions must be made:
         , creationTime : Time.Posix
         , loginCode : Int
         }
-, log : MagicToken.Types.Log
+, log : MagicLink.Types.Log
 , userDictionary : Dict.Dict String User.User
 , sessions : Session.Sessions
 , sessionInfo : Session.SessionInfo
@@ -118,10 +118,10 @@ The following additions must be made:
 ## Modules to add
 
 ```
-MagicToken.Types
-MagicToken.Backend
+MagicLink.Types
+MagicLink.Backend
 Token.Frontend
-MagicToken.LoginForm
+MagicLink.LoginForm
 Pages.SignIn -- attach this to your routing/page system
 ```
 
@@ -130,7 +130,7 @@ Pages.SignIn -- attach this to your routing/page system
 ### Imports
 
 ```
-import MagicToken.Backend
+import MagicLink.Backend
 ```
 
 ### Function init
@@ -204,22 +204,22 @@ SentLoginEmail _ _ _ ->
 
 ```
  AddUser realname username email ->
-        MagicToken.Backend.addUser model clientId email realname username
+        MagicLink.Backend.addUser model clientId email realname username
 
 CheckLoginRequest ->
-    MagicToken.Backend.checkLogin model clientId sessionId
+    MagicLink.Backend.checkLogin model clientId sessionId
 
 GetSignInTokenRequest email ->
-    MagicToken.Backend.sendLoginEmail model clientId sessionId email
+    MagicLink.Backend.sendLoginEmail model clientId sessionId email
 
 RequestSignup realname username email ->
-    MagicToken.Backend.requestSignUp model clientId realname username email
+    MagicLink.Backend.requestSignUp model clientId realname username email
 
 SigInWithTokenRequest loginCode ->
-    MagicToken.Backend.loginWithToken model.time sessionId clientId loginCode model
+    MagicLink.Backend.loginWithToken model.time sessionId clientId loginCode model
 
 SignOutRequest userData ->
-    MagicToken.Backend.signOut model clientId userData
+    MagicLink.Backend.signOut model clientId userData
 ```
 
 
@@ -230,17 +230,17 @@ SignOutRequest userData ->
 
 ```
 import Token.Frontend
-import MagicToken.LoginForm
-import MagicToken.Types exposing (LoginForm(..))
+import MagicLink.LoginForm
+import MagicLink.Types exposing (LoginForm(..))
 ```
 
 ### Function tryLoading
 
 ```
 -- in (Loaded { ... }
-    , loginForm = MagicToken.LoginForm.init
+    , loginForm = MagicLink.LoginForm.init
     , loginErrorMessage = Nothing
-    , signInStatus = MagicToken.Types.NotSignedIn
+    , signInStatus = MagicLink.Types.NotSignedIn
 ```
 
 ```
@@ -249,10 +249,10 @@ import MagicToken.Types exposing (LoginForm(..))
             ( { model | route = HomepageRoute }, Cmd.none )
 
         CancelSignUp ->
-            ( { model | signInStatus = MagicToken.Types.NotSignedIn }, Cmd.none )
+            ( { model | signInStatus = MagicLink.Types.NotSignedIn }, Cmd.none )
 
         OpenSignUp ->
-            ( { model | signInStatus = MagicToken.Types.SigningUp }, Cmd.none )
+            ( { model | signInStatus = MagicLink.Types.SigningUp }, Cmd.none )
 
         SubmitEmailForToken ->
             Token.Frontend.submitEmailForToken model
@@ -304,7 +304,7 @@ UserRegistered user ->
     Token.Frontend.userRegistered model user
 
 UserSignedIn maybeUser ->
-    ( { model | signInStatus = MagicToken.Types.NotSignedIn }, Cmd.none )
+    ( { model | signInStatus = MagicLink.Types.NotSignedIn }, Cmd.none )
 ```
 
 

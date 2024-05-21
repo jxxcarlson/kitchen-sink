@@ -1,4 +1,4 @@
-module Evergreen.V141.MagicToken.Types exposing (..)
+module Evergreen.V141.MagicLink.Types exposing (..)
 
 import Dict
 import Evergreen.V141.EmailAddress

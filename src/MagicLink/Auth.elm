@@ -1,4 +1,4 @@
-module MagicToken.Auth exposing
+module MagicLink.Auth exposing
     ( backendConfig
     , config
     , handleAuthSuccess
@@ -19,8 +19,8 @@ import Env
 import Http
 import Lamdera exposing (ClientId, SessionId)
 import List.Nonempty
-import MagicToken.Backend
-import MagicToken.LoginForm
+import MagicLink.Backend
+import MagicLink.LoginForm
 import Postmark
 import SHA1
 import String.Nonempty
@@ -86,7 +86,7 @@ initiateEmailSignin sessionId clientId model login now =
                       }
                     , Cmd.batch
                         [ -- TODO: replace 1234 by the actual loginCode
-                          -- MagicToken.Backend.sendLoginEmail_ (SentLoginEmail model.time user.email) user.email 1234
+                          -- MagicLink.Backend.sendLoginEmail_ (SentLoginEmail model.time user.email) user.email 1234
                           loginResponse clientId
                         ]
                     )

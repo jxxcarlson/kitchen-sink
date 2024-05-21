@@ -15,10 +15,10 @@ import Json.Decode
 import Json.Encode
 import KeyValueStore
 import Lamdera
-import MagicToken.Auth
-import MagicToken.Frontend
-import MagicToken.LoginForm
-import MagicToken.Types exposing (LoginForm(..))
+import MagicLink.Auth
+import MagicLink.Frontend
+import MagicLink.LoginForm
+import MagicLink.Types exposing (LoginForm(..))
 import Ports
 import RPC
 import Route exposing (Route(..))
@@ -150,9 +150,9 @@ tryLoading loadingModel =
                                     loadingModel.initUrl
                             in
                             { initUrl | query = Nothing, fragment = Nothing }
-                        , loginForm = MagicToken.LoginForm.init
+                        , loginForm = MagicLink.LoginForm.init
                         , loginErrorMessage = Nothing
-                        , signInStatus = MagicToken.Types.NotSignedIn
+                        , signInStatus = MagicLink.Types.NotSignedIn
 
                         -- USER
                         , currentUserData = Nothing
@@ -229,7 +229,7 @@ updateLoaded msg model =
 
         -- MAGICLINK
         SubmitEmailForToken ->
-            -- MagicToken.Frontend.submitEmailForToken model
+            -- MagicLink.Frontend.submitEmailForToken model
             -- ( model, Helper.trigger <| AuthSigninRequested { methodId = "MagicLink", email = Just model.email } )
             case model.loginForm of
                 EnterEmail loginForm ->
@@ -257,22 +257,22 @@ updateLoaded msg model =
             ( { model | route = HomepageRoute }, Cmd.none )
 
         CancelSignUp ->
-            ( { model | signInStatus = MagicToken.Types.NotSignedIn }, Cmd.none )
+            ( { model | signInStatus = MagicLink.Types.NotSignedIn }, Cmd.none )
 
         OpenSignUp ->
-            ( { model | signInStatus = MagicToken.Types.SigningUp }, Cmd.none )
+            ( { model | signInStatus = MagicLink.Types.SigningUp }, Cmd.none )
 
         TypedEmailInSignInForm email ->
-            MagicToken.Frontend.enterEmail model email
+            MagicLink.Frontend.enterEmail model email
 
         UseReceivedCodetoSignIn loginCode ->
-            MagicToken.Frontend.signInWithCode model loginCode
+            MagicLink.Frontend.signInWithCode model loginCode
 
         SubmitSignUp ->
-            MagicToken.Frontend.submitSignUp model
+            MagicLink.Frontend.submitSignUp model
 
         SignOut ->
-            MagicToken.Frontend.signOut model
+            MagicLink.Frontend.signOut model
 
         InputRealname str ->
             ( { model | realname = str }, Cmd.none )
@@ -440,7 +440,7 @@ updateFromBackendLoaded : ToFrontend -> LoadedModel -> ( LoadedModel, Cmd msg )
 updateFromBackendLoaded msg model =
     case msg of
         AuthToFrontend authToFrontendMsg ->
-            MagicToken.Auth.updateFromBackend authToFrontendMsg model
+            MagicLink.Auth.updateFromBackend authToFrontendMsg model
 
         GotBackendModel beModel ->
             ( { model | backendModel = Just beModel }, Cmd.none )
@@ -459,16 +459,16 @@ updateFromBackendLoaded msg model =
             ( model, Cmd.none )
 
         SignInError message ->
-            MagicToken.Frontend.handleSignInError model message
+            MagicLink.Frontend.handleSignInError model message
 
         RegistrationError str ->
-            MagicToken.Frontend.handleRegistrationError model str
+            MagicLink.Frontend.handleRegistrationError model str
 
         CheckSignInResponse _ ->
             ( model, Cmd.none )
 
         SignInWithTokenResponse result ->
-            MagicToken.Frontend.signInWithTokenResponse model result
+            MagicLink.Frontend.signInWithTokenResponse model result
 
         GetLoginTokenRateLimited ->
             ( model, Cmd.none )
@@ -477,10 +477,10 @@ updateFromBackendLoaded msg model =
             ( model, Cmd.none )
 
         UserRegistered user ->
-            MagicToken.Frontend.userRegistered model user
+            MagicLink.Frontend.userRegistered model user
 
         UserSignedIn maybeUser ->
-            ( { model | signInStatus = MagicToken.Types.NotSignedIn }, Cmd.none )
+            ( { model | signInStatus = MagicLink.Types.NotSignedIn }, Cmd.none )
 
         -- STRIPE
         InitData { prices, productInfo } ->

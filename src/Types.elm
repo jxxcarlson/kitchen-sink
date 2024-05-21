@@ -25,7 +25,7 @@ import Id exposing (Id)
 import KeyValueStore
 import Lamdera exposing (ClientId, SessionId)
 import LocalUUID
-import MagicToken.Types
+import MagicLink.Types
 import Postmark exposing (PostmarkSendResponse)
 import Route exposing (Route)
 import Session
@@ -68,9 +68,9 @@ type alias LoadedModel =
     -- MAGICLINK
     , authFlow : Auth.Common.Flow
     , authRedirectBaseUrl : Url
-    , loginForm : MagicToken.Types.LoginForm
+    , loginForm : MagicLink.Types.LoginForm
     , loginErrorMessage : Maybe String
-    , signInStatus : MagicToken.Types.SignInStatus
+    , signInStatus : MagicLink.Types.SignInStatus
     , currentUserData : Maybe User.LoginData
 
     -- STRIPE
@@ -144,7 +144,7 @@ type alias BackendModel =
             , creationTime : Time.Posix
             , loginCode : Int
             }
-    , log : MagicToken.Types.Log
+    , log : MagicLink.Types.Log
     , users : Dict.Dict String User.User
     , sessionInfo : Session.SessionInfo
 
