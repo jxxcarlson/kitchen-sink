@@ -54,7 +54,13 @@ loginResponse clientId =
         (UserAuthResponse (Ok "An email has been sent if this account exists."))
 
 
-initiateEmailSignin : SessionId -> ClientId -> BackendModel -> { f | username : Maybe String } -> Time.Posix -> ( BackendModel, Cmd BackendMsg )
+initiateEmailSignin :
+    SessionId
+    -> ClientId
+    -> BackendModel
+    -> { username : Maybe String }
+    -> Time.Posix
+    -> ( BackendModel, Cmd BackendMsg )
 initiateEmailSignin sessionId clientId model login now =
     case login.username of
         Nothing ->

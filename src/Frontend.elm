@@ -239,7 +239,7 @@ updateLoaded msg model =
                                 model2 =
                                     { model | loginForm = EnterLoginCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
                             in
-                            ( model2, Helper.trigger <| AuthSigninRequested { methodId = "MagicLink", email = Just loginForm.email } )
+                            ( model2, Helper.trigger <| AuthSigninRequested { methodId = "EmailMagicLink", email = Just loginForm.email } )
 
                         Nothing ->
                             ( { model | loginForm = EnterEmail { loginForm | pressedSubmitEmail = True } }, Cmd.none )

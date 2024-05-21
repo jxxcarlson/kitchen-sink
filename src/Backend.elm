@@ -1,6 +1,7 @@
 module Backend exposing (app)
 
 import AssocList
+import Auth.Common
 import Auth.Flow
 import Auth.HttpHelpers
 import Backend.Session
@@ -8,6 +9,7 @@ import BiDict
 import Dict
 import Duration
 import Email
+import EmailAddress
 import Helper
 import Id exposing (Id)
 import Lamdera exposing (ClientId, SessionId)
@@ -258,8 +260,11 @@ update msg model =
 
         -- MAGICLINK
         AuthBackendMsg authMsg ->
-            --Auth.Flow.update authMsg model
-            -- TODO placeholder
+            -- Auth.Flow.update authMsg model
+            let
+                _ =
+                    Debug.log "AuthBackendMsg" authMsg
+            in
             ( model, Cmd.none )
 
         SentLoginEmail _ _ _ ->
@@ -435,7 +440,22 @@ updateFromFrontend sessionId clientId msg model =
 
         -- MAGICLINK
         AuthToBackend authMsg ->
-            Auth.Flow.updateFromFrontend (MagicToken.Auth.backendConfig model) clientId sessionId authMsg model
+            case authMsg of
+                Auth.Common.AuthSigninInitiated { methodId, baseUrl, username } ->
+                    case username of
+                        Just email_ ->
+                            case EmailAddress.fromString email_ of
+                                Just email ->
+                                    MagicToken.Backend.setMagicToken clientId sessionId email model
+
+                                Nothing ->
+                                    ( model, Cmd.none )
+
+                        Nothing ->
+                            ( model, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
 
         AddUser realname username email ->
             MagicToken.Backend.addUser model clientId email realname username
