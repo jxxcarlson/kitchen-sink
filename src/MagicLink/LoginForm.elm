@@ -105,7 +105,7 @@ view model loginForm =
             EnterEmail enterEmail2 ->
                 enterEmailView enterEmail2
 
-            EnterLoginCode enterLoginCode ->
+            EnterSigninCode enterLoginCode ->
                 enterLoginCodeView enterLoginCode
         , Element.paragraph
             [ Element.Font.center ]
@@ -211,7 +211,7 @@ rateLimited loginForm =
         EnterEmail enterEmail ->
             EnterEmail { enterEmail | rateLimited = True }
 
-        EnterLoginCode enterLoginCode ->
+        EnterSigninCode enterLoginCode ->
             EnterEmail
                 { email = EmailAddress.toString enterLoginCode.sentTo
                 , pressedSubmitEmail = False
@@ -225,9 +225,9 @@ invalidCode loginCode loginForm =
         EnterEmail _ ->
             loginForm
 
-        EnterLoginCode enterLoginCode ->
+        EnterSigninCode enterLoginCode ->
             { enterLoginCode | attempts = Dict.insert loginCode NotValid enterLoginCode.attempts }
-                |> EnterLoginCode
+                |> EnterSigninCode
 
 
 enterEmailView : EnterEmail2 -> Element FrontendMsg

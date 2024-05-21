@@ -20,7 +20,7 @@ import User
 
 type LoginForm
     = EnterEmail EnterEmail2
-    | EnterLoginCode EnterLoginCode2
+    | EnterSigninCode EnterLoginCode2
 
 
 type SignInStatus

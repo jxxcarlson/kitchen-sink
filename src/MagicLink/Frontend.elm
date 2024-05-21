@@ -48,14 +48,14 @@ submitEmailForSignin model =
                 Just email ->
                     let
                         model2 =
-                            { model | loginForm = EnterLoginCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
+                            { model | loginForm = EnterSigninCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
                     in
                     ( model2, Helper.trigger <| AuthSigninRequested { methodId = "EmailMagicLink", email = Just loginForm.email } )
 
                 Nothing ->
                     ( { model | loginForm = EnterEmail { loginForm | pressedSubmitEmail = True } }, Cmd.none )
 
-        EnterLoginCode _ ->
+        EnterSigninCode _ ->
             ( model, Cmd.none )
 
 
@@ -68,7 +68,7 @@ enterEmail model email =
             in
             ( { model | loginForm = EnterEmail loginForm }, Cmd.none )
 
-        EnterLoginCode loginCode_ ->
+        EnterSigninCode loginCode_ ->
             -- TODO: complete this
             --  EnterLoginCode{ sentTo : EmailAddress, loginCode : String, attempts : Dict Int LoginCodeStatus }
             ( model, Cmd.none )
@@ -168,14 +168,14 @@ submitEmailForToken model =
         EnterEmail loginForm ->
             case EmailAddress.fromString loginForm.email of
                 Just email ->
-                    ( { model | loginForm = EnterLoginCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
+                    ( { model | loginForm = EnterSigninCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
                     , Lamdera.sendToBackend (RequestMagicToken email)
                     )
 
                 Nothing ->
                     ( { model | loginForm = EnterEmail { loginForm | pressedSubmitEmail = True } }, Cmd.none )
 
-        EnterLoginCode _ ->
+        EnterSigninCode _ ->
             -- TODO: handle EnterLoginCode with parameter loginCode instead of _ ??
             ( model, Cmd.none )
 
@@ -189,13 +189,13 @@ signInWithCode model signInCode =
         MagicLink.Types.EnterEmail _ ->
             ( model, Cmd.none )
 
-        EnterLoginCode enterLoginCode ->
+        EnterSigninCode enterLoginCode ->
             case MagicLink.LoginForm.validateLoginCode signInCode of
                 Ok loginCode ->
                     if Dict.member loginCode enterLoginCode.attempts then
                         ( { model
                             | loginForm =
-                                EnterLoginCode
+                                EnterSigninCode
                                     { enterLoginCode | loginCode = String.left MagicLink.LoginForm.loginCodeLength signInCode }
                           }
                         , Cmd.none
@@ -204,7 +204,7 @@ signInWithCode model signInCode =
                     else
                         ( { model
                             | loginForm =
-                                EnterLoginCode
+                                EnterSigninCode
                                     { enterLoginCode
                                         | loginCode = String.left MagicLink.LoginForm.loginCodeLength signInCode
                                         , attempts =
@@ -215,6 +215,6 @@ signInWithCode model signInCode =
                         )
 
                 Err _ ->
-                    ( { model | loginForm = EnterLoginCode { enterLoginCode | loginCode = String.left MagicLink.LoginForm.loginCodeLength signInCode } }
+                    ( { model | loginForm = EnterSigninCode { enterLoginCode | loginCode = String.left MagicLink.LoginForm.loginCodeLength signInCode } }
                     , Cmd.none
                     )
