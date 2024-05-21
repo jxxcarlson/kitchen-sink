@@ -170,7 +170,7 @@ type FrontendMsg
     | MouseDown
       -- MAGICLINK
     | AuthSigninRequested { methodId : Auth.Common.MethodId, email : Maybe String }
-    | SubmitEmailForToken
+    | SubmitEmailForSignIn
     | CancelSignIn
     | TypedEmailInSignInForm String
     | UseReceivedCodetoSignIn String

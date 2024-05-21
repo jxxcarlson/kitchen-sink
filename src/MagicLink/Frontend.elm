@@ -5,29 +5,20 @@ module MagicLink.Frontend exposing
     , signInWithCode
     , signInWithTokenResponse
     , signOut
+    , submitEmailForSignin
     , submitEmailForToken
     , submitSignUp
     , userRegistered
     )
 
-import AssocList
-import Browser exposing (UrlRequest(..))
-import Browser.Dom
-import Browser.Events
-import Browser.Navigation
 import Dict
 import EmailAddress
-import Env
-import Json.Decode
-import Json.Encode
+import Helper
 import KeyValueStore
 import Lamdera
 import MagicLink.LoginForm
 import MagicLink.Types exposing (LoginForm(..))
-import Ports
-import RPC
 import Route exposing (Route(..))
-import Stripe.Product as Tickets exposing (Product_)
 import Stripe.PurchaseForm as PurchaseForm
     exposing
         ( PressedSubmit(..)
@@ -35,10 +26,6 @@ import Stripe.PurchaseForm as PurchaseForm
         , PurchaseFormValidated(..)
         , SubmitStatus(..)
         )
-import Stripe.Stripe as Stripe
-import Stripe.View
-import Task
-import Time
 import Types
     exposing
         ( AdminDisplay(..)
@@ -51,12 +38,25 @@ import Types
         , ToBackend(..)
         , ToFrontend(..)
         )
-import Untrusted
-import Url
-import Url.Parser exposing ((</>), (<?>))
-import Url.Parser.Query as Query
 import User
-import View.Main
+
+
+submitEmailForSignin model =
+    case model.loginForm of
+        EnterEmail loginForm ->
+            case EmailAddress.fromString loginForm.email of
+                Just email ->
+                    let
+                        model2 =
+                            { model | loginForm = EnterLoginCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
+                    in
+                    ( model2, Helper.trigger <| AuthSigninRequested { methodId = "EmailMagicLink", email = Just loginForm.email } )
+
+                Nothing ->
+                    ( { model | loginForm = EnterEmail { loginForm | pressedSubmitEmail = True } }, Cmd.none )
+
+        EnterLoginCode _ ->
+            ( model, Cmd.none )
 
 
 enterEmail model email =
