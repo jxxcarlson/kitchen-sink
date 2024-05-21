@@ -11,11 +11,9 @@ import Dict exposing (Dict)
 import Element exposing (Element)
 import Element.Background
 import Element.Border
-import Element.Events
 import Element.Font
 import Element.Input
 import EmailAddress exposing (EmailAddress)
-import Env
 import Html.Attributes
 import MagicLink.Types exposing (EnterEmail2, EnterLoginCode2, LoginCodeStatus(..), LoginForm(..))
 import Martin
