@@ -30,10 +30,10 @@ validateLoginCode text =
     else if String.length text == loginCodeLength then
         case String.toInt text of
             Just int ->
-                Ok int |> Debug.log "@@ validateLoginCode: Just int"
+                Ok int
 
             Nothing ->
-                Err "Invalid code" |> Debug.log "@@ validateLoginCode: Nothing"
+                Err "Invalid code"
 
     else
         Err ""

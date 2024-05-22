@@ -61,7 +61,6 @@ loadedView : LoadedModel -> Element FrontendMsg
 loadedView model =
     case model.route of
         HomepageRoute ->
-            -- Pages.Home.view model
             Pages.Parts.generic model Pages.Home.view
 
         TermsOfServiceRoute ->

@@ -4,6 +4,7 @@ module User exposing
     , LoginData
     , Role(..)
     , User
+    , Username
     , loginDataOfUser
     )
 
@@ -24,12 +25,18 @@ type alias User =
     }
 
 
+type alias Username =
+    String
+
+
 type alias EmailString =
     String
 
 
 type alias LoginData =
     { username : String
+    , email : EmailString
+    , name : String
     , roles : List Role
     }
 
@@ -38,6 +45,8 @@ loginDataOfUser : User -> LoginData
 loginDataOfUser user =
     { username = user.username
     , roles = user.roles
+    , name = user.fullname
+    , email = user.emailString
     }
 
 

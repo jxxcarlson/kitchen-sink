@@ -3,7 +3,8 @@ module MagicLink.Frontend exposing
     , handleRegistrationError
     , handleSignInError
     , signInWithCode
-    , signInWithTokenResponse
+    , signInWithTokenResponseC
+    , signInWithTokenResponseM
     , signOut
     , submitEmailForSignin
     , submitEmailForToken
@@ -82,22 +83,18 @@ handleSignInError model message =
     ( { model | loginErrorMessage = Just message, signInStatus = MagicLink.Types.ErrorNotRegistered message }, Cmd.none )
 
 
-signInWithTokenResponse model result =
-    case result of
-        Err _ ->
-            ( { model | loginErrorMessage = Just "Invalid login code" }, Cmd.none )
+signInWithTokenResponseM : User.LoginData -> LoadedModel -> LoadedModel
+signInWithTokenResponseM signInData model =
+    { model | currentUserData = Just signInData, route = HomepageRoute }
 
-        Ok signInData ->
-            let
-                adminCommand =
-                    case signInData.role of
-                        User.AdminRole ->
-                            Lamdera.sendToBackend GetBackendModel
 
-                        User.UserRole ->
-                            Cmd.none
-            in
-            ( { model | currentUserData = Just signInData, route = HomepageRoute }, adminCommand )
+signInWithTokenResponseC : User.LoginData -> Cmd msg
+signInWithTokenResponseC signInData =
+    if List.member User.AdminRole signInData.roles then
+        Lamdera.sendToBackend GetBackendModel
+
+    else
+        Cmd.none
 
 
 signOut model =
@@ -211,7 +208,7 @@ signInWithCode model signInCode =
                                             Dict.insert loginCode MagicLink.Types.Checking enterLoginCode.attempts
                                     }
                           }
-                        , Lamdera.sendToBackend (SigInWithTokenRequest loginCode)
+                        , Lamdera.sendToBackend (SigInWithToken loginCode)
                         )
 
                 Err _ ->

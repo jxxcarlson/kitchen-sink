@@ -58,13 +58,13 @@ initiateEmailSignin sessionId clientId model login now =
         Nothing ->
             ( model, loginResponse )
 
-        Just username_ ->
-            case EmailAddress.fromString username_ of
+        Just emailString ->
+            case EmailAddress.fromString emailString of
                 Nothing ->
                     ( model, loginResponse )
 
                 Just emailAddress_ ->
-                    case model.users |> Dict.get username_ of
+                    case model.users |> Dict.get emailString of
                         Just user ->
                             let
                                 loginToken =

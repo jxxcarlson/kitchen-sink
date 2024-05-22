@@ -467,8 +467,24 @@ updateFromBackendLoaded msg model =
             ( model, Cmd.none )
 
         SignInWithTokenResponse result ->
-            -- TODO: ???? MagicLink.Frontend.signInWithTokenResponse model result
-            ( model, Cmd.none )
+            case result of
+                Ok userData ->
+                    ( { model
+                        | currentUserData = Just userData
+                        , authFlow =
+                            Auth.Common.Done
+                                { email = userData.email
+                                , name = Just userData.name
+                                , username = Just userData.username
+                                }
+                        , signInState = SignedIn
+                      }
+                        |> MagicLink.Frontend.signInWithTokenResponseM userData
+                    , MagicLink.Frontend.signInWithTokenResponseC userData
+                    )
+
+                Err _ ->
+                    ( model, Cmd.none )
 
         GetLoginTokenRateLimited ->
             ( model, Cmd.none )

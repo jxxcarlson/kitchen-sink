@@ -52,7 +52,7 @@ getNewWeatherByCity clientId city =
         }
 
 
-testUserDictionary : Dict.Dict String User.User
+testUserDictionary : Dict.Dict User.EmailString User.User
 testUserDictionary =
     Dict.fromList
         [ ( "jxxcarlson@gmail.com"

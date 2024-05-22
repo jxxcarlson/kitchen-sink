@@ -1,5 +1,6 @@
 module MagicLink.Backend exposing
-    ( addUser
+    ( addNewUser
+    , addUser
     , checkLogin
     , requestSignUp
     , sendLoginEmail_
@@ -99,9 +100,29 @@ signInWithMagicToken :
     -> BackendModel
     -> ( BackendModel, Cmd BackendMsg )
 signInWithMagicToken time sessionId clientId magicToken model =
-    case AssocList.get sessionId model.sessionDict of
-        Just username ->
-            handleExistingSession model username sessionId clientId magicToken
+    -- TODO ^@@^
+    let
+        _ =
+            Debug.log "(1) @@signInWithMagicToken, sessionId" <| sessionId
+
+        --_ =
+        --    Debug.log "(2) @@signInWithMagicToken, sessionDict" <| model.sessionDict
+        --
+        --_ =
+        --    Debug.log "(2.1) @@signInWithMagicToken, sessions" <| model.sessions
+        --
+        _ =
+            Debug.log "(2.2) @@signInWithMagicToken, pendingEmailAuths" <| model.pendingEmailAuths
+
+        --_ =
+        --    Debug.log "(2.3) @@signInWithMagicToken, sessionId" <| sessionId
+        _ =
+            Debug.log "(3) @@signInWithMagicToken,  get" <| Dict.get sessionId model.pendingEmailAuths
+    in
+    ---case AssocList.get sessionId model.sessionDict of
+    case Dict.get sessionId model.pendingEmailAuths of
+        Just pendingAuth ->
+            handleExistingSession model pendingAuth.username sessionId clientId magicToken
 
         Nothing ->
             handleNoSession model time sessionId clientId magicToken
@@ -135,10 +156,23 @@ requestSignUp model clientId fullname username email =
                     in
                     ( { model
                         | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
-                        , users = Dict.insert email user model.users
                       }
+                        |> addNewUser email user
                     , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
                     )
+
+
+addNewUser email user model =
+    { model
+        | users = Dict.insert email user model.users
+        , userNameToEmailString = Dict.insert user.username email model.userNameToEmailString
+    }
+
+
+getUserWithUsername : BackendModel -> User.Username -> Maybe User.User
+getUserWithUsername model username =
+    Dict.get username model.userNameToEmailString
+        |> Maybe.andThen (\email -> Dict.get email model.users)
 
 
 setMagicLink_ : ClientId -> SessionId -> User.EmailString -> EmailAddress -> BackendModel -> ( BackendModel, Cmd BackendMsg )
@@ -169,9 +203,15 @@ signOut model clientId userData =
 
 handleExistingSession : BackendModel -> String -> SessionId -> ClientId -> Int -> ( BackendModel, Cmd BackendMsg )
 handleExistingSession model username sessionId clientId magicToken =
-    case Dict.get username model.users of
+    let
+        _ =
+            Debug.log "(4.3) @@handleExistingSession, username" <| getUserWithUsername model username
+    in
+    case getUserWithUsername model username of
         Just user ->
-            ( model, Lamdera.sendToFrontend sessionId (SignInWithTokenResponse <| Ok <| User.loginDataOfUser user) )
+            ( model
+            , Lamdera.sendToFrontend sessionId (SignInWithTokenResponse <| Ok <| User.loginDataOfUser user)
+            )
 
         Nothing ->
             ( model, Lamdera.sendToFrontend clientId (SignInWithTokenResponse (Err magicToken)) )
@@ -276,8 +316,8 @@ addUser2 model clientId emailString emailAddress realname username =
             in
             ( { model
                 | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
-                , users = Dict.insert username user model.users
               }
+                |> addNewUser emailString user
             , Lamdera.sendToFrontend clientId (UserRegistered user)
             )
 

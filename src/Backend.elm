@@ -39,6 +39,7 @@ app =
 init : ( BackendModel, Cmd BackendMsg )
 init =
     ( { users = Dict.empty
+      , userNameToEmailString = Dict.empty
       , sessions = Dict.empty
       , sessionInfo = Dict.empty
       , time = Time.millisToPosix 0
@@ -171,6 +172,12 @@ update msg model =
 
                     else
                         model.users
+                , userNameToEmailString =
+                    if Dict.isEmpty model.userNameToEmailString then
+                        Dict.fromList [ ( "jxxcarlson", "jxxcarlson@gmail.com" ), ( "aristotle", "jxxcarlson@mac.com" ) ]
+
+                    else
+                        model.userNameToEmailString
               }
             , Cmd.none
             )
@@ -260,10 +267,6 @@ update msg model =
 
         -- MAGICLINK
         AuthBackendMsg authMsg ->
-            let
-                _ =
-                    Debug.log "AUTH BACKEND msg" authMsg
-            in
             Auth.Flow.backendUpdate (MagicLink.Auth.backendConfig model) authMsg
 
         SentLoginEmail _ _ _ ->
@@ -461,10 +464,9 @@ updateFromFrontend sessionId clientId msg model =
         RequestSignup realname username email ->
             MagicLink.Backend.requestSignUp model clientId realname username email
 
-        SigInWithTokenRequest loginCode ->
-            -- MagicLink.Backend.signInWithMagicToken model.time sessionId clientId loginCode model
-            -- TODO ???
-            ( model, Cmd.none )
+        SigInWithToken loginCode ->
+            -- TODO ^@@^
+            MagicLink.Backend.signInWithMagicToken model.time sessionId clientId loginCode model
 
         SignOutRequest userData ->
             MagicLink.Backend.signOut model clientId userData

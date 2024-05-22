@@ -145,7 +145,8 @@ type alias BackendModel =
             , loginCode : Int
             }
     , log : MagicLink.Types.Log
-    , users : Dict.Dict String User.User
+    , users : Dict.Dict User.EmailString User.User
+    , userNameToEmailString : Dict.Dict User.Username User.EmailString
     , sessionInfo : Session.SessionInfo
 
     --STRIPE
@@ -223,7 +224,7 @@ type ToBackend
     | AuthToBackend Auth.Common.ToBackend
       ---
     | CheckLoginRequest
-    | SigInWithTokenRequest Int
+    | SigInWithToken Int
     | RequestMagicToken EmailAddress
     | SignOutRequest (Maybe User.LoginData)
       -- STRIPE
