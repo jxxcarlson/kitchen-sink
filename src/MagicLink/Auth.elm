@@ -57,6 +57,10 @@ sendAuthResponse clientId message =
 
 initiateEmailSignin : SessionId -> ClientId -> BackendModel -> { a | username : Maybe String } -> Time.Posix -> ( BackendModel, Cmd BackendMsg )
 initiateEmailSignin sessionId clientId model login now =
+    let
+        _ =
+            Debug.log "@@!!!!!!!@@ initiateEmailSignin" True
+    in
     case login.username of
         Nothing ->
             ( model, sendAuthResponse clientId "No username provided." )
@@ -114,6 +118,10 @@ onEmailAuthCallbackReceived :
     -> BackendModel
     -> ( BackendModel, Cmd BackendMsg )
 onEmailAuthCallbackReceived sessionId clientId receivedUrl code state now asBackendMsg backendModel =
+    let
+        _ =
+            Debug.log "@@!!!!@ onEmailAuthCallbackReceived" True
+    in
     case backendModel.pendingEmailAuths |> Dict.find (\k p -> p.token == code) of
         Just ( sessionIdRequester, pendingAuth ) ->
             { backendModel | pendingEmailAuths = backendModel.pendingEmailAuths |> Dict.remove sessionIdRequester }

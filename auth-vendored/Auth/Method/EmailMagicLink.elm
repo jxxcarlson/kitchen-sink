@@ -60,6 +60,10 @@ configuration { initiateSignin, onAuthCallbackReceived } =
 
 
 onFrontendCallbackInit frontendModel methodId origin key toBackend =
+    let
+        _ =
+            Debug.log "@@!!!!!@@ onFrontendCallbackInit" True
+    in
     case origin |> Url.Parser.parse (callbackUrl methodId <?> queryParams) of
         Just ( Just token, Just email ) ->
             ( { frontendModel | authFlow = Auth.Common.Pending }
