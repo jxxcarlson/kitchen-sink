@@ -21,6 +21,7 @@ import Lamdera exposing (ClientId, SessionId)
 import List.Nonempty
 import MagicLink.Backend
 import MagicLink.LoginForm
+import MagicLink.Types
 import Postmark
 import SHA1
 import String.Nonempty
@@ -48,19 +49,13 @@ config =
     }
 
 
-
--- getLoginCode time model
---
---initiateEmailSignin sessionId clientId model login now =
---    initiateEmailSignin_ sessionId clientId (model |> MagicLink.Backend.getLoginCode now) login now
-
-
 sendAuthResponse : ClientId -> String -> Cmd msg
 sendAuthResponse clientId message =
     Lamdera.sendToFrontend clientId
         (UserAuthResponse (Ok message))
 
 
+initiateEmailSignin : SessionId -> ClientId -> BackendModel -> { a | username : Maybe String } -> Time.Posix -> ( BackendModel, Cmd BackendMsg )
 initiateEmailSignin sessionId clientId model login now =
     case login.username of
         Nothing ->
