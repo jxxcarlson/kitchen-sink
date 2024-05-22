@@ -161,7 +161,7 @@ backendUpdate :
 backendUpdate { asToFrontend, asBackendMsg, sendToFrontend, backendModel, loadMethod, handleAuthSuccess, renewSession, logout, isDev } authBackendMsg =
     let
         _ =
-            Debug.log "@@Auth.Flow.backendUpdate" authBackendMsg
+            Debug.log "7. @@Auth.Flow.backendUpdate" authBackendMsg
 
         authError str =
             let
@@ -187,13 +187,13 @@ backendUpdate { asToFrontend, asBackendMsg, sendToFrontend, backendModel, loadMe
                 (\method ->
                     let
                         _ =
-                            Debug.log "@@Auth.Common.AuthSigninInitiated_" username
+                            Debug.log "8. @@Auth.Common.AuthSigninInitiated_" username
                     in
                     case method of
                         Auth.Common.ProtocolEmailMagicLink config ->
                             let
                                 _ =
-                                    Debug.log "@@Auth.Flow.backendUpdate username" username
+                                    Debug.log "9. @@Auth.Flow.backendUpdateAuth.Common.AuthSigninInitiated_" username
                             in
                             config.initiateSignin sessionId clientId backendModel { username = username } now
 

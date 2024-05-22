@@ -48,29 +48,40 @@ config =
     }
 
 
+
+-- getLoginCode time model
+--
+--initiateEmailSignin sessionId clientId model login now =
+--    initiateEmailSignin_ sessionId clientId (model |> MagicLink.Backend.getLoginCode now) login now
+
+
+sendAuthResponse : ClientId -> String -> Cmd msg
+sendAuthResponse clientId message =
+    Lamdera.sendToFrontend clientId
+        (UserAuthResponse (Ok message))
+
+
 initiateEmailSignin sessionId clientId model login now =
-    let
-        loginResponse =
-            Lamdera.sendToFrontend clientId
-                (UserAuthResponse (Ok "An email has been sent if this account exists."))
-    in
     case login.username of
         Nothing ->
-            ( model, loginResponse )
+            ( model, sendAuthResponse clientId "No username provided." )
 
         Just emailString ->
             case EmailAddress.fromString emailString of
                 Nothing ->
-                    ( model, loginResponse )
+                    ( model, sendAuthResponse clientId "Invalid email address." )
 
                 Just emailAddress_ ->
                     case model.users |> Dict.get emailString of
                         Just user ->
                             let
-                                loginToken =
-                                    generateLoginToken now
+                                ( newModel, loginToken ) =
+                                    MagicLink.Backend.getLoginCode now model
+
+                                loginCode =
+                                    loginToken |> Result.withDefault 31462718 |> Debug.log "@@LOGIN_TOKEN"
                             in
-                            ( { model
+                            ( { newModel
                                 | pendingEmailAuths =
                                     model.pendingEmailAuths
                                         |> Dict.insert sessionId
@@ -78,17 +89,17 @@ initiateEmailSignin sessionId clientId model login now =
                                             , sessionId = sessionId
                                             , username = user.username
                                             , fullname = user.fullname
-                                            , token = String.fromInt loginToken
+                                            , token = loginCode |> String.fromInt
                                             }
                               }
                             , Cmd.batch
-                                [ MagicLink.Backend.sendLoginEmail_ (SentLoginEmail now emailAddress_) emailAddress_ loginToken
-                                , loginResponse
+                                [ MagicLink.Backend.sendLoginEmail_ (SentLoginEmail now emailAddress_) emailAddress_ loginCode
+                                , sendAuthResponse clientId "We have sent you a login email."
                                 ]
                             )
 
                         Nothing ->
-                            ( model, loginResponse )
+                            ( model, sendAuthResponse clientId "You are not properly registered." )
 
 
 generateLoginToken : Time.Posix -> Int
@@ -266,6 +277,9 @@ handleAuthSuccess :
 handleAuthSuccess backendModel sessionId clientId userInfo _ _ _ =
     -- TODO handle renewing sessions if that is something you need
     let
+        _ =
+            Debug.log "@@!!handleAuthSuccess" userInfo
+
         sessionsWithOutThisOne : Dict SessionId UserInfo
         sessionsWithOutThisOne =
             Dict.removeWhen (\_ { email } -> email == userInfo.email) backendModel.sessions
@@ -277,5 +291,35 @@ handleAuthSuccess backendModel sessionId clientId userInfo _ _ _ =
     , Cmd.batch
         [ -- renewSession_ user_.id sessionId clientId
           Lamdera.sendToFrontend clientId (AuthSuccess userInfo)
+        ]
+    )
+
+
+handleAuthSuccess2 :
+    BackendModel
+    -> SessionId
+    -> ClientId
+    -> Auth.Common.UserInfo
+    -> Auth.Common.MethodId
+    -> Maybe Auth.Common.Token
+    -> Time.Posix
+    -> ( BackendModel, Cmd BackendMsg )
+handleAuthSuccess2 backendModel sessionId clientId userInfo _ _ _ =
+    -- TODO handle renewing sessions if that is something you need
+    let
+        sessionsWithOutThisOne : Dict SessionId UserInfo
+        sessionsWithOutThisOne =
+            Dict.removeWhen (\_ { email } -> email == userInfo.email) backendModel.sessions
+
+        newSessions =
+            Dict.insert sessionId userInfo sessionsWithOutThisOne
+
+        response =
+            AuthSuccess userInfo
+    in
+    ( { backendModel | sessions = newSessions }
+    , Cmd.batch
+        [ -- renewSession_ user_.id sessionId clientId
+          Lamdera.sendToFrontend clientId response
         ]
     )

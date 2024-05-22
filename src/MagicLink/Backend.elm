@@ -2,6 +2,7 @@ module MagicLink.Backend exposing
     ( addNewUser
     , addUser
     , checkLogin
+    , getLoginCode
     , requestSignUp
     , sendLoginEmail_
     , setMagicLink
