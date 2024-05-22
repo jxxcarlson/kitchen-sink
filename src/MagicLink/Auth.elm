@@ -56,34 +56,19 @@ initiateEmailSignin sessionId clientId model login now =
     in
     case login.username of
         Nothing ->
-            let
-                _ =
-                    Debug.log "@@BRANCH" 1
-            in
             ( model, loginResponse )
 
         Just username_ ->
             case EmailAddress.fromString username_ of
                 Nothing ->
-                    let
-                        _ =
-                            Debug.log "@@BRANCH" 2
-                    in
                     ( model, loginResponse )
 
                 Just emailAddress_ ->
-                    let
-                        _ =
-                            Debug.log "@@BRANCH" 3
-                    in
-                    case model.users |> Debug.log "@@USERS" |> Dict.get username_ of
+                    case model.users |> Dict.get username_ of
                         Just user ->
                             let
-                                _ =
-                                    Debug.log "@@BRANCH" 3.1
-
                                 loginToken =
-                                    generateLoginToken now |> Debug.log "@@loginToken!"
+                                    generateLoginToken now
                             in
                             ( { model
                                 | pendingEmailAuths =
@@ -103,15 +88,12 @@ initiateEmailSignin sessionId clientId model login now =
                             )
 
                         Nothing ->
-                            let
-                                _ =
-                                    Debug.log "BRANCH" 3.2
-                            in
                             ( model, loginResponse )
 
 
 generateLoginToken : Time.Posix -> Int
 generateLoginToken now =
+    -- TODO: this is not secure, but it is good enough for now
     now |> Time.posixToMillis |> modBy 100000000
 
 
@@ -261,10 +243,6 @@ updateFromBackend authToFrontendMsg model =
             Auth.Flow.startProviderSignin url model
 
         Auth.Common.AuthError err ->
-            let
-                _ =
-                    Debug.log "@@AuthError (1)" err
-            in
             Auth.Flow.setError model err
 
         Auth.Common.AuthSessionChallenge _ ->
