@@ -169,8 +169,8 @@ type FrontendMsg
     | PressedShowTooltip
     | MouseDown
       -- MAGICLINK
-    | AuthSigninRequested { methodId : Auth.Common.MethodId, email : Maybe String }
     | SubmitEmailForSignIn
+    | AuthSigninRequested { methodId : Auth.Common.MethodId, email : Maybe String }
     | CancelSignIn
     | TypedEmailInSignInForm String
     | UseReceivedCodetoSignIn String
