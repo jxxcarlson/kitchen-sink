@@ -2,12 +2,15 @@ module MagicLink.Backend exposing
     ( addUser
     , checkLogin
     , requestSignUp
-    , setMagicToken
+    , sendLoginEmail_
+    , setMagicLink
+    , setMagicLink_
     , signInWithMagicToken
     , signOut
     )
 
 import AssocList
+import Auth.Common
 import Config
 import Dict
 import Duration
@@ -31,6 +34,26 @@ import String.Nonempty exposing (NonemptyString)
 import Time
 import Types exposing (BackendModel, BackendMsg(..), ToBackend(..), ToFrontend(..))
 import User
+
+
+setMagicLink : BackendModel -> ClientId -> SessionId -> Auth.Common.ToBackend -> ( BackendModel, Cmd BackendMsg )
+setMagicLink model clientId sessionId authMsg =
+    case authMsg of
+        Auth.Common.AuthSigninInitiated { methodId, baseUrl, username } ->
+            case username of
+                Just email_ ->
+                    case EmailAddress.fromString email_ of
+                        Just email ->
+                            setMagicLink_ clientId sessionId email model
+
+                        Nothing ->
+                            ( model, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        _ ->
+            ( model, Cmd.none )
 
 
 addUser : BackendModel -> ClientId -> String -> String -> String -> ( BackendModel, Cmd backendMsg )
@@ -117,8 +140,8 @@ requestSignUp model clientId fullname username email =
                     )
 
 
-setMagicToken : ClientId -> SessionId -> EmailAddress -> BackendModel -> ( BackendModel, Cmd BackendMsg )
-setMagicToken clientId sessionId email model =
+setMagicLink_ : ClientId -> SessionId -> EmailAddress -> BackendModel -> ( BackendModel, Cmd BackendMsg )
+setMagicLink_ clientId sessionId email model =
     if emailNotRegistered email model.users then
         ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
 
