@@ -158,10 +158,10 @@ backendUpdate :
         { backendModel | pendingAuths : Dict Auth.Common.SessionId Auth.Common.PendingAuth }
     -> Auth.Common.BackendMsg
     -> ( { backendModel | pendingAuths : Dict Auth.Common.SessionId Auth.Common.PendingAuth }, Cmd backendMsg )
-backendUpdate { asToFrontend, asBackendMsg, sendToFrontend, backendModel, loadMethod, handleAuthSuccess, renewSession, logout, isDev } authBackendMsg =
+backendUpdate { asToFrontend, asBackendMsg, sendToFrontend, backendModel, loadMethod, handleAuthSuccess, renewSession, logout, isDev } authMsg =
     let
         _ =
-            Debug.log "7. @@Auth.Flow.backendUpdate" authBackendMsg
+            Debug.log "7. @@Auth.Flow.backendUpdate" authMsg
 
         authError str =
             let
@@ -180,7 +180,7 @@ backendUpdate { asToFrontend, asBackendMsg, sendToFrontend, backendModel, loadMe
                 Just method ->
                     fn method
     in
-    case authBackendMsg of
+    case authMsg of
         Auth.Common.AuthSigninInitiated_ { sessionId, clientId, methodId, baseUrl, now, username } ->
             withMethod methodId
                 clientId
