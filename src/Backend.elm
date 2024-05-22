@@ -60,7 +60,7 @@ init =
       , localUuidData = Nothing
       , products =
             AssocList.fromList
-                [ ( Id.fromString "prod_NwykP5NQq7KEJt"
+                [ ( Id.fromString "prodNwykP5NQq7KEJt"
                   , { name = "Basic Package"
                     , description = "100 image credits"
                     }
@@ -260,12 +260,11 @@ update msg model =
 
         -- MAGICLINK
         AuthBackendMsg authMsg ->
-            -- Auth.Flow.update authMsg model
             let
                 _ =
-                    Debug.log "AuthBackendMsg" authMsg
+                    Debug.log "AUTH BACKEND msg" authMsg
             in
-            ( model, Cmd.none )
+            Auth.Flow.backendUpdate (MagicLink.Auth.backendConfig model) authMsg
 
         SentLoginEmail _ _ _ ->
             -- TODO
@@ -440,22 +439,9 @@ updateFromFrontend sessionId clientId msg model =
 
         -- MAGICLINK
         AuthToBackend authMsg ->
-            case authMsg of
-                Auth.Common.AuthSigninInitiated { methodId, baseUrl, username } ->
-                    case username of
-                        Just email_ ->
-                            case EmailAddress.fromString email_ of
-                                Just email ->
-                                    MagicLink.Backend.setMagicToken clientId sessionId email model
-
-                                Nothing ->
-                                    ( model, Cmd.none )
-
-                        Nothing ->
-                            ( model, Cmd.none )
-
-                _ ->
-                    ( model, Cmd.none )
+            -- MagicLink.Backend.setMagicLink model clientId sessionId authMsg
+            -- Auth.Flow.updateFromFrontend (MagicLink.Auth.backendConfig model) clientId sessionId authMsg model
+            Auth.Flow.updateFromFrontend (MagicLink.Auth.backendConfig model) clientId sessionId authMsg model
 
         AddUser realname username email ->
             MagicLink.Backend.addUser model clientId email realname username
@@ -464,7 +450,7 @@ updateFromFrontend sessionId clientId msg model =
             MagicLink.Backend.checkLogin model clientId sessionId
 
         RequestMagicToken email ->
-            MagicLink.Backend.setMagicToken clientId sessionId email model
+            MagicLink.Backend.setMagicLink_ clientId sessionId email model
 
         RequestSignup realname username email ->
             MagicLink.Backend.requestSignUp model clientId realname username email
