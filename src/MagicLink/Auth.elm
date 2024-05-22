@@ -31,7 +31,7 @@ import Url
 import User
 
 
-config : Auth.Common.Config FrontendMsg ToBackend BackendMsg ToFrontend FrontendModel BackendModel
+config : Auth.Common.Config FrontendMsg ToBackend BackendMsg ToFrontend LoadedModel BackendModel
 config =
     { toBackend = AuthToBackend
     , toFrontend = AuthToFrontend
@@ -40,59 +40,60 @@ config =
     , sendToBackend = Lamdera.sendToBackend
     , renewSession = renewSession
     , methods =
-        [--Auth.Method.EmailMagicLink.configuration
-         --    { initiateSignin = initiateEmailSignin
-         --    , onAuthCallbackReceived = onEmailAuthCallbackReceived
-         --    }
+        [ Auth.Method.EmailMagicLink.configuration
+            { initiateSignin = initiateEmailSignin
+            , onAuthCallbackReceived = onEmailAuthCallbackReceived
+            }
         ]
     }
 
 
-loginResponse : ClientId -> Cmd backendMsg
-loginResponse clientId =
-    Lamdera.sendToFrontend clientId
-        (UserAuthResponse (Ok "An email has been sent if this account exists."))
-
-
-initiateEmailSignin :
-    SessionId
-    -> ClientId
-    -> BackendModel
-    -> { username : Maybe String }
-    -> Time.Posix
-    -> ( BackendModel, Cmd BackendMsg )
 initiateEmailSignin sessionId clientId model login now =
+    let
+        loginResponse =
+            Lamdera.sendToFrontend clientId
+                (UserAuthResponse (Ok "An email has been sent if this account exists."))
+    in
     case login.username of
         Nothing ->
-            ( model, loginResponse clientId )
+            ( model, loginResponse )
 
         Just username_ ->
-            let
-                username =
-                    String.toLower username_
-            in
-            case model.users |> Dict.get username of
-                Just user ->
-                    ( { model
-                        | pendingEmailAuths =
-                            model.pendingEmailAuths
-                                |> Dict.insert sessionId
-                                    { created = now
-                                    , sessionId = sessionId
-                                    , username = user.username
-                                    , fullname = user.fullname
-                                    , token = "loginToken" -- TODO implement this
-                                    }
-                      }
-                    , Cmd.batch
-                        [ -- TODO: replace 1234 by the actual loginCode
-                          -- MagicLink.Backend.sendLoginEmail_ (SentLoginEmail model.time user.email) user.email 1234
-                          loginResponse clientId
-                        ]
-                    )
-
+            case EmailAddress.fromString username_ of
                 Nothing ->
-                    ( model, loginResponse clientId )
+                    ( model, loginResponse )
+
+                Just emailAddress_ ->
+                    case model.users |> Dict.get username_ of
+                        Just user ->
+                            let
+                                loginToken =
+                                    generateLoginToken now
+                            in
+                            ( { model
+                                | pendingEmailAuths =
+                                    model.pendingEmailAuths
+                                        |> Dict.insert sessionId
+                                            { created = now
+                                            , sessionId = sessionId
+                                            , username = user.username
+                                            , fullname = user.fullname
+                                            , token = String.fromInt loginToken
+                                            }
+                              }
+                            , Cmd.batch
+                                [ MagicLink.Backend.sendLoginEmail_ (SentLoginEmail now emailAddress_) emailAddress_ loginToken
+                                , loginResponse
+                                ]
+                            )
+
+                        Nothing ->
+                            ( model, loginResponse )
+
+
+generateLoginToken : Time.Posix -> Int
+generateLoginToken now =
+    now |> Time.posixToMillis |> modBy 1000000
 
 
 onEmailAuthCallbackReceived :
@@ -215,7 +216,7 @@ findOrRegisterUser =
 --            )
 
 
-backendConfig : BackendModel -> Auth.Flow.BackendUpdateConfig FrontendMsg BackendMsg ToFrontend FrontendModel BackendModel
+backendConfig : BackendModel -> Auth.Flow.BackendUpdateConfig FrontendMsg BackendMsg ToFrontend LoadedModel BackendModel
 backendConfig model =
     { asToFrontend = AuthToFrontend
     , asBackendMsg = AuthBackendMsg
@@ -240,6 +241,10 @@ updateFromBackend authToFrontendMsg model =
             Auth.Flow.startProviderSignin url model
 
         Auth.Common.AuthError err ->
+            let
+                _ =
+                    Debug.log "@@AuthError (1)" err
+            in
             Auth.Flow.setError model err
 
         Auth.Common.AuthSessionChallenge _ ->
