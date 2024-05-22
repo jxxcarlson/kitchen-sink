@@ -55,25 +55,27 @@ getNewWeatherByCity clientId city =
 testUserDictionary : Dict.Dict String User.User
 testUserDictionary =
     Dict.fromList
-        [ ( "jxxcarlson"
+        [ ( "jxxcarlson@gmail.com"
           , { fullname = "Jim Carlson"
             , username = "jxxcarlson"
             , email = EmailAddress.EmailAddress { domain = "gmail", localPart = "jxxcarlson", tags = [], tld = [ "com" ] }
+            , emailString = "jxxcarlson@gmail.com"
             , id = "661b76d8-eee8-42fb-a28d-cf8ada73f869"
             , created_at = Time.millisToPosix 1704237963000
             , updated_at = Time.millisToPosix 1704237963000
-            , role = User.AdminRole
+            , roles = [ User.AdminRole ]
             , recentLoginEmails = []
             }
           )
-        , ( "aristotle"
+        , ( "jxxcarlson@mac.com"
           , { fullname = "Aristotle"
             , username = "aristotle"
             , email = EmailAddress.EmailAddress { domain = "mac", localPart = "jxxcarlson", tags = [], tld = [ "com" ] }
+            , emailString = "jxxcarlson@mac.com"
             , id = "38952d62-9772-4e5d-a927-b8e41b6ef2ed"
             , created_at = Time.millisToPosix 1704237963000
             , updated_at = Time.millisToPosix 1704237963000
-            , role = User.UserRole
+            , roles = [ User.UserRole ]
             , recentLoginEmails = []
             }
           )

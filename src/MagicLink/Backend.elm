@@ -43,8 +43,8 @@ setMagicLink model clientId sessionId authMsg =
             case username of
                 Just email_ ->
                     case EmailAddress.fromString email_ of
-                        Just email ->
-                            setMagicLink_ clientId sessionId email model
+                        Just emailAddress ->
+                            setMagicLink_ clientId sessionId email_ emailAddress model
 
                         Nothing ->
                             ( model, Cmd.none )
@@ -56,14 +56,14 @@ setMagicLink model clientId sessionId authMsg =
             ( model, Cmd.none )
 
 
-addUser : BackendModel -> ClientId -> String -> String -> String -> ( BackendModel, Cmd backendMsg )
+addUser : BackendModel -> ClientId -> String -> String -> String -> ( BackendModel, Cmd BackendMsg )
 addUser model clientId email realname username =
     case EmailAddress.fromString email of
         Nothing ->
             ( model, Lamdera.sendToFrontend clientId (SignInError <| "Invalid email: " ++ email) )
 
         Just validEmail ->
-            addUser1 model clientId validEmail realname username
+            addUser1 model clientId email validEmail realname username
 
 
 checkLogin : BackendModel -> ClientId -> SessionId -> ( BackendModel, Cmd BackendMsg )
@@ -125,28 +125,30 @@ requestSignUp model clientId fullname username email =
                             { fullname = fullname
                             , username = username
                             , email = validEmail
+                            , emailString = email
                             , created_at = model.time
                             , updated_at = model.time
                             , id = LocalUUID.extractUUIDAsString uuidData
-                            , role = User.UserRole
+                            , roles = [ User.UserRole ]
                             , recentLoginEmails = []
                             }
                     in
                     ( { model
                         | localUuidData = model.localUuidData |> Maybe.map LocalUUID.step
-                        , users = Dict.insert username user model.users
+                        , users = Dict.insert email user model.users
                       }
                     , Lamdera.sendToFrontend clientId (UserSignedIn (Just user))
                     )
 
 
-setMagicLink_ : ClientId -> SessionId -> EmailAddress -> BackendModel -> ( BackendModel, Cmd BackendMsg )
-setMagicLink_ clientId sessionId email model =
-    if emailNotRegistered email model.users then
+setMagicLink_ : ClientId -> SessionId -> User.EmailString -> EmailAddress -> BackendModel -> ( BackendModel, Cmd BackendMsg )
+setMagicLink_ clientId sessionId emailString emailAddress model =
+    -- TODO: is this safe?
+    if emailNotRegistered emailString model.users then
         ( model, Lamdera.sendToFrontend clientId (SignInError "Sorry, you are not registered — please sign up for an account") )
 
     else
-        setMagicTokenAndSendEmailToUser model clientId sessionId email
+        setMagicTokenAndSendEmailToUser model clientId sessionId emailAddress
 
 
 signOut : BackendModel -> ClientId -> Maybe User.LoginData -> ( BackendModel, Cmd BackendMsg )
@@ -239,26 +241,23 @@ getUserFromSessionId sessionId model =
 -- HELPERS FOR ADDUSER
 
 
-addUser1 model clientId email realname username =
-    if emailNotRegistered email model.users then
+addUser1 : BackendModel -> ClientId -> User.EmailString -> EmailAddress -> String -> String -> ( BackendModel, Cmd BackendMsg )
+addUser1 model clientId emailString emailAddress realname username =
+    if emailNotRegistered emailString model.users then
         case Dict.get username model.users of
             Just _ ->
                 ( model, Lamdera.sendToFrontend clientId (RegistrationError "That username is already registered") )
 
             Nothing ->
-                addUser2 model clientId email realname username
+                addUser2 model clientId emailString emailAddress realname username
 
     else
         ( model, Lamdera.sendToFrontend clientId (RegistrationError "That email is already registered") )
 
 
-addUser2 model clientId email realname username =
+addUser2 model clientId emailString emailAddress realname username =
     case model.localUuidData of
         Nothing ->
-            let
-                _ =
-                    Nothing
-            in
             ( model, Lamdera.sendToFrontend clientId (UserSignedIn Nothing) )
 
         Just uuidData ->
@@ -266,11 +265,12 @@ addUser2 model clientId email realname username =
                 user =
                     { fullname = realname
                     , username = username
-                    , email = email
+                    , email = emailAddress
+                    , emailString = emailString
                     , created_at = model.time
                     , updated_at = model.time
                     , id = LocalUUID.extractUUIDAsString uuidData
-                    , role = User.UserRole
+                    , roles = [ User.UserRole ]
                     , recentLoginEmails = []
                     }
             in
@@ -286,9 +286,14 @@ addUser2 model clientId email realname username =
 -- STUFF
 
 
-emailNotRegistered : EmailAddress -> Dict.Dict String User.User -> Bool
+emailNotRegistered : User.EmailString -> Dict.Dict String User.User -> Bool
 emailNotRegistered email users =
-    Dict.filter (\_ user -> user.email == email) users |> Dict.isEmpty
+    case Dict.get email users of
+        Nothing ->
+            True
+
+        Just _ ->
+            False
 
 
 userNameNotFound : String -> Dict.Dict String User.User -> Bool
@@ -392,12 +397,12 @@ sendLoginEmail_ :
     -> Cmd backendMsg
 sendLoginEmail_ msg emailAddress loginCode =
     { from = { name = "", email = noReplyEmailAddress }
-    , to = List.Nonempty.fromElement { name = "", email = emailAddress }
+    , to = List.Nonempty.fromElement { name = "", email = emailAddress } |> Debug.log "@@TO-FIELD"
     , subject = loginEmailSubject
     , body =
         Postmark.BodyBoth
             (loginEmailContent loginCode)
-            ("Here is your code " ++ String.fromInt loginCode ++ "\n\nPlease type it in the XXX login page you were previously on.\n\nIf you weren't expecting this email you can safely ignore it.")
+            ("Here is your code " ++ (String.fromInt loginCode |> Debug.log "@@LOGIN-CODE") ++ "\n\nPlease type it in the XXX login page you were previously on.\n\nIf you weren't expecting this email you can safely ignore it.")
     , messageStream = "outbound"
     }
         |> Postmark.sendEmail msg Config.postmarkApiKey

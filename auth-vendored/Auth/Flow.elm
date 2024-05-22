@@ -68,7 +68,12 @@ onFrontendLogoutCallback navigationMsg =
     navigationMsg
 
 
+updateFromFrontend : { a | asBackendMsg : Auth.Common.BackendMsg -> b } -> Auth.Common.ClientId -> Auth.Common.SessionId -> ToBackend -> e -> ( e, Cmd b )
 updateFromFrontend { asBackendMsg } clientId sessionId authToBackend model =
+    let
+        _ =
+            Debug.log "@@Auth.Flow.updateFromFrontend" authToBackend
+    in
     case authToBackend of
         Auth.Common.AuthSigninInitiated params ->
             ( model
@@ -155,14 +160,21 @@ backendUpdate :
     -> ( { backendModel | pendingAuths : Dict Auth.Common.SessionId Auth.Common.PendingAuth }, Cmd backendMsg )
 backendUpdate { asToFrontend, asBackendMsg, sendToFrontend, backendModel, loadMethod, handleAuthSuccess, renewSession, logout, isDev } authBackendMsg =
     let
+        _ =
+            Debug.log "@@Auth.Flow.backendUpdate" authBackendMsg
+
         authError str =
-            asToFrontend (Auth.Common.AuthError (Auth.Common.ErrAuthString str))
+            let
+                _ =
+                    Debug.log "@@authError (2)" str
+            in
+            asToFrontend (Auth.Common.AuthError str)
 
         withMethod methodId clientId fn =
             case loadMethod methodId of
                 Nothing ->
                     ( backendModel
-                    , sendToFrontend clientId <| authError ("Unsupported auth method: " ++ methodId)
+                    , sendToFrontend clientId <| authError (Auth.Common.ErrAuthString <| "Unsupported auth method: " ++ methodId)
                     )
 
                 Just method ->
@@ -173,8 +185,16 @@ backendUpdate { asToFrontend, asBackendMsg, sendToFrontend, backendModel, loadMe
             withMethod methodId
                 clientId
                 (\method ->
+                    let
+                        _ =
+                            Debug.log "@@Auth.Common.AuthSigninInitiated_" username
+                    in
                     case method of
                         Auth.Common.ProtocolEmailMagicLink config ->
+                            let
+                                _ =
+                                    Debug.log "@@Auth.Flow.backendUpdate username" username
+                            in
                             config.initiateSignin sessionId clientId backendModel { username = username } now
 
                         Auth.Common.ProtocolOAuth config ->
@@ -182,6 +202,10 @@ backendUpdate { asToFrontend, asBackendMsg, sendToFrontend, backendModel, loadMe
                 )
 
         Auth.Common.AuthSigninInitiatedDelayed_ sessionId initiateMsg ->
+            let
+                _ =
+                    Debug.log "@@Auth.Common.AuthSigninInitiatedDelayed_ initiateMsg" initiateMsg
+            in
             ( backendModel, sendToFrontend sessionId (asToFrontend initiateMsg) )
 
         Auth.Common.AuthCallbackReceived_ sessionId clientId methodId receivedUrl code state now ->
@@ -190,9 +214,17 @@ backendUpdate { asToFrontend, asBackendMsg, sendToFrontend, backendModel, loadMe
                 (\method ->
                     case method of
                         Auth.Common.ProtocolEmailMagicLink config ->
+                            let
+                                _ =
+                                    Debug.log "@@Auth.Common.AuthCallbackReceived_ BR" Auth.Common.ProtocolEmailMagicLink
+                            in
                             config.onAuthCallbackReceived sessionId clientId receivedUrl code state now asBackendMsg backendModel
 
                         Auth.Common.ProtocolOAuth config ->
+                            let
+                                _ =
+                                    Debug.log "@@Auth.Common.AuthCallbackReceived_ BR" Auth.Common.ProtocolOAuth
+                            in
                             Auth.Protocol.OAuth.onAuthCallbackReceived sessionId clientId config receivedUrl code state now asBackendMsg backendModel
                 )
 
@@ -200,6 +232,9 @@ backendUpdate { asToFrontend, asBackendMsg, sendToFrontend, backendModel, loadMe
             let
                 removeSession backendModel_ =
                     { backendModel_ | pendingAuths = backendModel_.pendingAuths |> Dict.remove sessionId }
+
+                _ =
+                    Debug.log "@@Auth.Common.AuthSuccess res" res
             in
             withMethod methodId
                 clientId
@@ -210,6 +245,10 @@ backendUpdate { asToFrontend, asBackendMsg, sendToFrontend, backendModel, loadMe
                                 |> Tuple.mapFirst removeSession
 
                         Err err ->
+                            let
+                                _ =
+                                    Debug.log "@@authError (3)" err
+                            in
                             ( backendModel, sendToFrontend sessionId (asToFrontend <| Auth.Common.AuthError err) )
                 )
 

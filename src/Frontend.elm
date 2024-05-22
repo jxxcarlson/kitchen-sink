@@ -450,7 +450,8 @@ updateFromBackendLoaded msg model =
             ( model, Cmd.none )
 
         SignInWithTokenResponse result ->
-            MagicLink.Frontend.signInWithTokenResponse model result
+            -- TODO: ???? MagicLink.Frontend.signInWithTokenResponse model result
+            ( model, Cmd.none )
 
         GetLoginTokenRateLimited ->
             ( model, Cmd.none )

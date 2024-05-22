@@ -56,19 +56,34 @@ initiateEmailSignin sessionId clientId model login now =
     in
     case login.username of
         Nothing ->
+            let
+                _ =
+                    Debug.log "@@BRANCH" 1
+            in
             ( model, loginResponse )
 
         Just username_ ->
             case EmailAddress.fromString username_ of
                 Nothing ->
+                    let
+                        _ =
+                            Debug.log "@@BRANCH" 2
+                    in
                     ( model, loginResponse )
 
                 Just emailAddress_ ->
-                    case model.users |> Dict.get username_ of
+                    let
+                        _ =
+                            Debug.log "@@BRANCH" 3
+                    in
+                    case model.users |> Debug.log "@@USERS" |> Dict.get username_ of
                         Just user ->
                             let
+                                _ =
+                                    Debug.log "@@BRANCH" 3.1
+
                                 loginToken =
-                                    generateLoginToken now
+                                    generateLoginToken now |> Debug.log "@@loginToken!"
                             in
                             ( { model
                                 | pendingEmailAuths =
@@ -88,12 +103,16 @@ initiateEmailSignin sessionId clientId model login now =
                             )
 
                         Nothing ->
+                            let
+                                _ =
+                                    Debug.log "BRANCH" 3.2
+                            in
                             ( model, loginResponse )
 
 
 generateLoginToken : Time.Posix -> Int
 generateLoginToken now =
-    now |> Time.posixToMillis |> modBy 1000000
+    now |> Time.posixToMillis |> modBy 100000000
 
 
 onEmailAuthCallbackReceived :
@@ -136,8 +155,9 @@ findOrRegisterUser :
     }
     -> BackendModel
     -> ( BackendModel, Cmd BackendMsg )
-findOrRegisterUser =
-    Debug.todo "findOrRegisterUser"
+findOrRegisterUser params model =
+    -- TODO : real implementation needed here
+    ( model, Cmd.none )
 
 
 

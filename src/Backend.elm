@@ -270,9 +270,14 @@ update msg model =
             -- TODO
             ( model, Cmd.none )
 
-        AuthenticationConfirmationEmailSent _ ->
-            -- TODO
-            ( model, Cmd.none )
+        AuthenticationConfirmationEmailSent result ->
+            case result of
+                Ok _ ->
+                    -- TODO: some kind of response to the frontend
+                    ( model, Cmd.none )
+
+                Err error ->
+                    ( model, Helper.errorEmail ("AuthenticationConfirmationEmailSent failed: " ++ Auth.HttpHelpers.httpErrorToString error) )
 
         AutoLogin sessionId loginData ->
             ( model, Lamdera.sendToFrontend sessionId (SignInWithTokenResponse <| Ok <| loginData) )
@@ -449,14 +454,16 @@ updateFromFrontend sessionId clientId msg model =
         CheckLoginRequest ->
             MagicLink.Backend.checkLogin model clientId sessionId
 
-        RequestMagicToken email ->
-            MagicLink.Backend.setMagicLink_ clientId sessionId email model
+        RequestMagicToken emailAddress ->
+            MagicLink.Backend.setMagicLink_ clientId sessionId (EmailAddress.toString emailAddress) emailAddress model
 
         RequestSignup realname username email ->
             MagicLink.Backend.requestSignUp model clientId realname username email
 
         SigInWithTokenRequest loginCode ->
-            MagicLink.Backend.signInWithMagicToken model.time sessionId clientId loginCode model
+            -- MagicLink.Backend.signInWithMagicToken model.time sessionId clientId loginCode model
+            -- TODO ???
+            ( model, Cmd.none )
 
         SignOutRequest userData ->
             MagicLink.Backend.signOut model clientId userData

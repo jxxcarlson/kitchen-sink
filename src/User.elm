@@ -1,4 +1,11 @@
-module User exposing (Id, LoginData, Role(..), User, loginDataOfUser)
+module User exposing
+    ( EmailString
+    , Id
+    , LoginData
+    , Role(..)
+    , User
+    , loginDataOfUser
+    )
 
 import EmailAddress exposing (EmailAddress)
 import Time
@@ -9,23 +16,28 @@ type alias User =
     , fullname : String
     , username : String
     , email : EmailAddress
+    , emailString : EmailString
     , created_at : Time.Posix
     , updated_at : Time.Posix
-    , role : Role
+    , roles : List Role
     , recentLoginEmails : List Time.Posix
     }
 
 
+type alias EmailString =
+    String
+
+
 type alias LoginData =
     { username : String
-    , role : Role
+    , roles : List Role
     }
 
 
 loginDataOfUser : User -> LoginData
 loginDataOfUser user =
     { username = user.username
-    , role = user.role
+    , roles = user.roles
     }
 
 
