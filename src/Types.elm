@@ -171,6 +171,7 @@ type FrontendMsg
       -- MAGICLINK
     | SubmitEmailForSignIn
     | AuthSigninRequested { methodId : Auth.Common.MethodId, email : Maybe String }
+      --
     | CancelSignIn
     | TypedEmailInSignInForm String
     | UseReceivedCodetoSignIn String
@@ -220,6 +221,7 @@ type ToBackend
     | GetBackendModel
       -- MAGICLINK
     | AuthToBackend Auth.Common.ToBackend
+      ---
     | CheckLoginRequest
     | SigInWithTokenRequest Int
     | RequestMagicToken EmailAddress
@@ -273,6 +275,7 @@ type ToFrontend
     | AuthToFrontend Auth.Common.ToFrontend
     | AuthSuccess Auth.Common.UserInfo
     | UserInfoMsg (Maybe Auth.Common.UserInfo)
+      ---
     | CheckSignInResponse (Result BackendDataStatus User.LoginData)
     | SignInWithTokenResponse (Result Int User.LoginData)
     | GetLoginTokenRateLimited

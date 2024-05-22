@@ -294,13 +294,10 @@ handleAuthSuccess backendModel sessionId clientId userInfo _ _ _ =
 
         newSessions =
             Dict.insert sessionId userInfo sessionsWithOutThisOne
-
-        response =
-            AuthSuccess userInfo
     in
     ( { backendModel | sessions = newSessions }
     , Cmd.batch
         [ -- renewSession_ user_.id sessionId clientId
-          Lamdera.sendToFrontend clientId response
+          Lamdera.sendToFrontend clientId (AuthSuccess userInfo)
         ]
     )

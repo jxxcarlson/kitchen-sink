@@ -455,7 +455,8 @@ updateFromFrontend sessionId clientId msg model =
             MagicLink.Backend.checkLogin model clientId sessionId
 
         RequestMagicToken emailAddress ->
-            MagicLink.Backend.setMagicLink_ clientId sessionId (EmailAddress.toString emailAddress) emailAddress model
+            -- MagicLink.Backend.setMagicLink_ clientId sessionId (EmailAddress.toString emailAddress) emailAddress model
+            ( model, Cmd.none )
 
         RequestSignup realname username email ->
             MagicLink.Backend.requestSignUp model clientId realname username email

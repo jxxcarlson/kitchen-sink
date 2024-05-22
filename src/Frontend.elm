@@ -428,13 +428,30 @@ updateFromBackendLoaded msg model =
             ( { model | backendModel = Just beModel }, Cmd.none )
 
         -- MAGICLINK
-        UserAuthResponse _ ->
-            -- TODO (placholder)
-            ( model, Cmd.none )
+        UserAuthResponse result ->
+            case result of
+                Ok a ->
+                    let
+                        foo =
+                            a |> Debug.log "@@UserAuthResponse (1)"
+                    in
+                    ( model, Cmd.none )
 
-        AuthSuccess _ ->
+                Err b ->
+                    let
+                        bar =
+                            b |> Debug.log "@@UserAuthResponse (2)"
+                    in
+                    ( model, Cmd.none )
+
+        AuthSuccess userInfo ->
             -- TODO (placholder)
-            ( model, Cmd.none )
+            case userInfo.username of
+                Just username ->
+                    ( { model | authFlow = Auth.Common.Authorized userInfo.email username |> Debug.log "@@AuthFlow (*)" }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         UserInfoMsg _ ->
             -- TODO (placholder)
