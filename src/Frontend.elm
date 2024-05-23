@@ -247,7 +247,7 @@ updateLoaded msg model =
         TypedEmailInSignInForm email ->
             MagicLink.Frontend.enterEmail model email
 
-        UseReceivedCodetoSignIn loginCode ->
+        ReceivedSigninCode loginCode ->
             MagicLink.Frontend.signInWithCode model loginCode
 
         SubmitSignUp ->

@@ -191,7 +191,10 @@ handleExistingSession model username sessionId clientId magicToken =
     case getUserWithUsername model username of
         Just user ->
             ( model
-            , Lamdera.sendToFrontend sessionId (SignInWithTokenResponse <| Ok <| User.loginDataOfUser user)
+            , Cmd.batch
+                [ Lamdera.sendToFrontend sessionId
+                    (SignInWithTokenResponse (Ok <| User.loginDataOfUser user))
+                ]
             )
 
         Nothing ->
