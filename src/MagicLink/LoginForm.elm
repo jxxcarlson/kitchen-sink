@@ -265,16 +265,6 @@ enterEmailView model =
         ]
 
 
-
---routeLinkNewTab : Route -> String -> Element msg
---routeLinkNewTab route label =
---    Element.el
---        [ Element.linkNewTab (Route.encode route)
---        , Element.Font.underline
---        ]
---        (Element.text label)
-
-
 validateEmail : String -> Result String EmailAddress
 validateEmail text =
     EmailAddress.fromString text

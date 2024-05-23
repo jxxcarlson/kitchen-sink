@@ -7,7 +7,6 @@ module MagicLink.Frontend exposing
     , signInWithTokenResponseM
     , signOut
     , submitEmailForSignin
-    , submitEmailForToken
     , submitSignUp
     , userRegistered
     )
@@ -157,24 +156,6 @@ userRegistered model user =
       }
     , Cmd.none
     )
-
-
-submitEmailForToken : LoadedModel -> ( LoadedModel, Cmd FrontendMsg )
-submitEmailForToken model =
-    case model.loginForm of
-        EnterEmail loginForm ->
-            case EmailAddress.fromString loginForm.email of
-                Just email ->
-                    ( { model | loginForm = EnterSigninCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
-                    , Lamdera.sendToBackend (RequestMagicToken email)
-                    )
-
-                Nothing ->
-                    ( { model | loginForm = EnterEmail { loginForm | pressedSubmitEmail = True } }, Cmd.none )
-
-        EnterSigninCode _ ->
-            -- TODO: handle EnterLoginCode with parameter loginCode instead of _ ??
-            ( model, Cmd.none )
 
 
 

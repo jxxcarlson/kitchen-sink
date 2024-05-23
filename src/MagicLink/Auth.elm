@@ -101,12 +101,6 @@ initiateEmailSignin sessionId clientId model login now =
                             ( model, sendAuthResponse clientId "You are not properly registered." )
 
 
-generateLoginToken : Time.Posix -> Int
-generateLoginToken now =
-    -- TODO: this is not secure, but it is good enough for now
-    now |> Time.posixToMillis |> modBy 100000000
-
-
 onEmailAuthCallbackReceived :
     Auth.Common.SessionId
     -> Auth.Common.ClientId
@@ -154,82 +148,6 @@ findOrRegisterUser :
 findOrRegisterUser params model =
     -- TODO : real implementation needed here
     ( model, Cmd.none )
-
-
-
---findOrRegisterUser :
---    { currentClientId : Lamdera.ClientId
---    , requestingSessionId : Lamdera.SessionId
---    , username : String -- TODO: alias this
---    , fullname : String -- TODO: alias this
---    , authTokenM : Maybe Auth.Common.Token
---    , now : Time.Posix
---    }
---    -> BackendModel
---    -> ( BackendModel, Cmd BackendMsg )
---findOrRegisterUser { currentClientId, requestingSessionId, username, fullname, authTokenM, now } model =
---    case model.users |> Dict.get username of
---        Just user ->
---            let
---                newSession : Session
---                newSession =
---                    { id = requestingSessionId
---                    , created = now
---                    , username = user.username
---                    , masqueradedFrom = Nothing
---                    , focusedOwner = OwnerUser user.username
---                    , authToken = authTokenM
---                    }
---            in
---            ( { model
---                | sessions = Data.Session.updateSessions model (sessionIdFromString requestingSessionId) newSession
---              }
---            , Command.batch
---                [ sendAuthSuccessWithAccount (sessionIdFromString requestingSessionId) user newSession model
---                , bumpLastActive user
---                ]
---            )
---
---        Nothing ->
---            let
---                newUser : User.User
---                newUser =
---                    { created = now
---                    , lastActive = Time.millisToPosix 0
---                    , username = username
---                    , fullname = fullname
---                    , roles = []
---                    }
---
---                --type alias User =
---                --    { id : String
---                --    , fullname : String
---                --    , username : String
---                --    , email : EmailAddress
---                --    , created_at : Time.Posix
---                --    , updated_at : Time.Posix
---                --    , role : Role
---                --    , recentLoginEmails : List Time.Posix
---                --    }
---                newSession : Session
---                newSession =
---                    { id = requestingSessionId
---                    , created = now
---                    , username = newUser.username
---                    , masqueradedFrom = Nothing
---                    , focusedOwner = OwnerUser newUser.username
---                    , authToken = authTokenM
---                    }
---            in
---            ( { model
---                | sessions = Data.Session.updateSessions model (sessionIdFromString requestingSessionId) newSession
---                , users = upsert newUser.username newUser model.users
---              }
---            , Cmd.batch
---                [ sendAuthSuccessWithAccount (sessionIdFromString requestingSessionId) newUser newSession model
---                , bumpLastActive newUser
---                ]
---            )
 
 
 backendConfig : BackendModel -> Auth.Flow.BackendUpdateConfig FrontendMsg BackendMsg ToFrontend LoadedModel BackendModel

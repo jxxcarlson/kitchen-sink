@@ -14,10 +14,6 @@ import Time
 import User
 
 
-
--- MAGICLINK
-
-
 type LoginForm
     = EnterEmail EnterEmail2
     | EnterSigninCode EnterLoginCode2

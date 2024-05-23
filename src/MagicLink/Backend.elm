@@ -101,26 +101,6 @@ signInWithMagicToken :
     -> BackendModel
     -> ( BackendModel, Cmd BackendMsg )
 signInWithMagicToken time sessionId clientId magicToken model =
-    -- TODO ^@@^
-    let
-        _ =
-            Debug.log "(1) @@signInWithMagicToken, sessionId" <| sessionId
-
-        --_ =
-        --    Debug.log "(2) @@signInWithMagicToken, sessionDict" <| model.sessionDict
-        --
-        --_ =
-        --    Debug.log "(2.1) @@signInWithMagicToken, sessions" <| model.sessions
-        --
-        _ =
-            Debug.log "(2.2) @@signInWithMagicToken, pendingEmailAuths" <| model.pendingEmailAuths
-
-        --_ =
-        --    Debug.log "(2.3) @@signInWithMagicToken, sessionId" <| sessionId
-        _ =
-            Debug.log "(3) @@signInWithMagicToken,  get" <| Dict.get sessionId model.pendingEmailAuths
-    in
-    ---case AssocList.get sessionId model.sessionDict of
     case Dict.get sessionId model.pendingEmailAuths of
         Just pendingAuth ->
             handleExistingSession model pendingAuth.username sessionId clientId magicToken
