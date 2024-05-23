@@ -20,6 +20,7 @@ import Http
 import Lamdera exposing (ClientId, SessionId)
 import List.Nonempty
 import MagicLink.Backend
+import MagicLink.Common
 import MagicLink.LoginForm
 import MagicLink.Types
 import Postmark
@@ -49,12 +50,6 @@ config =
     }
 
 
-sendAuthResponse : ClientId -> String -> Cmd msg
-sendAuthResponse clientId message =
-    Lamdera.sendToFrontend clientId
-        (UserAuthResponse (Ok message))
-
-
 initiateEmailSignin : SessionId -> ClientId -> BackendModel -> { a | username : Maybe String } -> Time.Posix -> ( BackendModel, Cmd BackendMsg )
 initiateEmailSignin sessionId clientId model login now =
     let
@@ -63,12 +58,12 @@ initiateEmailSignin sessionId clientId model login now =
     in
     case login.username of
         Nothing ->
-            ( model, sendAuthResponse clientId "No username provided." )
+            ( model, MagicLink.Common.sendMessage clientId "No username provided." )
 
         Just emailString ->
             case EmailAddress.fromString emailString of
                 Nothing ->
-                    ( model, sendAuthResponse clientId "Invalid email address." )
+                    ( model, MagicLink.Common.sendMessage clientId "Invalid email address." )
 
                 Just emailAddress_ ->
                     case model.users |> Dict.get emailString of
@@ -93,12 +88,13 @@ initiateEmailSignin sessionId clientId model login now =
                               }
                             , Cmd.batch
                                 [ MagicLink.Backend.sendLoginEmail_ (SentLoginEmail now emailAddress_) emailAddress_ loginCode
-                                , sendAuthResponse clientId "We have sent you a login email."
+                                , MagicLink.Common.sendMessage clientId
+                                    ("We have sent you a login email at " ++ EmailAddress.toString emailAddress_ |> Debug.log "@@LOGIN EMAIL SENT")
                                 ]
                             )
 
                         Nothing ->
-                            ( model, sendAuthResponse clientId "You are not properly registered." )
+                            ( model, MagicLink.Common.sendMessage clientId "You are not properly registered." )
 
 
 onEmailAuthCallbackReceived :

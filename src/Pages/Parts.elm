@@ -129,9 +129,6 @@ footer route model =
              ]
                 ++ Theme.contentAttributes
             )
-            [ Element.link
-                (linkStyle route Brillig)
-                { url = Route.encode Brillig, label = Element.text "Brillig" }
-            , Element.el [ Element.Background.color View.Color.black, Element.Font.color View.Color.white ] (Element.text model.message)
+            [ Element.el [ Element.Font.color (Element.rgb 1 1 1) ] (Element.text model.message)
             ]
         )

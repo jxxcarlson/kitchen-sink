@@ -170,7 +170,7 @@ tryLoading loadingModel =
                         --
                         , route = loadingModel.route
                         , backendModel = Nothing
-                        , message = ""
+                        , message = "Starting up ..."
 
                         -- EXAMPLES
                         , language = "en-US"
@@ -428,14 +428,10 @@ updateFromBackendLoaded msg model =
             ( { model | backendModel = Just beModel }, Cmd.none )
 
         -- MAGICLINK
-        UserAuthResponse result ->
+        ReceivedMessage result ->
             case result of
-                Ok a ->
-                    let
-                        foo =
-                            a |> Debug.log "@@UserAuthResponse (1)"
-                    in
-                    ( model, Cmd.none )
+                Ok message ->
+                    ( { model | message = message }, Cmd.none )
 
                 Err b ->
                     let

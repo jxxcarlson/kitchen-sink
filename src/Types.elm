@@ -284,7 +284,7 @@ type ToFrontend
     | RegistrationError String
     | SignInError String
       -- USER
-    | UserAuthResponse (Result String String) -- MAGICLINK
+    | ReceivedMessage (Result String String) -- MAGICLINK
     | UserSignedIn (Maybe User.User)
     | UserRegistered User.User
       -- EXAMPLE
