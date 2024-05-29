@@ -17,7 +17,7 @@ import Helper
 import KeyValueStore
 import Lamdera
 import MagicLink.LoginForm
-import MagicLink.Types exposing (SiginForm(..))
+import MagicLink.Types exposing (SigninForm(..))
 import Route exposing (Route(..))
 import Stripe.PurchaseForm as PurchaseForm
     exposing
@@ -41,6 +41,7 @@ import Types
 import User
 
 
+submitEmailForSignin : LoadedModel -> ( LoadedModel, Cmd FrontendMsg )
 submitEmailForSignin model =
     case model.signinForm of
         EnterEmail signinForm ->
@@ -59,6 +60,7 @@ submitEmailForSignin model =
             ( model, Cmd.none )
 
 
+enterEmail : { a | signinForm : SigninForm } -> String -> ( { a | signinForm : SigninForm }, Cmd msg )
 enterEmail model email =
     case model.signinForm of
         EnterEmail signinForm_ ->
@@ -74,15 +76,17 @@ enterEmail model email =
             ( model, Cmd.none )
 
 
+handleRegistrationError : { a | signInStatus : MagicLink.Types.SignInStatus } -> String -> ( { a | signInStatus : MagicLink.Types.SignInStatus }, Cmd msg )
 handleRegistrationError model str =
     ( { model | signInStatus = MagicLink.Types.ErrorNotRegistered str }, Cmd.none )
 
 
+handleSignInError : { a | loginErrorMessage : Maybe String, signInStatus : MagicLink.Types.SignInStatus } -> String -> ( { a | loginErrorMessage : Maybe String, signInStatus : MagicLink.Types.SignInStatus }, Cmd msg )
 handleSignInError model message =
     ( { model | loginErrorMessage = Just message, signInStatus = MagicLink.Types.ErrorNotRegistered message }, Cmd.none )
 
 
-signInWithTokenResponseM : User.LoginData -> LoadedModel -> LoadedModel
+signInWithTokenResponseM : a -> { b | currentUserData : Maybe a, route : Route } -> { b | currentUserData : Maybe a, route : Route }
 signInWithTokenResponseM signInData model =
     { model | currentUserData = Just signInData, route = HomepageRoute }
 
@@ -96,6 +100,7 @@ signInWithTokenResponseC signInData =
         Cmd.none
 
 
+signOut : { a | showTooltip : Bool, form : { submitStatus : SubmitStatus, name : String, billingEmail : String, country : String }, signinForm : SigninForm, loginErrorMessage : Maybe b, signInStatus : MagicLink.Types.SignInStatus, currentUserData : Maybe User.LoginData, currentUser : Maybe c, realname : String, username : String, email : String, password : String, passwordConfirmation : String, signInState : SignInState, adminDisplay : AdminDisplay, backendModel : Maybe d, message : String, language : String, inputCity : String, weatherData : Maybe e, currentKVPair : Maybe f, inputKey : String, inputValue : String, inputFilterData : String, kvViewType : KeyValueStore.KVViewType, kvVerbosity : KeyValueStore.KVVerbosity } -> ( { a | showTooltip : Bool, form : { submitStatus : SubmitStatus, name : String, billingEmail : String, country : String }, signinForm : SigninForm, loginErrorMessage : Maybe b, signInStatus : MagicLink.Types.SignInStatus, currentUserData : Maybe User.LoginData, currentUser : Maybe c, realname : String, username : String, email : String, password : String, passwordConfirmation : String, signInState : SignInState, adminDisplay : AdminDisplay, backendModel : Maybe d, message : String, language : String, inputCity : String, weatherData : Maybe e, currentKVPair : Maybe f, inputKey : String, inputValue : String, inputFilterData : String, kvViewType : KeyValueStore.KVViewType, kvVerbosity : KeyValueStore.KVVerbosity }, Cmd frontendMsg )
 signOut model =
     ( { model
         | showTooltip = False
@@ -145,10 +150,12 @@ signOut model =
     )
 
 
+submitSignUp : { a | realname : String, username : String, email : String } -> ( { a | realname : String, username : String, email : String }, Cmd frontendMsg )
 submitSignUp model =
     ( model, Lamdera.sendToBackend (AddUser model.realname model.username model.email) )
 
 
+userRegistered : { a | currentUser : Maybe { b | username : String, email : EmailAddress.EmailAddress }, signInStatus : MagicLink.Types.SignInStatus } -> { b | username : String, email : EmailAddress.EmailAddress } -> ( { a | currentUser : Maybe { b | username : String, email : EmailAddress.EmailAddress }, signInStatus : MagicLink.Types.SignInStatus }, Cmd msg )
 userRegistered model user =
     ( { model
         | currentUser = Just user

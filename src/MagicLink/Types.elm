@@ -4,8 +4,8 @@ module MagicLink.Types exposing
     , Log
     , LogItem(..)
     , LoginCodeStatus(..)
-    , SiginForm(..)
     , SignInStatus(..)
+    , SigninForm(..)
     )
 
 import Dict exposing (Dict)
@@ -14,7 +14,7 @@ import Time
 import User
 
 
-type SiginForm
+type SigninForm
     = EnterEmail EnterEmail_
     | EnterSigninCode EnterLoginCode_
 

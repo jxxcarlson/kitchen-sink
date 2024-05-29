@@ -68,7 +68,7 @@ type alias LoadedModel =
     -- MAGICLINK
     , authFlow : Auth.Common.Flow
     , authRedirectBaseUrl : Url
-    , signinForm : MagicLink.Types.SiginForm
+    , signinForm : MagicLink.Types.SigninForm
     , loginErrorMessage : Maybe String
     , signInStatus : MagicLink.Types.SignInStatus
     , currentUserData : Maybe User.LoginData

@@ -18,7 +18,7 @@ import Lamdera
 import MagicLink.Auth
 import MagicLink.Frontend
 import MagicLink.LoginForm
-import MagicLink.Types exposing (SiginForm(..))
+import MagicLink.Types exposing (SigninForm(..))
 import Ports
 import RPC
 import Route exposing (Route(..))
