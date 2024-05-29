@@ -68,7 +68,7 @@ type alias LoadedModel =
     -- MAGICLINK
     , authFlow : Auth.Common.Flow
     , authRedirectBaseUrl : Url
-    , loginForm : MagicLink.Types.LoginForm
+    , signinForm : MagicLink.Types.SiginForm
     , loginErrorMessage : Maybe String
     , signInStatus : MagicLink.Types.SignInStatus
     , currentUserData : Maybe User.LoginData
@@ -292,6 +292,10 @@ type ToFrontend
       -- DATA (JC)
     | GotKeyValueStore (Dict.Dict String KeyValueStore.KVDatum)
     | GotBackendModel BackendModel
+
+
+
+-- SentLoginEmail Time.Posix EmailAddress (Result Http.Error Postmark.PostmarkSendResponse)
 
 
 type BackendDataStatus

@@ -15,7 +15,7 @@ import Element.Font
 import Element.Input
 import EmailAddress exposing (EmailAddress)
 import Html.Attributes
-import MagicLink.Types exposing (EnterEmail2, EnterLoginCode2, LoginCodeStatus(..), LoginForm(..))
+import MagicLink.Types exposing (EnterEmail_, EnterLoginCode_, LoginCodeStatus(..), SiginForm(..))
 import Martin
 import Route exposing (Route)
 import Types exposing (FrontendMsg)
@@ -89,7 +89,7 @@ errorView errorMessage =
         [ Element.text errorMessage ]
 
 
-view : Types.LoadedModel -> LoginForm -> Element FrontendMsg
+view : Types.LoadedModel -> SiginForm -> Element FrontendMsg
 view model loginForm =
     Element.column
         [ Element.padding 16
@@ -113,7 +113,7 @@ view model loginForm =
         ]
 
 
-enterLoginCodeView : EnterLoginCode2 -> Element FrontendMsg
+enterLoginCodeView : EnterLoginCode_ -> Element FrontendMsg
 enterLoginCodeView model =
     let
         -- label : MyElement.Label
@@ -203,7 +203,7 @@ maxLoginAttempts =
     10
 
 
-rateLimited : LoginForm -> LoginForm
+rateLimited : SiginForm -> SiginForm
 rateLimited loginForm =
     case loginForm of
         EnterEmail enterEmail ->
@@ -217,7 +217,7 @@ rateLimited loginForm =
                 }
 
 
-invalidCode : Int -> LoginForm -> LoginForm
+invalidCode : Int -> SiginForm -> SiginForm
 invalidCode loginCode loginForm =
     case loginForm of
         EnterEmail _ ->
@@ -228,7 +228,7 @@ invalidCode loginCode loginForm =
                 |> EnterSigninCode
 
 
-enterEmailView : EnterEmail2 -> Element FrontendMsg
+enterEmailView : EnterEmail_ -> Element FrontendMsg
 enterEmailView model =
     Element.column
         [ Element.spacing 16 ]
@@ -277,7 +277,7 @@ validateEmail text =
             )
 
 
-init : LoginForm
+init : SiginForm
 init =
     EnterEmail
         { email = ""

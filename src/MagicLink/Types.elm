@@ -1,10 +1,10 @@
 module MagicLink.Types exposing
-    ( EnterEmail2
-    , EnterLoginCode2
+    ( EnterEmail_
+    , EnterLoginCode_
     , Log
     , LogItem(..)
     , LoginCodeStatus(..)
-    , LoginForm(..)
+    , SiginForm(..)
     , SignInStatus(..)
     )
 
@@ -14,9 +14,9 @@ import Time
 import User
 
 
-type LoginForm
-    = EnterEmail EnterEmail2
-    | EnterSigninCode EnterLoginCode2
+type SiginForm
+    = EnterEmail EnterEmail_
+    | EnterSigninCode EnterLoginCode_
 
 
 type SignInStatus
@@ -37,14 +37,14 @@ type LogItem
     | FailedToCreateLoginCode Int
 
 
-type alias EnterEmail2 =
+type alias EnterEmail_ =
     { email : String
     , pressedSubmitEmail : Bool
     , rateLimited : Bool
     }
 
 
-type alias EnterLoginCode2 =
+type alias EnterLoginCode_ =
     { sentTo : EmailAddress, loginCode : String, attempts : Dict Int LoginCodeStatus }
 
 

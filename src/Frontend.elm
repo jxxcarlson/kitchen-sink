@@ -18,7 +18,7 @@ import Lamdera
 import MagicLink.Auth
 import MagicLink.Frontend
 import MagicLink.LoginForm
-import MagicLink.Types exposing (LoginForm(..))
+import MagicLink.Types exposing (SiginForm(..))
 import Ports
 import RPC
 import Route exposing (Route(..))
@@ -150,7 +150,7 @@ tryLoading loadingModel =
                                     loadingModel.initUrl
                             in
                             { initUrl | query = Nothing, fragment = Nothing }
-                        , loginForm = MagicLink.LoginForm.init
+                        , signinForm = MagicLink.LoginForm.init
                         , loginErrorMessage = Nothing
                         , signInStatus = MagicLink.Types.NotSignedIn
 
@@ -248,6 +248,7 @@ updateLoaded msg model =
             MagicLink.Frontend.enterEmail model email
 
         ReceivedSigninCode loginCode ->
+            -- TODO: put in Auth API
             MagicLink.Frontend.signInWithCode model loginCode
 
         SubmitSignUp ->

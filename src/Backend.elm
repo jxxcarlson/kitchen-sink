@@ -447,8 +447,6 @@ updateFromFrontend sessionId clientId msg model =
 
         -- MAGICLINK
         AuthToBackend authMsg ->
-            -- MagicLink.Backend.setMagicLink model clientId sessionId authMsg
-            -- Auth.Flow.updateFromFrontend (MagicLink.Auth.backendConfig model) clientId sessionId authMsg model
             Auth.Flow.updateFromFrontend (MagicLink.Auth.backendConfig model) clientId sessionId authMsg model
 
         AddUser realname username email ->

@@ -17,7 +17,7 @@ import Helper
 import KeyValueStore
 import Lamdera
 import MagicLink.LoginForm
-import MagicLink.Types exposing (LoginForm(..))
+import MagicLink.Types exposing (SiginForm(..))
 import Route exposing (Route(..))
 import Stripe.PurchaseForm as PurchaseForm
     exposing
@@ -42,31 +42,31 @@ import User
 
 
 submitEmailForSignin model =
-    case model.loginForm of
-        EnterEmail loginForm ->
-            case EmailAddress.fromString loginForm.email of
+    case model.signinForm of
+        EnterEmail signinForm ->
+            case EmailAddress.fromString signinForm.email of
                 Just email ->
                     let
                         model2 =
-                            { model | loginForm = EnterSigninCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
+                            { model | signinForm = EnterSigninCode { sentTo = email, loginCode = "", attempts = Dict.empty } }
                     in
-                    ( model2, Helper.trigger <| AuthSigninRequested { methodId = "EmailMagicLink", email = Just loginForm.email } )
+                    ( model2, Helper.trigger <| AuthSigninRequested { methodId = "EmailMagicLink", email = Just signinForm.email } )
 
                 Nothing ->
-                    ( { model | loginForm = EnterEmail { loginForm | pressedSubmitEmail = True } }, Cmd.none )
+                    ( { model | signinForm = EnterEmail { signinForm | pressedSubmitEmail = True } }, Cmd.none )
 
         EnterSigninCode _ ->
             ( model, Cmd.none )
 
 
 enterEmail model email =
-    case model.loginForm of
-        EnterEmail loginForm_ ->
+    case model.signinForm of
+        EnterEmail signinForm_ ->
             let
-                loginForm =
-                    { loginForm_ | email = email }
+                signinForm =
+                    { signinForm_ | email = email }
             in
-            ( { model | loginForm = EnterEmail loginForm }, Cmd.none )
+            ( { model | signinForm = EnterEmail signinForm }, Cmd.none )
 
         EnterSigninCode loginCode_ ->
             -- TODO: complete this
@@ -107,7 +107,7 @@ signOut model =
             }
 
         -- TOKEN
-        , loginForm = MagicLink.LoginForm.init
+        , signinForm = MagicLink.LoginForm.init
         , loginErrorMessage = Nothing
         , signInStatus = MagicLink.Types.NotSignedIn
 
@@ -162,8 +162,9 @@ userRegistered model user =
 -- HELPERS
 
 
+signInWithCode : LoadedModel -> String -> ( LoadedModel, Cmd msg )
 signInWithCode model signInCode =
-    case model.loginForm of
+    case model.signinForm of
         MagicLink.Types.EnterEmail _ ->
             ( model, Cmd.none )
 
@@ -172,7 +173,7 @@ signInWithCode model signInCode =
                 Ok loginCode ->
                     if Dict.member loginCode enterLoginCode.attempts then
                         ( { model
-                            | loginForm =
+                            | signinForm =
                                 EnterSigninCode
                                     { enterLoginCode | loginCode = String.left MagicLink.LoginForm.loginCodeLength signInCode }
                           }
@@ -181,7 +182,7 @@ signInWithCode model signInCode =
 
                     else
                         ( { model
-                            | loginForm =
+                            | signinForm =
                                 EnterSigninCode
                                     { enterLoginCode
                                         | loginCode = String.left MagicLink.LoginForm.loginCodeLength signInCode
@@ -193,6 +194,6 @@ signInWithCode model signInCode =
                         )
 
                 Err _ ->
-                    ( { model | loginForm = EnterSigninCode { enterLoginCode | loginCode = String.left MagicLink.LoginForm.loginCodeLength signInCode } }
+                    ( { model | signinForm = EnterSigninCode { enterLoginCode | loginCode = String.left MagicLink.LoginForm.loginCodeLength signInCode } }
                     , Cmd.none
                     )

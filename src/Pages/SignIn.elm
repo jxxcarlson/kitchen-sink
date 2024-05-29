@@ -11,7 +11,7 @@ import View.Input
 import View.Utility
 
 
-testInput : MagicLink.Types.EnterEmail2
+testInput : MagicLink.Types.EnterEmail_
 testInput =
     { email = "jxxcarlson@gmail.com"
     , pressedSubmitEmail = False
@@ -58,7 +58,7 @@ signInView : LoadedModel -> Element FrontendMsg
 signInView model =
     Element.column []
         [ Element.el [ Element.Font.semiBold, Element.Font.size 24 ] (Element.text "Sign in")
-        , MagicLink.LoginForm.view model model.loginForm
+        , MagicLink.LoginForm.view model model.signinForm
 
         --, Element.paragraph [ Element.Font.color (Element.rgb 1 0 0) ] [ Element.text (model.loginErrorMessage |> Maybe.withDefault "") ]
         , Element.row
@@ -73,7 +73,7 @@ signInAfterRegisteringView : LoadedModel -> Element FrontendMsg
 signInAfterRegisteringView model =
     Element.column []
         [ Element.el [ Element.Font.semiBold, Element.Font.size 24 ] (Element.text "Sign in")
-        , MagicLink.LoginForm.view model model.loginForm
+        , MagicLink.LoginForm.view model model.signinForm
         ]
 
 
